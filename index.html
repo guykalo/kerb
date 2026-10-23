@@ -43,8 +43,10 @@
             <button type="button" data-v="0.25">15m</button><button type="button" data-v="1">1h</button><button type="button" data-v="2">2h</button><button type="button" data-v="3">3h</button><button type="button" data-v="4">4h</button>
           </div>
         </div>
+        <div class="ribbon-cap"><span id="ribbonTitle">Streets on screen</span><span class="mini-key"><i class="k-free"></i>Free<i class="k-meter"></i>Meter<i class="k-no"></i>No parking</span></div>
         <div class="ribbon" id="ribbon">
           <canvas id="ribbonCanvas" aria-hidden="true"></canvas>
+          <div class="staybox" id="stayBox" aria-hidden="true"></div>
           <input id="time" type="range" min="0" max="23.75" step="0.25" aria-label="Arrival time">
           <div class="ticks" aria-hidden="true"><span>12am</span><span>6am</span><span>noon</span><span>6pm</span><span>12am</span></div>
         </div>

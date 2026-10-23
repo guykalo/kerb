@@ -7,6 +7,7 @@ import {
   stateAt, costFor, category, plainNow, dayTimeline,
   busy, busyLevel, BUSY_WORD, BANDS, band,
 } from './rules.js';
+import { parsePart } from '../scripts/lib/parse-rules.mjs';
 
 const $ = (s) => document.querySelector(s);
 const DATA = './data/';
@@ -175,7 +176,10 @@ function syncControls() {
   timeIn.value = S.hour;
   $('#timeOut').textContent = fmtClock(S.hour);
   const isNow = S.day === today.day && Math.abs(S.hour - today.hour) < 0.01;
-  $('#dayOut').textContent = isNow ? 'now' : DAYS_LONG[S.day];
+  $('#dayOut').textContent = isNow ? 'now' : DAYS[S.day];
+  const box = $('#stayBox');
+  box.style.left = `${(S.hour / 24) * 100}%`;
+  box.style.width = `${(Math.min(S.stay, 24 - S.hour) / 24) * 100}%`;
 }
 
 /* ---------- ribbon: what the kerbs in view do across 24 hours ---------- */
@@ -194,6 +198,7 @@ function drawRibbon() {
   const colFor = { free: c.free, meter: c.paid, restricted: c.restricted };
   const W = r.width / 96;
   const selKerb = typeof S.sel === 'number' ? byId.get(S.sel) : null;
+  $('#ribbonTitle').textContent = selKerb ? `${selKerb.properties.s}, ${DAYS_LONG[S.day]}` : `Streets on screen, ${DAYS_LONG[S.day]}`;
   if (selKerb) {
     for (const seg of dayTimeline(selKerb.properties, RULES, S.day)) {
       if (!colFor[seg.kind]) continue;
@@ -315,12 +320,34 @@ function plateHTML(part) {
   const allDay = m[2] === '12AM' && m[3] === '12AM';
   const ph = /PUBLIC HOLIDAYS/i.test(m[4]);
   const days = m[4].replace(/&?\s*PUBLIC HOLIDAYS/i, '').trim();
-  return `<div class="plate" role="img" aria-label="${p}P ticket parking ${allDay ? 'at all times' : `${m[2]} to ${m[3]}`}, ${days}${ph ? ' and public holidays' : ''}, $${m[5]} an hour">
+  const on = (parsePart(part) || []).some((r) => r.d.includes(S.day) && S.hour >= r.f && S.hour < r.t);
+  return `<figure class="plate-wrap${on ? '' : ' off'}">
+    <div class="plate" role="img" aria-label="${p}P ticket parking ${allDay ? 'at all times' : `${m[2]} to ${m[3]}`}, ${days}${ph ? ' and public holidays' : ''}, $${m[5]} an hour">
     <div class="p">${p}P</div><div class="l">Ticket</div>
     <div class="l">${allDay ? 'All times' : `${m[2]}-${m[3]}`}</div>
     <div class="l">${days}</div>
     ${ph ? '<div class="s">&amp; public hols</div>' : ''}
-    <div class="s">$${m[5]}/hr</div></div>`;
+    <div class="s">$${m[5]}/hr</div></div>
+    <figcaption>${on ? `In force at ${fmtTime(S.hour)}` : `Not in force at ${fmtTime(S.hour)}`}</figcaption></figure>`;
+}
+
+// Says in plain words why the stay costs what it does.
+function verdictText(p, c) {
+  if (c.ok === null) return { head: 'No published rules', why: '' };
+  if (!c.ok) return { head: "You can't stay that long", why: '' };
+  if (c.quarterFree) return { head: 'Free with a ticket', why: 'The first 15 minutes are free. Grab a ticket from the meter.' };
+  const end = S.hour + S.stay;
+  if (c.paidHours === 0) {
+    const s = stateAt(p, RULES, S.day, S.hour);
+    const why = s.why === 'before-hours' || s.why === 'night'
+      ? `The meters don't start until ${fmtTime(s.until)}, and you're gone by ${fmtTime(end)}.`
+      : s.why === 'after-hours' ? `The meters have finished for ${DAYS_LONG[S.day]}.`
+        : `There are no meter hours on ${DAYS_LONG[S.day]}s.`;
+    return { head: 'Free the whole time', why };
+  }
+  if (c.freeHours > 0 && c.firstPaidAt > S.hour) return { head: `Free until ${fmtTime(c.firstPaidAt)}, then pay`, why: `The meter starts at ${fmtTime(c.firstPaidAt)}, so you pay for ${c.paidHours === 1 ? '1 hour' : `${c.paidHours} hours`} at ${money(c.rate)} an hour.` };
+  if (c.freeHours > 0) return { head: 'Pay, then free', why: `You pay ${money(c.rate)} an hour until the meter finishes, then the rest is free.` };
+  return { head: `${money(c.rate)} an hour`, why: '' };
 }
 
 function weekHTML(p) {
@@ -356,13 +383,14 @@ function renderDetail() {
     const c = costFor(p, RULES, S.day, S.hour, S.stay);
     const set = p.k >= 0 ? RULES[p.k] : null;
     const lv = busyLevel(busy(p, RULES, S.day, S.hour));
+    const v = verdictText(p, c);
     d.innerHTML = `
       <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
       <div><h2>${p.s}</h2><div class="where">${[p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} paid spaces` : ''].filter(Boolean).join(', ')}</div></div>
-      <div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>${c.ok === null ? 'No published rules' : c.ok ? (c.quarterFree ? 'Free with a ticket' : 'You can park here') : "You can't stay that long"}</div>
-        ${c.ok ? `<span class="big ${c.cost === 0 ? '' : ''}" style="color:var(--${c.cost === 0 ? 'free' : 'fg'})">${money(c.cost)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
-      <p class="plain">${plainNow(p, RULES, S.day, S.hour)}${p.f15 ? ' This street is in a free 15-minute zone: get a ticket for the first quarter hour free.' : ''}</p>
-      ${set ? `<h3 class="h3">The meter rules</h3><div class="plates">${set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div>
+      <div class="verdict"><div><small>${stayTxt}, ${DAYS[S.day]} ${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}</small>${v.head}</div>
+        ${c.ok ? `<span class="big" style="color:var(--${c.cost === 0 ? 'free' : 'fg'})">${money(c.cost)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
+      <p class="plain">${v.why || plainNow(p, RULES, S.day, S.hour)}${p.f15 ? ' This street is in a free 15-minute zone, so a ticket gets you the first quarter hour free.' : ''}</p>
+      ${set ? `<h3 class="h3">What the signs say</h3><div class="plates">${set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div>
       <h3 class="h3">Across the week</h3>${weekHTML(p)}
       <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>

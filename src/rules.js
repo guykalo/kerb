@@ -60,7 +60,7 @@ export function costFor(props, rules, day, h, stay) {
   if (props.k < 0) return { ok: null, why: 'No published rules for this kerb yet' };
   const set = rules[props.k];
   const step = 0.25, n = Math.max(1, Math.round(stay / step));
-  let cost = 0, run = 0, ref = null, paid = 0;
+  let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0;
   for (let i = 0; i < n; i++) {
     const t = h + i * step, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
     const s = stateAt(props, rules, d, hh);
@@ -70,11 +70,12 @@ export function costFor(props, rules, day, h, stay) {
     run += step;
     if (run > s.rule[0] + 1e-9) return { ok: false, why: `${pLabel(s.rule[0])} limit until ${fmtTime(s.rule[3])}` };
     cost += s.rule[4] * step; paid += step;
+    if (firstPaidAt == null) { firstPaidAt = t; rate = s.rule[4]; }
   }
   // Ticket machines in free 15-minute zones give the first quarter hour free.
   const quarterFree = set.q || props.f15;
   if (quarterFree && paid > 0) cost = Math.max(0, cost - Math.min(paid, 0.25) * (cost / paid));
-  return { ok: true, cost, quarterFree: !!quarterFree && stay <= 0.25 };
+  return { ok: true, cost, quarterFree: !!quarterFree && stay <= 0.25, paidHours: paid, freeHours: stay - paid, firstPaidAt, rate };
 }
 
 // Category used for colouring the kerb for the chosen stay.
