@@ -1,0 +1,26 @@
+{
+  "name": "kerb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "data:fetch": "node scripts/fetch-data.mjs",
+    "data:build": "node scripts/build-data.mjs",
+    "data": "npm run data:fetch && npm run data:build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "vite": "^5.4.11"
+  },
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@phosphor-icons/web": "^2.1.1",
+    "maplibre-gl": "^4.7.1"
+  }
+}

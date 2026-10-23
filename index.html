@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kerb · Sydney parking</title>
+  <meta name="description" content="Every metered kerb in the City of Sydney on one map: where it's free right now, what the meters cost, and how long you can stay.">
+  <meta name="theme-color" content="#0e1a24" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#eef3f5" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="map" id="map" aria-label="Map of Sydney kerbs"></div>
+
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Kerb home">
+        <span class="mark" aria-hidden="true">K</span><span class="word">Kerb</span>
+      </a>
+      <form class="search" id="searchForm" role="search" autocomplete="off">
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+        <label class="sr" for="q">Search a street or place</label>
+        <input id="q" type="search" placeholder="Search a street or place" enterkeyhint="search">
+        <ul class="results" id="results" role="listbox" hidden></ul>
+      </form>
+      <button class="iconbtn" id="locate" type="button" aria-label="Show my location"><i class="ph ph-crosshair"></i></button>
+    </header>
+
+    <section class="panel" id="panel" aria-label="Parking options">
+      <button class="handle" id="handle" type="button" aria-label="Expand or collapse the options"><span></span></button>
+
+      <div class="dock" id="dock">
+        <div class="dock-row">
+          <div class="when">
+            <label for="time" class="sr">Arrival time</label>
+            <output id="timeOut" for="time"></output>
+            <span id="dayOut" class="dayout"></span>
+          </div>
+          <div class="stay" role="group" aria-label="How long you're staying" id="staySeg">
+            <button type="button" data-v="0.25">15m</button><button type="button" data-v="1">1h</button><button type="button" data-v="2">2h</button><button type="button" data-v="3">3h</button><button type="button" data-v="4">4h</button>
+          </div>
+        </div>
+        <div class="ribbon" id="ribbon">
+          <canvas id="ribbonCanvas" aria-hidden="true"></canvas>
+          <input id="time" type="range" min="0" max="23.75" step="0.25" aria-label="Arrival time">
+          <div class="ticks" aria-hidden="true"><span>12am</span><span>6am</span><span>noon</span><span>6pm</span><span>12am</span></div>
+        </div>
+        <div class="days" role="group" aria-label="Day" id="daySeg"></div>
+      </div>
+
+      <div class="body" id="body"></div>
+    </section>
+
+    <div class="legend" id="legend" aria-label="Map key"></div>
+    <div class="toast" id="toast" role="status" hidden></div>
+  </div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
