@@ -36,7 +36,7 @@ const C = () => ({
 });
 const BASE = {
   light: { bg: '#e8eef1', land2: '#e1e8eb', water: '#b9d6e5', park: '#d3e5d2', building: '#d6dfe4', road: '#ffffff', roadMajor: '#ffffff', casing: '#cfdbe1', label: '#5a7383', halo: '#eef3f5' },
-  dark: { bg: '#0c1821', land2: '#0f1d27', water: '#0d2b3c', park: '#0f2419', building: '#142531', road: '#1b3140', roadMajor: '#22394a', casing: '#0c1821', label: '#6f8a9a', halo: '#0c1821' },
+  dark: { bg: '#0c1821', land2: '#0f1d27', water: '#0d2b3c', park: '#0f2419', building: '#13232e', road: '#203646', roadMajor: '#2a4558', casing: '#152836', label: '#8aa3b2', halo: '#0c1821' },
 };
 
 /* ---------- data ---------- */
@@ -69,6 +69,7 @@ const map = new maplibregl.Map({
   ...START, minZoom: 11, maxZoom: 19.5, attributionControl: false, pitchWithRotate: false, dragRotate: false,
 });
 map.touchZoomRotate.disableRotation();
+window.__kerbMap = map; // handy for debugging in the browser console
 map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: 'Kerb data: <a href="https://data.cityofsydney.nsw.gov.au/" target="_blank" rel="noopener">City of Sydney</a>' }), 'top-right');
 
 function restyleBase() {
@@ -110,7 +111,7 @@ function kerbLayers() {
   }
   for (const id of ['kerb-glow', 'kerb-faint', 'kerb-line', 'kerb-short', 'kerb-sel', 'meter-dot']) if (map.getLayer(id)) map.removeLayer(id);
   map.addLayer({ id: 'kerb-glow', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(3.2), 'line-blur': w(2.4), 'line-opacity': dark() ? 0.35 : 0.18 } });
-  map.addLayer({ id: 'kerb-faint', type: 'line', source: 'kerbs', filter: ['all', ['in', ['get', 'c'], ['literal', ['unknown', 'permit']]], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'round' }, paint: { 'line-color': col, 'line-width': w(0.55), 'line-opacity': ['case', ['==', ['get', 'c'], 'permit'], 0.75, 0.6], 'line-dasharray': [1.5, 1.5] } });
+  map.addLayer({ id: 'kerb-faint', type: 'line', source: 'kerbs', filter: ['all', ['in', ['get', 'c'], ['literal', ['unknown', 'permit']]], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'round' }, paint: { 'line-color': col, 'line-width': w(0.55), 'line-opacity': ['case', ['==', ['get', 'c'], 'permit'], 0.4, 0.5], 'line-dasharray': [1.5, 1.5] } });
   map.addLayer({ id: 'kerb-line', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(1) } });
   map.addLayer({ id: 'kerb-short', type: 'line', source: 'kerbs', filter: ['all', ['==', ['get', 'c'], 'short'], ['!', ['in', 'short', ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'butt' }, paint: { 'line-color': col, 'line-width': w(0.9), 'line-dasharray': [1.2, 1] } });
   map.addLayer({ id: 'kerb-sel', type: 'line', source: 'kerbs', filter: ['==', ['get', 'id'], S.sel && typeof S.sel === 'number' ? S.sel : -1], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.fg, 'line-width': ['interpolate', ['linear'], ['zoom'], 13, 1.5, 18, 3], 'line-gap-width': w(1.4), 'line-opacity': 0.95 } });
@@ -522,6 +523,7 @@ const dataReady = loadData().catch((e) => { body.innerHTML = `<div class="empty"
 dataReady.then(() => update(), () => {});
 map.on('style.load', async () => {
   restyleBase();
+  document.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
   try { await dataReady; } catch { return; }
   recolour();
   kerbLayers();
