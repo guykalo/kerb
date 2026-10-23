@@ -2,7 +2,7 @@
 <html lang="en-AU">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
   <title>Kerb · Sydney parking</title>
   <meta name="description" content="Every metered kerb in the City of Sydney on one map: where it's free right now, what the meters cost, and how long you can stay.">
   <meta name="theme-color" content="#0e1a24" media="(prefers-color-scheme: dark)">
@@ -23,7 +23,7 @@
       <form class="search" id="searchForm" role="search" autocomplete="off">
         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
         <label class="sr" for="q">Search a street or place</label>
-        <input id="q" type="search" placeholder="Search a street or place" enterkeyhint="search">
+        <input id="q" type="search" placeholder="Search a street" enterkeyhint="search">
         <ul class="results" id="results" role="listbox" hidden></ul>
       </form>
       <button class="iconbtn" id="locate" type="button" aria-label="Show my location"><i class="ph ph-crosshair"></i></button>
@@ -57,6 +57,7 @@
     </section>
 
     <div class="legend" id="legend" aria-label="Map key"></div>
+    <button class="iconbtn fullbtn" id="fullBtn" type="button" aria-label="Full screen map" aria-pressed="false"><i class="ph ph-arrows-out-simple"></i></button>
     <div class="toast" id="toast" role="status" hidden></div>
   </div>
   <script type="module" src="./src/main.js"></script>

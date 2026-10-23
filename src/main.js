@@ -439,38 +439,70 @@ function renderLegend() {
   }
 }
 
-/* ---------- sheet (phones) ---------- */
+/* ---------- sheet (phones): min (full map), peek, open ---------- */
 const panel = $('#panel');
+const root = document.documentElement;
+let sheet = 'peek';
+const px = (v) => parseFloat(getComputedStyle(root).getPropertyValue(v)) || 0;
 function setPeek() {
-  const peek = $('#dock').getBoundingClientRect().height + 22 + 64;
-  document.documentElement.style.setProperty('--peek', `${Math.round(peek)}px`);
+  const dock = $('#dock').getBoundingClientRect().height;
+  const row = $('.dock-row').getBoundingClientRect().height;
+  root.style.setProperty('--peek', `${Math.round(dock + 22 + 64)}px`);
+  root.style.setProperty('--min', `${Math.round(row + 22 + 12)}px`);
+  setSheet(sheet, true);
 }
-function setOpen(v) { S.open = v; panel.classList.toggle('open', v); }
+function visibleHeight(state) {
+  if (innerWidth >= 900) return 0;
+  return state === 'open' ? panel.offsetHeight : state === 'min' ? px('--min') : px('--peek');
+}
+function setSheet(state, quiet) {
+  sheet = state; S.open = state === 'open';
+  panel.classList.toggle('open', state === 'open');
+  panel.classList.toggle('min', state === 'min');
+  root.style.setProperty('--vis', `${Math.round(visibleHeight(state === 'open' ? 'peek' : state))}px`);
+  const fb = $('#fullBtn');
+  if (fb) { fb.setAttribute('aria-pressed', String(state === 'min')); fb.innerHTML = state === 'min' ? '<i class="ph ph-arrows-in-simple"></i>' : '<i class="ph ph-arrows-out-simple"></i>'; fb.setAttribute('aria-label', state === 'min' ? 'Show the options' : 'Full screen map'); }
+  if (!quiet) setTimeout(() => map.resize(), 340);
+}
+function setOpen(v) { setSheet(v ? 'open' : 'peek'); }
 (() => {
   const h = $('#handle');
-  let y0 = null, moved = false, base = 0;
-  h.addEventListener('pointerdown', (e) => { y0 = e.clientY; moved = false; base = panel.getBoundingClientRect().top; h.setPointerCapture(e.pointerId); panel.classList.add('dragging'); });
+  let y0 = null, moved = false, startOff = 0;
+  const offFor = (state) => panel.offsetHeight - visibleHeight(state);
+  h.addEventListener('pointerdown', (e) => { y0 = e.clientY; moved = false; startOff = offFor(sheet); h.setPointerCapture(e.pointerId); panel.classList.add('dragging'); });
   h.addEventListener('pointermove', (e) => {
     if (y0 == null) return;
     const dy = e.clientY - y0; if (Math.abs(dy) > 4) moved = true;
-    const full = panel.offsetHeight, peek = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--peek'));
-    const off = Math.min(full - peek, Math.max(0, base + dy - (innerHeight - full)));
+    const off = Math.min(offFor('min'), Math.max(0, startOff + dy));
     panel.style.transform = `translateY(${off}px)`;
   });
   const end = (e) => {
     if (y0 == null) return;
     const dy = e.clientY - y0; y0 = null; panel.classList.remove('dragging'); panel.style.transform = '';
-    if (!moved) setOpen(!S.open); else setOpen(dy < 0);
+    if (!moved) { setSheet(sheet === 'min' ? 'peek' : sheet === 'peek' ? 'open' : 'peek'); return; }
+    const off = startOff + dy;
+    const options = ['open', 'peek', 'min'].map((s) => [s, Math.abs(offFor(s) - off)]);
+    setSheet(options.sort((x, y) => x[1] - y[1])[0][0]);
   };
   h.addEventListener('pointerup', end); h.addEventListener('pointercancel', end);
-  $('#dock').addEventListener('click', (e) => { if (innerWidth < 900 && !S.open && e.target.closest('button,input') === null) setOpen(true); });
+  $('#dock').addEventListener('click', (e) => { if (innerWidth < 900 && sheet !== 'open' && e.target.closest('button,input') === null) setSheet(sheet === 'min' ? 'peek' : 'open'); });
+  $('#fullBtn').addEventListener('click', () => setSheet(sheet === 'min' ? 'peek' : 'min'));
 })();
+
+/* ---------- keep the page pinned on phones (iOS can scroll or zoom the whole page after the keyboard) ---------- */
+function settle() { if (scrollX || scrollY) scrollTo(0, 0); map.resize(); setPeek(); }
+visualViewport?.addEventListener('resize', () => { clearTimeout(settle.t); settle.t = setTimeout(settle, 150); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { settle(); map.triggerRepaint(); } });
+addEventListener('pageshow', settle);
+map.on('webglcontextlost', () => toast('The map paused. It will come back in a moment.'));
+map.on('webglcontextrestored', () => { restyleBase(); if (KERBS) { kerbLayers(); recolour(); } });
 
 /* ---------- search ---------- */
 const q = $('#q'), results = $('#results');
 let searchTimer = null, searchCtl = null;
 q.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(runSearch, 250); });
 q.addEventListener('keydown', (e) => { if (e.key === 'Escape') { results.hidden = true; q.blur(); } });
+q.addEventListener('blur', () => setTimeout(settle, 120));
 $('#searchForm').addEventListener('submit', (e) => { e.preventDefault(); const first = results.querySelector('button'); if (first) first.click(); else runSearch(); });
 document.addEventListener('click', (e) => { if (!e.target.closest('.search')) results.hidden = true; });
 async function runSearch() {
@@ -540,7 +572,7 @@ let moveTimer = null;
 map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel == null) renderList(); }, 120); });
 
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) kerbLayers(); drawRibbon(); });
-addEventListener('resize', () => { setPeek(); drawRibbon(); });
+addEventListener('resize', () => { setPeek(); drawRibbon(); map.resize(); });
 
 /* ---------- boot ---------- */
 renderLegend();
