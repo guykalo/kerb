@@ -1,0 +1,25 @@
+# Council documents Kerb reads by hand. Lines starting with "page " are crawled for document links.
+# Randwick
+https://hdp-au-prod-app-rcc-yoursay-files.s3.ap-southeast-2.amazonaws.com/9717/5741/6127/b84af58341fd86f92b39b7d9993d862c_Current20parking20Coogee20Beach20TC.pdf
+https://www.yoursay.randwick.nsw.gov.au/download_file/3030/905
+https://www.yoursay.randwick.nsw.gov.au/download_file/3032/905
+https://www.yoursay.randwick.nsw.gov.au/download_file/3033/905
+https://www.yoursay.randwick.nsw.gov.au/download_file/3034/905
+https://www.yoursay.randwick.nsw.gov.au/download_file/3035/905
+https://www.randwick.nsw.gov.au/__data/assets/pdf_file/0006/224844/Resident-Parking-area-map-CO1.pdf
+https://www.randwick.nsw.gov.au/__data/assets/pdf_file/0008/418706/CL1-ResidentParking-Area-Map-20250623.pdf
+# Woollahra
+https://hdp-au-prod-app-woollahra-yoursay-files.s3.ap-southeast-2.amazonaws.com/7217/4063/8615/Woollahra_Local_Traffic_Committee_Report_Watsons_Bay_Permit_Parking_Trial_Review_26_July_2024_Extraordinary.DOCX
+https://hdp-au-prod-app-woollahra-yoursay-files.s3.ap-southeast-2.amazonaws.com/5317/4063/8280/Council_Report_Watsons_Bay_Parking_Review_-_Proposed_Permit_Parking_Trial_Scheme_15_November_2023.DOCX
+# North Sydney
+https://northsydney.nsw.gov.au/downloads/file/220/parking-meters-locations-rates-nsc
+https://www.northsydney.nsw.gov.au/downloads/file/3974/map-of-parking-meter-rates-and-demand-areas
+https://northsydney.nsw.gov.au/downloads/file/3496/new-parking-meter-rates-and-demand-areas-2024-25
+range https://www.northsydney.nsw.gov.au/downloads/file/{n} 230 265
+# Inner West (crawl the permit pages for each former council area)
+page https://www.innerwest.nsw.gov.au/live/information-for-residents/parking/parking-permit/ashfield
+page https://innerwest.nsw.gov.au/live/information-for-residents/parking/permit-parking/marrickville
+page https://www.innerwest.nsw.gov.au/live/information-for-residents/parking/permit-parking/leichhardt
+page https://www.innerwest.nsw.gov.au/live/information-for-residents/parking/parking-permit/leichhardt
+page https://www.innerwest.nsw.gov.au/live/information-for-residents/parking/parking-permit/marrickville
+page https://www.innerwest.nsw.gov.au/live/information-for-residents/parking/council-car-parks

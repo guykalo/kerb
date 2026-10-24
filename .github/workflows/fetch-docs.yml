@@ -1,0 +1,15 @@
+name: Fetch council documents
+on:
+  workflow_dispatch:
+  push:
+    paths: ['data/doc-urls.txt', 'scripts/fetch-docs.mjs']
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/fetch-docs.mjs
+      - uses: actions/upload-artifact@v4
+        with: { name: council-docs, path: docs/, retention-days: 30 }
