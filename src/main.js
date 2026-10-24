@@ -38,7 +38,13 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } },
 };
 // A shared link looks like #at=-33.89123,151.27456 and opens the kerb or car park at that spot.
-const LINK = (() => { const m = /at=(-?\d+\.\d+),(-?\d+\.\d+)/.exec(location.hash); return m ? [+m[2], +m[1]] : null; })();
+// Shared links carry #at=lat,lng. Accept either order, and ignore anything that isn't in the Sydney region.
+const LINK = (() => {
+  const m = /at=(-?\d+\.\d+),(-?\d+\.\d+)/.exec(location.hash);
+  if (!m) return null;
+  const a = +m[1], b = +m[2], ok = (lng, lat) => lng > 149 && lng < 153 && lat > -35.5 && lat < -32;
+  return ok(b, a) ? [b, a] : ok(a, b) ? [a, b] : null;
+})();
 if (LINK) { START.center = LINK; START.zoom = 17; }
 
 /* ---------- theme colours (read from CSS so the map follows light/dark) ---------- */
