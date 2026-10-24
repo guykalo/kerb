@@ -1134,7 +1134,8 @@ function localMatches(text) {
 function pick(item) {
   results.hidden = true; q.value = item.title; q.blur(); S.sel = null;
   if (item.kind === 'carpark') { setDest(null); q.value = item.title; select(item.id, true); return; }
-  setDest({ at: item.at, name: item.sub && item.kind === 'street' ? `${item.title}, ${item.sub}` : item.title }); setOpen(true);
+  q.blur(); setSheet('peek'); // keep the map in view so the options can be seen; the list is one swipe up
+  setDest({ at: item.at, name: item.sub && item.kind === 'street' ? `${item.title}, ${item.sub}` : item.title });
 }
 function showResults(local, places, loading) {
   results.replaceChildren();
