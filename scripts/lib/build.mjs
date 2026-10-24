@@ -152,7 +152,15 @@ export function buildData(raw) {
       if (!remap.has(k)) { const key = JSON.stringify([carry.rules[k].rules, carry.rules[k].q || 0]); if (!ruleKey.has(key)) { ruleKey.set(key, ruleSets.length); ruleSets.push(carry.rules[k]); } remap.set(k, ruleKey.get(key)); }
       return remap.get(k);
     };
-    for (const f of carry.kerbs.features) if (!f.properties.src) kerbGeo.features.push({ ...f, properties: { ...f.properties, k: kOf(f.properties.k) } });
+    // Keep one kerb per piece of street (a metered copy beats a blank one).
+    const pick = new Map();
+    for (const f of carry.kerbs.features) {
+      if (f.properties.src) continue;
+      const c = f.geometry.coordinates, key = `${f.properties.s}|${c[0]}|${c[c.length - 1]}`;
+      const cur = pick.get(key);
+      if (!cur || (cur.properties.k < 0 && f.properties.k >= 0)) pick.set(key, f);
+    }
+    for (const f of pick.values()) kerbGeo.features.push({ ...f, properties: { ...f.properties, k: kOf(f.properties.k) } });
     for (const m of carry.meters) meterPts.push([m[0], m[1], kOf(m[2]), m[3]]);
   }
 
