@@ -1,0 +1,26 @@
+name: Fetch council parking decisions
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 17 * * 1' # Tuesday 4:41am Sydney, weekly (committees meet monthly)
+  push:
+    paths: ['scripts/fetch-decisions.mjs']
+permissions:
+  contents: write
+jobs:
+  decisions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # Start from what's already downloaded, so only new decisions are fetched.
+      - run: mkdir -p docs && (git fetch -q origin council-decisions && git show origin/council-decisions:decisions-cos.json > docs/decisions-cos.json) || true
+      - run: node scripts/fetch-decisions.mjs
+      - run: |
+          cd docs
+          git init -q -b council-decisions
+          git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Council parking decisions $(date -u +%F)"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" council-decisions
