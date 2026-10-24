@@ -2,7 +2,11 @@
  "about": "Kerb rules read by hand from council PDFs and maps. Each entry paints one side (or both) of a named street within `radius` metres of `near` [lon, lat]. Rules use Kerb's tuple: [hours, days(0=Sun), from, to, $/hr (-1 = meter, rate unknown), public holidays, 0 park / 1 no parking, note].",
  "sources": {
   "rw4p": "Randwick Council 4P beach parking maps (Jan 2021): https://www.randwick.nsw.gov.au/about-council/news/news-items/2021/january/4p-parking-introduced-in-beachside-areas",
-  "rwcoogee": "Randwick Council Coogee local business area parking survey map (Sept 2025): https://www.yoursay.randwick.nsw.gov.au"
+  "rwcoogee": "Randwick Council Coogee local business area parking survey map (Sept 2025): https://www.yoursay.randwick.nsw.gov.au",
+  "rwrandwick": "Randwick Council current parking map, Randwick town centre (Sept 2025): https://www.yoursay.randwick.nsw.gov.au/download_file/3030/905",
+  "rwbream": "Randwick Council current parking map, Coogee Bream St (Sept 2025): https://www.yoursay.randwick.nsw.gov.au/download_file/3032/905",
+  "rwsouthcoogee": "Randwick Council current parking map, South Coogee (Sept 2025): https://www.yoursay.randwick.nsw.gov.au/download_file/3033/905",
+  "rwmalabar": "Randwick Council current parking map, Malabar town centre (Sept 2025): https://www.yoursay.randwick.nsw.gov.au/download_file/3034/905"
  },
  "streets": [
   {
@@ -1242,6 +1246,4584 @@
    ],
    "text": "Loading 7am-11:30am Sat-Sun, 1/4P 11:30am-6pm Mon-Sun",
    "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Alfreda Street",
+   "to": "Coogee Bay Road",
+   "side": [
+    "west"
+   ],
+   "f": [
+    -0.06,
+    0.25
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Alfreda Street",
+   "to": "Coogee Bay Road",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.16,
+    0.63
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.09,
+    0.14
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     6,
+     12,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     12,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 6am-12pm Mon-Sun, 1/2P 12pm-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.1,
+    0.16
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     6,
+     12,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     12,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 6am-12pm Mon-Sun, 1/2P 12pm-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.15,
+    0.36
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.18,
+    0.36
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.52,
+    0.57
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     6,
+     12,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     12,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 6am-12pm Mon-Sun, 1/2P 12pm-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.6,
+    0.75
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.77,
+    0.83
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     7,
+     11,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     11,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      0
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 7am-11am Mon-Sat, 1/2P 11am-6pm Mon-Sat, 8am-6pm Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.84,
+    0.87
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Mobility permit holders only"
+    ]
+   ],
+   "text": "Accessible parking",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.52,
+    0.67
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.69,
+    0.74
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     12.5,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     12.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     24,
+     0,
+     0,
+     1,
+     "Taxi zone"
+    ],
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     5,
+     0,
+     0,
+     1,
+     "Taxi zone"
+    ]
+   ],
+   "text": "Loading 8am-12:30pm Mon-Sun, 1/2P 12:30pm-6pm Mon-Sun, Taxi 6pm-5am Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.75,
+    0.86
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     24,
+     0,
+     0,
+     1,
+     "Taxi zone"
+    ],
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     5,
+     0,
+     0,
+     1,
+     "Taxi zone"
+    ]
+   ],
+   "text": "1/2P 8am-6pm Mon-Sun, Taxi 6pm-5am Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Arden Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Carr Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.18,
+    0.3
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     6,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     23,
+     24,
+     0,
+     0,
+     1,
+     "Taxi zone"
+    ],
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     6,
+     0,
+     0,
+     1,
+     "Taxi zone"
+    ]
+   ],
+   "text": "4P 6am-10pm Mon-Sun, Taxi Zone 11pm-6am Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Arden Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Carr Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.32,
+    0.73
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "4P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Arden Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Carr Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.75,
+    0.92
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Arden Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Carr Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.51,
+    0.92
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "4P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Arden Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Carr Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.43,
+    0.48
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     1,
+     "EV charging only"
+    ]
+   ],
+   "text": "1P EV Charging 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Kidman Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.37,
+    0.52
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Kidman Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.77,
+    1.04
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Kidman Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.32,
+    0.36
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Motorbike only"
+    ]
+   ],
+   "text": "Motorbike parking",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Kidman Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.36,
+    0.42
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Mobility permit holders only"
+    ]
+   ],
+   "text": "Accessible parking",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Kidman Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.44,
+    0.63
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Kidman Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.65,
+    0.69
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     7,
+     17,
+     0,
+     0,
+     1,
+     "Works zone"
+    ],
+    [
+     0,
+     [
+      6
+     ],
+     8,
+     17,
+     0,
+     0,
+     1,
+     "Works zone"
+    ]
+   ],
+   "text": "Work Zone 7am-5pm Mon-Fri, 8am-5pm Sat",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Kidman Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.7,
+    0.77
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Coogee Bay Road",
+   "to": "Kidman Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.81,
+    0.89
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    -0.15,
+    -0.1
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     6,
+     12.5,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     12.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 6am-12:30pm Mon-Sun, 1/2P 12:30pm-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    -0.19,
+    -0.16
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Motorbike only"
+    ]
+   ],
+   "text": "Motorbike 2P 9am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    -0.21,
+    -0.19
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Mobility permit holders only"
+    ]
+   ],
+   "text": "Accessible parking",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    -0.34,
+    -0.22
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    -0.43,
+    -0.36
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    -0.69,
+    -0.59
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     5.5,
+     21,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone 5:30am-9pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    -0.81,
+    -0.71
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8,
+     9.5,
+     0,
+     0,
+     1,
+     "No parking, school days"
+    ],
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     14.5,
+     16,
+     0,
+     0,
+     1,
+     "No parking, school days"
+    ]
+   ],
+   "text": "No Parking 8am-9:30am School days, 2:30pm-4pm School days",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    -0.87,
+    -0.82
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    -0.13,
+    -0.07
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    -0.17,
+    -0.14
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    -0.3,
+    -0.23
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    -0.42,
+    -0.35
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Coogee Bay Road",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    -0.87,
+    -0.55
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Alison Road",
+   "to": "Silver Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.28,
+    0.51
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Alison Road",
+   "to": "Silver Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.26,
+    0.74
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Alison Road",
+   "to": "Silver Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.75,
+    0.98
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.07,
+    0.44
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     16,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-4pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.46,
+    0.64
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     16,
+     18,
+     0,
+     0,
+     1,
+     "No stopping"
+    ],
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     16,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-4pm Mon-Fri, 8:30am-12:30pm Sat, No Stopping 4pm-6pm Mon-Fri",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.64,
+    0.7
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     16,
+     18,
+     0,
+     0,
+     1,
+     "No stopping"
+    ],
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     0,
+     16,
+     0,
+     0,
+     1,
+     "Mail zone"
+    ],
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     18,
+     24,
+     0,
+     0,
+     1,
+     "Mail zone"
+    ],
+    [
+     0,
+     [
+      0,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Mail zone"
+    ]
+   ],
+   "text": "No Stopping 4pm-6pm Mon-Fri, Mail Zone at Other Times",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.72,
+    0.91
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.07,
+    0.57
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.66,
+    0.7
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     12.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 8:30am-12:30pm Mon-Fri, 1/2P 12:30pm-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.73,
+    0.78
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.81,
+    0.87
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     12.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 8:30am-12:30pm Mon-Fri, 1/2P 12:30pm-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    1.08,
+    1.25
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    1.27,
+    1.53
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     7,
+     9,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ],
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     9,
+     12.5,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     12.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Bus Zone 7am-9am Mon-Fri, Loading 9am-12:30pm Mon-Fri, 1/2P 12:30pm-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    1.55,
+    1.73
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    1.75,
+    1.82
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     6.5,
+     18,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 6:30am-6pm Mon-Fri, 1/2P 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    1.35,
+    1.53
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     16,
+     18,
+     0,
+     0,
+     1,
+     "No stopping"
+    ],
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     10,
+     15,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "No Stopping 4pm-6pm Mon-Fri, 1/2P 10am-3pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Belmore Road",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Silver Street",
+   "to": "Arthur Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    1.55,
+    1.68
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Elizabeth Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Alison Road",
+   "to": "Silver Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.18,
+    0.34
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Elizabeth Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Alison Road",
+   "to": "Silver Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.32,
+    0.42
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "EV charging only"
+    ]
+   ],
+   "text": "EV charging",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Elizabeth Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Alison Road",
+   "to": "Silver Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.19,
+    0.5
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Elizabeth Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Alison Road",
+   "to": "Silver Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.52,
+    0.62
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ]
+   ],
+   "text": "Loading Mon-Sun",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Elizabeth Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Alison Road",
+   "to": "Silver Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.69,
+    0.84
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     1,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Elizabeth Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Alison Road",
+   "to": "Silver Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.6,
+    0.84
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     1,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Silver Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Elizabeth Street",
+   "to": "Belmore Road",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.15,
+    0.27
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Silver Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Elizabeth Street",
+   "to": "Belmore Road",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.31,
+    0.81
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     1,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Silver Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Elizabeth Street",
+   "to": "Belmore Road",
+   "side": [
+    "south"
+   ],
+   "f": [
+    -0.01,
+    0.19
+   ],
+   "rules": [
+    [
+     2,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8am-6pm Mon-Fri",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Silver Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Elizabeth Street",
+   "to": "Belmore Road",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.24,
+    0.44
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     1,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Silver Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Elizabeth Street",
+   "to": "Belmore Road",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.66,
+    0.79
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     1,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Silver Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Elizabeth Street",
+   "to": "Belmore Road",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.82,
+    0.88
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Mobility permit holders only"
+    ]
+   ],
+   "text": "Accessible parking",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Arthur Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Clara Street",
+   "to": "Belmore Road",
+   "side": [
+    "north"
+   ],
+   "f": [
+    -0.03,
+    0.23
+   ],
+   "rules": [
+    [
+     2,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8am-6pm Mon-Fri",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Arthur Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Clara Street",
+   "to": "Belmore Road",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.29,
+    0.41
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     1,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Fri, 1P 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Arthur Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Clara Street",
+   "to": "Belmore Road",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.51,
+    0.64
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Motorbike only"
+    ]
+   ],
+   "text": "Motorbike parking",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Short Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Belmore Road",
+   "to": "Avoca Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.28,
+    0.69
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Short Street",
+   "suburb": "Randwick",
+   "area": [
+    151.2415,
+    -33.9145
+   ],
+   "from": "Belmore Road",
+   "to": "Avoca Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.28,
+    0.74
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     1,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwrandwick"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.16,
+    0.27
+   ],
+   "rules": [
+    [
+     2,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8:30am-6pm Mon-Fri",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.3,
+    0.35
+   ],
+   "rules": [
+    [
+     0.167,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.167,
+     [
+      6
+     ],
+     8.5,
+     12,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "P10 8:30am-6pm Mon-Fri, 8:30am-12pm Sat",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.44,
+    0.49
+   ],
+   "rules": [
+    [
+     0.167,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.167,
+     [
+      6
+     ],
+     8.5,
+     12,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "P10 8:30am-6pm Mon-Fri, 8:30am-12pm Sat",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.51,
+    0.66
+   ],
+   "rules": [
+    [
+     2,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8:30am-6pm Mon-Fri",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.71,
+    0.75
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Motorbike only"
+    ]
+   ],
+   "text": "Motorbike parking",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.78,
+    0.82
+   ],
+   "rules": [
+    [
+     2,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8:30am-6pm Mon-Fri",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.86,
+    0.9
+   ],
+   "rules": [
+    [
+     2,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8:30am-6pm Mon-Fri",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.3,
+    0.45
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.46,
+    0.52
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     7.5,
+     16,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ]
+   ],
+   "text": "Loading 7:30am-4pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.54,
+    0.59
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwbream"
+  },
+  {
+   "street": "Bream Street",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Carrington Road",
+   "to": "Melody Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.61,
+    0.88
+   ],
+   "rules": [
+    [
+     2,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8:30am-6pm Mon-Fri",
+   "src": "rwbream"
+  },
+  {
+   "street": "Carrington Road",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Coogee Street",
+   "to": "Bream Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.05,
+    0.6
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwbream"
+  },
+  {
+   "street": "Carrington Road",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Coogee Street",
+   "to": "Bream Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.61,
+    1.15
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwbream"
+  },
+  {
+   "street": "Carrington Road",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Bream Street",
+   "to": "Dolphin Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.4,
+    0.8
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwbream"
+  },
+  {
+   "street": "Carrington Road",
+   "suburb": "Coogee",
+   "area": [
+    151.2495,
+    -33.9175
+   ],
+   "from": "Bream Street",
+   "to": "Dolphin Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.56,
+    0.72
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwbream"
+  },
+  {
+   "street": "Malabar Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Mermaid Avenue",
+   "to": "Torrington Road",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.05,
+    0.16
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Malabar Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Mermaid Avenue",
+   "to": "Torrington Road",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.24,
+    0.38
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "No parking, funeral and wedding vehicles excepted"
+    ]
+   ],
+   "text": "No parking, Funeral and Wedding Vehicles Excepted",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Malabar Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Mermaid Avenue",
+   "to": "Torrington Road",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.24,
+    0.27
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Malabar Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Mermaid Avenue",
+   "to": "Torrington Road",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.3,
+    0.66
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Malabar Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Mermaid Avenue",
+   "to": "Torrington Road",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.6,
+    0.87
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Malabar Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Mermaid Avenue",
+   "to": "Torrington Road",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.71,
+    0.84
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Malabar Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Mermaid Avenue",
+   "to": "Torrington Road",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.85,
+    0.89
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Mail zone"
+    ]
+   ],
+   "text": "Mail Zone",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Malabar Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Mermaid Avenue",
+   "to": "Torrington Road",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.9,
+    0.95
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Torrington Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Malabar Road",
+   "to": "The Causeway",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.14,
+    0.34
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     0.5,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Torrington Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Malabar Road",
+   "to": "The Causeway",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.15,
+    0.37
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Torrington Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Malabar Road",
+   "to": "The Causeway",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.45,
+    0.9
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Torrington Road",
+   "suburb": "South Coogee",
+   "area": [
+    151.2535,
+    -33.933
+   ],
+   "from": "Malabar Road",
+   "to": "The Causeway",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.42,
+    0.88
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwsouthcoogee"
+  },
+  {
+   "street": "Lawson Street",
+   "suburb": "Malabar",
+   "area": [
+    151.249,
+    -33.964
+   ],
+   "from": "Meehan Street",
+   "to": "Burke Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    -0.24,
+    0.19
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwmalabar"
+  },
+  {
+   "street": "Lawson Street",
+   "suburb": "Malabar",
+   "area": [
+    151.249,
+    -33.964
+   ],
+   "from": "Meehan Street",
+   "to": "Burke Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.07,
+    0.29
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwmalabar"
+  },
+  {
+   "street": "Lawson Street",
+   "suburb": "Malabar",
+   "area": [
+    151.249,
+    -33.964
+   ],
+   "from": "Meehan Street",
+   "to": "Burke Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.41,
+    0.78
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwmalabar"
+  },
+  {
+   "street": "Lawson Street",
+   "suburb": "Malabar",
+   "area": [
+    151.249,
+    -33.964
+   ],
+   "from": "Meehan Street",
+   "to": "Burke Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.57,
+    0.84
+   ],
+   "rules": [
+    [
+     1,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     8.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ],
+    [
+     1,
+     [
+      6
+     ],
+     8.5,
+     12.5,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+   "src": "rwmalabar"
+  },
+  {
+   "street": "Franklin Street",
+   "suburb": "Malabar",
+   "area": [
+    151.249,
+    -33.964
+   ],
+   "from": "Prince Edward Street",
+   "to": "Cromwell Place",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.11,
+    0.97
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1/2P 8am-6pm Mon-Sun",
+   "src": "rwmalabar"
+  },
+  {
+   "street": "Franklin Street",
+   "suburb": "Malabar",
+   "area": [
+    151.249,
+    -33.964
+   ],
+   "from": "Prince Edward Street",
+   "to": "Cromwell Place",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.29,
+    0.64
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwmalabar"
+  },
+  {
+   "street": "Franklin Street",
+   "suburb": "Malabar",
+   "area": [
+    151.249,
+    -33.964
+   ],
+   "from": "Prince Edward Street",
+   "to": "Cromwell Place",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.89,
+    1.17
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwmalabar"
+  },
+  {
+   "street": "Franklin Street",
+   "suburb": "Malabar",
+   "area": [
+    151.249,
+    -33.964
+   ],
+   "from": "Prince Edward Street",
+   "to": "Cromwell Place",
+   "side": [
+    "north"
+   ],
+   "f": [
+    1.39,
+    1.57
+   ],
+   "rules": [],
+   "text": "Unrestricted",
+   "src": "rwmalabar"
+  },
+  {
+   "street": "Franklin Street",
+   "suburb": "Malabar",
+   "area": [
+    151.249,
+    -33.964
+   ],
+   "from": "Prince Edward Street",
+   "to": "Cromwell Place",
+   "side": [
+    "south"
+   ],
+   "f": [
+    1.48,
+    1.61
+   ],
+   "rules": [
+    [
+     0.5,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     14.5,
+     15.5,
+     0,
+     0,
+     0,
+     "School days"
+    ]
+   ],
+   "text": "1/2P 2:30pm-3:30pm School days",
+   "src": "rwmalabar"
   }
  ]
 }
