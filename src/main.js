@@ -17,7 +17,9 @@ const NEAR_M = 650; // list shows kerbs within this distance of the map centre
 const WALK_M_PER_MIN = 80;
 
 /* ---------- state ---------- */
-const S = { day: 1, hour: 9, stay: 2, sel: null, hidden: new Set(), open: false };
+const S = { day: 1, hour: 9, stay: 2, night: false, sel: null, hidden: new Set(), open: false, dest: null, walk: 10 };
+// Overnight: from the arrival time until 8am the next morning.
+const nightStay = (h) => Math.max(1, h < 8 ? 8 - h : 32 - h);
 function sydneyNow() {
   const p = new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Sydney', weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
   const g = (t) => (p.find((x) => x.type === t) || {}).value;
@@ -27,7 +29,8 @@ function sydneyNow() {
 }
 const today = sydneyNow();
 Object.assign(S, today);
-try { const st = +localStorage.getItem('kerb-stay'); if ([0.25, 1, 2, 3, 4].includes(st)) S.stay = st; } catch { /* storage unavailable */ }
+try { const st = localStorage.getItem('kerb-stay'); if (st === 'night') { S.night = true; S.stay = nightStay(S.hour); } else if ([0.25, 1, 2, 3, 4, 8].includes(+st)) S.stay = +st; } catch { /* storage unavailable */ }
+try { const w = +localStorage.getItem('kerb-walk'); if ([2, 5, 10, 15, 20].includes(w)) S.walk = w; } catch { /* storage unavailable */ }
 try { BEN.mps = localStorage.getItem('kerb-mps') === '1'; } catch { /* storage unavailable */ }
 const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
@@ -250,16 +253,18 @@ const daySeg = $('#daySeg');
   daySeg.appendChild(b);
 });
 $('#staySeg').querySelectorAll('button').forEach((b) => (b.onclick = () => {
-  S.stay = +b.dataset.v; try { localStorage.setItem('kerb-stay', String(S.stay)); } catch { /* ignore */ }
+  S.night = b.dataset.v === 'night';
+  S.stay = S.night ? nightStay(S.hour) : +b.dataset.v;
+  try { localStorage.setItem('kerb-stay', S.night ? 'night' : String(S.stay)); } catch { /* ignore */ }
   update();
 }));
 const timeIn = $('#time');
-timeIn.addEventListener('input', () => { S.hour = +timeIn.value; update(true); });
+timeIn.addEventListener('input', () => { S.hour = +timeIn.value; if (S.night) S.stay = nightStay(S.hour); update(true); });
 timeIn.addEventListener('change', () => update());
 
 function syncControls() {
   daySeg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.v === S.day)));
-  $('#staySeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.v === S.stay)));
+  $('#staySeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(S.night ? b.dataset.v === 'night' : +b.dataset.v === S.stay)));
   timeIn.value = S.hour;
   $('#timeOut').textContent = fmtClock(S.hour);
   const isNow = S.day === today.day && Math.abs(S.hour - today.hour) < 0.01;
@@ -316,15 +321,24 @@ function visibleKerbs() {
 
 /* ---------- options list ---------- */
 const body = $('#body');
+const spanText = (t) => `${S.night ? 'Overnight' : t}, ${DAYS[S.day]} ${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}${S.hour + S.stay >= 24 ? ` ${DAYS[(S.day + 1) % 7]}` : ''}`;
+function stayWords(long) {
+  if (S.night) return long ? 'the night (until 8am)' : 'Overnight to 8am';
+  if (long) return S.stay === 0.25 ? '15 minutes' : S.stay === 1 ? 'an hour' : `${S.stay} hours`;
+  return S.stay === 0.25 ? '15 min' : `${S.stay} hr${S.stay > 1 ? 's' : ''}`;
+}
 function walkText(m) { if (m > 2500) return `${(m / 1000).toFixed(m > 20000 ? 0 : 1)} km away`; const min = Math.max(1, Math.round(m / WALK_M_PER_MIN)); return `${min} min walk`; }
 
 function renderList() {
   body.replaceChildren();
   if (!KERBS) { body.innerHTML = `<div class="empty"><strong>Loading the kerbs…</strong>Pulling in every meter in the City of Sydney.</div>`; return; }
-  const centre = map.getCenter().toArray();
+  const centre = S.dest ? S.dest.at : map.getCenter().toArray();
+  const nearM = S.dest ? S.walk * WALK_M_PER_MIN : NEAR_M;
+  destBar();
+  sessionCard();
   const inCoverage = KERBS.features.some((f) => { const m = mids.get(f.properties.id); return Math.abs(m[0] - centre[0]) < 0.015 && Math.abs(m[1] - centre[1]) < 0.012; });
   if (!inCoverage) {
-    body.innerHTML = `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington), Manly and Chatswood. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`;
+    body.insertAdjacentHTML('beforeend', `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington), Manly and Chatswood. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`);
     carParkRows();
     return;
   }
@@ -334,7 +348,7 @@ function renderList() {
     const p = f.properties;
     if (p.k < 0 && !p.lk) continue;
     const d = distM(mids.get(p.id), centre);
-    if (d > NEAR_M) continue;
+    if (d > nearM) continue;
     const c = p.k < 0 ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
     const key = `${p.s}|${p.b}|${p.sd || ''}`;
     const score = (c.ok ? 0 : 1e6) + (c.ok ? c.cost * 40 : 0) + (c.unknownRate ? 400 : 0) + (c.likely ? 250 : 0) + d;
@@ -349,12 +363,13 @@ function renderList() {
 
   const sum = document.createElement('div');
   sum.className = 'summary';
-  const stayTxt = S.stay === 0.25 ? '15 minutes' : S.stay === 1 ? 'an hour' : `${S.stay} hours`;
-  if (free[0]) sum.innerHTML = `Free for ${stayTxt}: <strong>${free[0].p.s}</strong>, ${walkText(free[0].d)} from the middle of the map.${paid[0] ? ` Cheapest meter: <strong>${paid[0].p.s}</strong> at ${costText(paid[0].c)}.` : ''}`;
+  const stayTxt = stayWords(true);
+  if (free[0]) sum.innerHTML = `Free for ${stayTxt}: <strong>${free[0].p.s}</strong>, ${walkText(free[0].d)} ${S.dest ? `from ${S.dest.name}` : 'from the middle of the map'}.${paid[0] ? ` Cheapest meter: <strong>${paid[0].p.s}</strong> at ${costText(paid[0].c)}.` : ''}`;
   else if (paid[0]) sum.innerHTML = `No free kerbs nearby for ${stayTxt}. Cheapest meter: <strong>${paid[0].p.s}</strong> at ${costText(paid[0].c)}.`;
   else if (likely[0]) sum.innerHTML = `Probably free: <strong>${likely[0].p.s}</strong>, ${walkText(likely[0].d)} away. The council doesn't publish its signs here, so check before you park.`;
-  else sum.innerHTML = `No kerb data near the middle of the map. Move the map to a street with coloured kerbs.`;
+  else sum.innerHTML = S.dest ? `No kerb data within a ${S.walk}-minute walk of ${S.dest.name}. Try a longer walk.` : `No kerb data near the middle of the map. Move the map to a street with coloured kerbs.`;
   body.appendChild(sum);
+  compareLine(free, paid, centre, nearM);
 
   const group = (title, list, limit = 12) => {
     if (!list.length) return;
@@ -390,8 +405,9 @@ function optRow(o) {
 
 function carParkRows() {
   if (!CARPARKS.length || S.hidden.has('carpark')) return;
-  const centre = map.getCenter().toArray();
-  const near = CARPARKS.map((cp) => ({ cp, d: distM(cp.at, centre) })).filter((x) => x.d < 1500).sort((a, b) => a.d - b.d);
+  const centre = S.dest ? S.dest.at : map.getCenter().toArray();
+  const radius = S.dest ? Math.max(400, S.walk * WALK_M_PER_MIN) : 1500;
+  const near = CARPARKS.map((cp) => ({ cp, d: distM(cp.at, centre) })).filter((x) => x.d < radius).sort((a, b) => a.d - b.d);
   if (!near.length) return;
   const h = document.createElement('div'); h.className = 'group'; h.innerHTML = `<span>Car parks</span><span class="num">${near.length}</span>`; body.appendChild(h);
   for (const { cp, d } of near) body.appendChild(cpRow(cp, d));
@@ -443,6 +459,96 @@ function savedRows(centre) {
     body.appendChild(optRow({ f: r.f, p, c: c.ok === null ? { ok: false, why: 'No published rules' } : c, d: distM(mids.get(p.id), centre) }));
   }
 }
+
+/* ---------- destination: rank parking from where you're going ---------- */
+let destMarker = null;
+function setDest(d) {
+  S.dest = d;
+  destMarker?.remove(); destMarker = null;
+  if (d) {
+    const el = document.createElement('div'); el.className = 'dest-pin'; el.innerHTML = '<i class="ph-fill ph-flag"></i>';
+    destMarker = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(d.at).addTo(map);
+    map.flyTo({ center: d.at, zoom: S.walk > 10 ? 15.4 : 16.2, duration: 900 });
+  } else q.value = '';
+  update();
+}
+function destBar() {
+  if (!S.dest) return;
+  const el = document.createElement('div'); el.className = 'dest';
+  el.innerHTML = `<div class="dest-top"><i class="ph-fill ph-flag" aria-hidden="true"></i><span>Near ${S.dest.name}</span><button type="button" aria-label="Clear destination"><i class="ph ph-x"></i></button></div>
+    <div class="walkseg" role="group" aria-label="Longest walk">Walk up to ${[2, 5, 10, 15, 20].map((w) => `<button type="button" data-w="${w}" aria-pressed="${w === S.walk}">${w} min</button>`).join('')}</div>`;
+  el.querySelector('.dest-top button').onclick = () => setDest(null);
+  el.querySelectorAll('[data-w]').forEach((b) => (b.onclick = () => { S.walk = +b.dataset.w; try { localStorage.setItem('kerb-walk', String(S.walk)); } catch { /* ignore */ } renderList(); }));
+  body.appendChild(el);
+}
+// Street parking against the cheapest car park nearby, for the whole stay.
+function compareLine(free, paid, centre, nearM) {
+  const cps = CARPARKS.map((cp) => ({ cp, d: distM(cp.at, centre), pr: carParkPrice(cp) }))
+    .filter((x) => x.d < Math.max(400, nearM) && x.pr && !x.pr.none).sort((a, b) => a.pr.p - b.pr.p || a.d - b.d);
+  const cp = cps[0];
+  if (!cp) return;
+  const kerb = free[0] ? { name: free[0].p.s, cost: 0 } : paid.find((o) => !o.c.unknownRate) ? { name: paid.find((o) => !o.c.unknownRate).p.s, cost: paid.find((o) => !o.c.unknownRate).c.cost } : null;
+  const el = document.createElement('p'); el.className = 'compare';
+  if (!kerb) el.innerHTML = `Cheapest car park: <strong>${cp.cp.name}</strong>, ${money(cp.pr.p)} for ${stayWords(true)}.`;
+  else if (cp.pr.p > kerb.cost) el.innerHTML = `The street saves you <strong>${money(cp.pr.p - kerb.cost)}</strong> on the cheapest car park (${cp.cp.name}, ${money(cp.pr.p)}).`;
+  else if (cp.pr.p < kerb.cost) el.innerHTML = `<strong>${cp.cp.name}</strong> is cheaper than the street: ${money(cp.pr.p)}, saving ${money(kerb.cost - cp.pr.p)}.`;
+  else el.innerHTML = `<strong>${cp.cp.name}</strong> is also ${money(cp.pr.p)} for ${stayWords(true)}.`;
+  body.appendChild(el);
+}
+
+/* ---------- I parked here: where the car is, and when to move it ---------- */
+// Uses the real clock, not the time picker. How long you can legally stay is worked out from the kerb's rules.
+function parkedNow(f) {
+  const now = sydneyNow(), p = f.properties;
+  let legal = null;
+  if (p.k >= 0) {
+    legal = 0;
+    for (let st = 0.25; st <= 24; st += 0.25) { if (costFor(p, RULES, now.day, now.hour, st).ok) legal = st; else break; }
+    if (legal === 0) { toast("You can't park here right now. Check the sign."); return; }
+  }
+  const hours = legal == null ? S.stay : legal;
+  const sess = { at: mids.get(p.id), name: p.s, side: p.sd || '', start: Date.now(), until: Date.now() + hours * 3600e3, legal: legal != null && legal < 24, planned: legal == null };
+  store.set('kerb-parked', sess);
+  setSessionMarker(); toast(legal != null && legal < 24 ? `Saved. Move by ${clockAt(sess.until)}.` : 'Saved where you parked.');
+  S.sel = null; update();
+}
+const clockAt = (ms) => new Date(ms).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', timeZone: 'Australia/Sydney' }).replace(' ', '').toLowerCase();
+const dayAt = (ms) => new Date(ms).toLocaleDateString('en-AU', { weekday: 'short', timeZone: 'Australia/Sydney' });
+let carMarker = null;
+function setSessionMarker() {
+  carMarker?.remove(); carMarker = null;
+  const s = store.get('kerb-parked', null);
+  if (!s) return;
+  const el = document.createElement('div'); el.className = 'car-pin'; el.innerHTML = '<i class="ph-fill ph-car-simple"></i>'; el.title = 'Your car';
+  carMarker = new maplibregl.Marker({ element: el }).setLngLat(s.at).addTo(map);
+}
+function icsFor(s) {
+  const z = (ms) => new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const txt = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Kerb//Sydney parking//EN', 'BEGIN:VEVENT', `UID:kerb-${s.start}@kerb`, `DTSTAMP:${z(Date.now())}`,
+    `DTSTART:${z(s.until - 10 * 60e3)}`, `DTEND:${z(s.until)}`, `SUMMARY:Move the car (${s.name})`,
+    `DESCRIPTION:${s.legal ? `Parking on ${s.name} ends at ${clockAt(s.until)}.` : `Your planned stay on ${s.name} ends at ${clockAt(s.until)}. Check the sign for the real limit.`}`,
+    `GEO:${s.at[1]};${s.at[0]}`, 'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Move the car', 'TRIGGER:-PT5M', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  return URL.createObjectURL(new Blob([txt], { type: 'text/calendar' }));
+}
+function sessionCard() {
+  const s = store.get('kerb-parked', null);
+  if (!s) return;
+  const left = s.until - Date.now();
+  const mins = Math.round(left / 60e3);
+  const leftTxt = left <= 0 ? 'Time is up' : mins >= 60 ? `${Math.floor(mins / 60)}h ${String(mins % 60).padStart(2, '0')}m left` : `${mins} min left`;
+  const el = document.createElement('div'); el.className = 'session';
+  const sameDay = dayAt(s.until) === dayAt(Date.now());
+  el.innerHTML = `<div class="st"><span><small class="note">Your car</small><br><b>${s.name}</b>${s.side ? `<span class="note">, ${s.side.toLowerCase()}</span>` : ''}</span><span class="left${left < 15 * 60e3 ? ' urgent' : ''}">${leftTxt}</span></div>
+    <div class="note">${s.legal ? `Move by ${clockAt(s.until)}${sameDay ? '' : ` ${dayAt(s.until)}`}, when the sign's limit or a restriction starts.` : s.planned ? `Your planned stay ends at ${clockAt(s.until)}. Kerb doesn't have the signs here, so check the sign.` : 'No limit for the rest of the day.'}</div>
+    <div class="acts">
+      <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${s.at[1]},${s.at[0]}&travelmode=walking" target="_blank" rel="noopener"><i class="ph ph-person-simple-walk"></i>Walk back</a>
+      ${s.legal || s.planned ? `<a class="cta" href="${icsFor(s)}" download="kerb-move-the-car.ics"><i class="ph ph-bell-ringing"></i>Remind me</a>` : ''}
+      <button class="cta" type="button" data-act="done"><i class="ph ph-check"></i>I've left</button>
+    </div>`;
+  el.querySelector('[data-act=done]').onclick = () => { store.set('kerb-parked', null); setSessionMarker(); renderList(); };
+  body.appendChild(el);
+}
+setInterval(() => { if (S.sel == null && store.get('kerb-parked', null)) renderList(); }, 60e3);
 
 /* ---------- detail ---------- */
 // Plates come straight from the meter's own sign text, so they read like the real sign.
@@ -559,7 +665,7 @@ function renderDetail() {
   if (!f && !cp) { S.sel = null; renderList(); return; }
   body.replaceChildren();
   const d = document.createElement('div'); d.className = 'detail';
-  const stayTxt = S.stay === 0.25 ? '15 min' : `${S.stay} hr${S.stay > 1 ? 's' : ''}`;
+  const stayTxt = stayWords(false);
   if (f) {
     const p = f.properties;
     const c = p.lk ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
@@ -569,7 +675,7 @@ function renderDetail() {
     d.innerHTML = `
       <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
       <div><h2>${p.s}</h2><div class="where">${[p.sd, p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} paid spaces` : ''].filter(Boolean).join(', ')}</div></div>
-      <div class="verdict"><div><small>${stayTxt}, ${DAYS[S.day]} ${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}</small>${v.head}</div>
+      <div class="verdict"><div><small>${spanText(stayTxt)}</small>${v.head}</div>
         ${p.lk ? `<span class="big" style="color:var(--free)">$0?</span>` : c.ok ? `<span class="big" style="color:var(--${c.cost === 0 && !c.unknownRate ? 'free' : 'fg'})">${costText(c)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
       <p class="plain">${v.why || plainNow(p, RULES, S.day, S.hour)}${p.f15 ? ' This street is in a free 15-minute zone, so a ticket gets you the first quarter hour free.' : ''}</p>
       ${set ? `<h3 class="h3">What the signs say</h3><div class="plates">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div>
@@ -585,7 +691,7 @@ function renderDetail() {
     d.innerHTML = `
       <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
       <div><h2>${cp.name}</h2><div class="where">${[cp.address, cp.entry ? `Entry from ${cp.entry}` : '', cp.spots ? `${cp.spots} spaces` : ''].filter(Boolean).join('. ')}.</div></div>
-      ${cp.kind === 'parkride' ? prDetail(cp) : price && !price.none ? `<div class="verdict"><div><small>${stayTxt}, ${DAYS[S.day]} ${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}</small>${price.k}</div><span class="big" style="color:var(--${price.p === 0 ? 'free' : 'fg'})">${money(price.p)}</span></div>`
+      ${cp.kind === 'parkride' ? prDetail(cp) : price && !price.none ? `<div class="verdict"><div><small>${spanText(stayTxt)}</small>${price.k}</div><span class="big" style="color:var(--${price.p === 0 ? 'free' : 'fg'})">${money(price.p)}</span></div>`
         : price?.none ? `<div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>${price.why === 'long' ? 'No published price for a stay this long' : 'No published rate for this time'}</div></div><p class="plain">${price.why === 'long' ? "The owner only publishes the shorter stays below. Longer stays are charged at the operator's rates, so check the board at the entrance." : "It may be closed then, or the rate isn't published. Check the board at the entrance."}</p>`
         : `<p class="plain">${cp.operator ? `Run by ${cp.operator}. ` : ''}The rates aren't published anywhere we can use yet, so check the board at the entrance before you go in.</p>`}
       ${cp.rates?.length ? `<h3 class="h3">Rates</h3>${rateBoard(cp)}` : ''}
@@ -602,6 +708,7 @@ function renderDetail() {
   const id = S.sel;
   d.querySelector('[data-act=save]').onclick = (e) => { toggleSaved(id); const on = isSaved(id); e.currentTarget.setAttribute('aria-pressed', String(on)); e.currentTarget.innerHTML = starInner(on); };
   d.querySelector('[data-act=share]').onclick = () => shareSel(f, cp);
+  const pk = d.querySelector('[data-act=park]'); if (pk) pk.onclick = () => parkedNow(f);
 }
 
 const starInner = (on) => `<i class="ph${on ? '-fill' : ''} ph-star"></i>${on ? 'Saved' : 'Save'}`;
@@ -610,6 +717,7 @@ function actionsHTML(at, id) {
   return `<div class="actions">
       <button class="cta" type="button" data-act="save" aria-pressed="${on}">${starInner(on)}</button>
       <button class="cta" type="button" data-act="share"><i class="ph ph-share-network"></i>Share</button>
+      ${typeof id === 'number' ? '<button class="cta" type="button" data-act="park"><i class="ph ph-car-simple"></i>I parked here</button>' : ''}
     </div>
     <div class="actions"><span class="nav-label">Drive there with</span>
       <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank" rel="noopener"><i class="ph ph-navigation-arrow"></i>Google Maps</a>
@@ -618,7 +726,7 @@ function actionsHTML(at, id) {
     </div>`;
 }
 async function shareSel(f, cp) {
-  const stayTxt = S.stay === 0.25 ? '15 min' : `${S.stay} hr${S.stay > 1 ? 's' : ''}`;
+  const stayTxt = stayWords(false);
   const when = `${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}`;
   let at, text;
   if (f) {
@@ -798,7 +906,7 @@ async function runSearch() {
       const b = document.createElement('button'); b.type = 'button';
       const title = p.name || [p.housenumber, p.street].filter(Boolean).join(' ');
       b.innerHTML = `<span>${title}</span><small>${[p.street && p.name ? p.street : '', p.district || p.locality, p.city].filter(Boolean).join(', ')}</small>`;
-      b.onclick = () => { results.hidden = true; q.value = title; q.blur(); S.sel = null; map.flyTo({ center: f.geometry.coordinates, zoom: 16.4, duration: 900 }); setOpen(true); };
+      b.onclick = () => { results.hidden = true; q.value = title; q.blur(); S.sel = null; setDest({ at: f.geometry.coordinates, name: title }); setOpen(true); };
       li.appendChild(b); results.appendChild(li);
     }
     results.hidden = false;
@@ -858,6 +966,7 @@ setPeek();
 renderList();
 const dataReady = loadData().catch((e) => { body.innerHTML = `<div class="empty"><strong>The parking data didn't load</strong>Check your connection and reload the page. (${e.message})</div>`; throw e; });
 dataReady.then(() => {
+  setSessionMarker();
   if (LINK && KERBS) {
     let best = null, bd = 30;
     for (const f of KERBS.features) { const d = distM(mids.get(f.properties.id), LINK); if (d < bd) { bd = d; best = f.properties.id; } }

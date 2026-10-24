@@ -78,8 +78,9 @@ button { cursor: pointer; }
 .when { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .when output { font-weight: 750; font-size: 30px; line-height: 1; font-stretch: 112%; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .dayout { color: var(--muted); font-weight: 600; font-size: 12.5px; white-space: nowrap; line-height: 1; }
-.stay { display: flex; background: var(--surface-2); border-radius: 999px; padding: 3px; gap: 2px; }
-.stay button { border: 0; background: transparent; border-radius: 999px; padding: 6px 10px; font-weight: 600; font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stay { display: flex; background: var(--surface-2); border-radius: 999px; padding: 3px; gap: 1px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.stay::-webkit-scrollbar { display: none; }
+.stay button { flex: none; border: 0; background: transparent; border-radius: 999px; padding: 6px 8px; font-weight: 600; font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .stay button[aria-pressed="true"] { background: var(--fg); color: var(--surface); }
 
 /* The ribbon: a 24-hour strip of what the kerbs in view do across the day, with the arrival time as a needle. */
@@ -238,3 +239,25 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
 .photo { flex: none; width: 78%; max-width: 320px; scroll-snap-align: start; position: relative; border-radius: 12px; overflow: hidden; background: var(--surface-2); aspect-ratio: 4 / 3; }
 .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .photo span { position: absolute; left: 8px; bottom: 8px; background: rgb(0 0 0 / .6); color: #fff; font-size: 11.5px; font-weight: 600; padding: 2px 7px; border-radius: 999px; }
+
+/* ---------- destination + parked car ---------- */
+.dest { margin: 4px 16px 0; padding: 10px 12px; border-radius: var(--r); background: var(--surface-2); display: flex; flex-direction: column; gap: 8px; }
+.dest-top { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.dest-top .ph { color: var(--accent); font-size: 18px; }
+.dest-top span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dest-top button { border: 0; background: transparent; color: var(--muted); font-size: 18px; padding: 2px; }
+.walkseg { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 600; flex-wrap: wrap; }
+.walkseg button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 9px; font-weight: 650; font-size: 12.5px; color: var(--fg); }
+.walkseg button[aria-pressed="true"] { background: var(--fg); color: var(--surface); border-color: transparent; }
+.dest-pin { width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--accent); border: 3px solid #fff; box-shadow: var(--shadow); display: grid; place-items: center; }
+.dest-pin i { transform: rotate(45deg); color: #fff; font-size: 14px; }
+.session { margin: 8px 16px 0; padding: 12px; border-radius: var(--r); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); display: flex; flex-direction: column; gap: 8px; }
+.session .st { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.session b { font-size: 17px; }
+.session .left { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 20px; }
+.session .left.urgent { color: var(--restricted); }
+.session .acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.session .acts .cta { padding: 7px 11px; font-size: 13.5px; }
+.compare { margin: 6px 16px 0; font-size: 13.5px; color: var(--muted); }
+.compare strong { color: var(--fg); }
+.car-pin { width: 28px; height: 28px; border-radius: 50%; background: var(--fg); color: var(--surface); display: grid; place-items: center; border: 3px solid var(--accent); box-shadow: var(--shadow); font-size: 15px; }

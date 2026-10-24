@@ -947,5 +947,917 @@
   "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Council-Chambers-Carpark",
   "checked": "2026-10-24",
   "research": "Appears only as a menu link; the page gives no address, access rules, hours or fees. Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. "
+ },
+ {
+  "id": "new-icc-sydney",
+  "name": "ICC Sydney car parks (Exhibition Centre P1 & Theatre P2)",
+  "address": "14 Darling Drive, Sydney",
+  "at": [
+   151.199,
+   -33.8734
+  ],
+  "operator": "ICC Sydney (managed by Legends Global)",
+  "spaces": 826,
+  "hours": "7 days, 24 hours",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "bands": [
+     [
+      0.16,
+      0
+     ],
+     [
+      1,
+      20
+     ],
+     [
+      2,
+      30
+     ],
+     [
+      3,
+      40
+     ],
+     [
+      4,
+      45
+     ],
+     [
+      24,
+      50
+     ]
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "Night",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     17,
+     24
+    ],
+    "exitBy": 4,
+    "price": 30
+   }
+  ],
+  "source": "https://iccsydney.com.au/visitors/getting-here/",
+  "checked": "2026-10-24",
+  "research": "0-10 min free (band set to 0.16 h). '4+ hours (to 4am only)' $50; rates reset 4am daily. Cashless only, tap-to-pay or ticket; no pre-booking. Height 2.2m. 826 spaces across both car parks. No event or early bird rates listed. Terms: iccsydney.com.au has no website terms-of-use page (footer only has privacy policy and '\u00a9 ICC Sydney all rights reserved'); venue is NSW Government-owned, managed by Legends Global. Coordinates from Wikipedia (ICC Sydney, 4 d.p.).",
+  "note": "First 10 minutes free. $50 covers 4+ hours until 4am, when rates reset. Card only. Height limit 2.2m. 826 spaces in two car parks."
+ },
+ {
+  "id": "new-rbg-mrs-macquaries-rd",
+  "name": "Royal Botanic Garden meter parking (Mrs Macquaries Rd & Hospital Rd)",
+  "address": "Mrs Macquaries Road, Sydney",
+  "at": [
+   151.22155,
+   -33.86366
+  ],
+  "operator": "Botanic Gardens of Sydney",
+  "hours": "24 hours",
+  "rates": [
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 8,
+    "to": 20,
+    "freeFirst": 0,
+    "perHour": 9,
+    "per": 1
+   },
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 20,
+    "to": 24,
+    "freeFirst": 0,
+    "perHour": 5,
+    "per": 1
+   },
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 8,
+    "freeFirst": 0,
+    "perHour": 5,
+    "per": 1
+   }
+  ],
+  "source": "https://www.botanicgardens.org.au/royal-botanic-garden-sydney/plan-your-visit/getting-here",
+  "checked": "2026-10-24",
+  "research": "Metered on-street spaces on Mrs Macquaries Road and Hospital Road, 12P limit. $9/hour 8am-8pm, $5/hour 8pm-8am, Mon-Sun. Cashless: PARK'nPAY app or card at meters. Billing unit not stated ('per hour'). Motorcycles free in 25 marked bays. Point is approximate (1C Mrs Macquaries Rd via sydney.com); meters run along the road.",
+  "note": "Street meters along Mrs Macquaries Rd and Hospital Rd: $9 an hour 8am-8pm, $5 an hour overnight, 12-hour limit. Motorbikes free in marked bays."
+ },
+ {
+  "id": "new-centennial-park",
+  "name": "Centennial Park parking",
+  "address": "Grand Drive, Centennial Park",
+  "at": [
+   151.23048,
+   -33.89646
+  ],
+  "operator": "Greater Sydney Parklands (Centennial Parklands)",
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24
+   }
+  ],
+  "source": "https://www.centennialparklands.com.au/visit/plan-your-visit/parking/centennial-park-parking",
+  "checked": "2026-10-24",
+  "research": "'All parking within Centennial Park is free and the majority of this parking is also untimed.' Small areas near the major gates are timed, max 3 hours. Overnight parking not permitted (fine). Parking may be restricted during major events. Park gate hours vary by season. Point is approximate (Grand Drive, via sydney.com).",
+  "note": "All parking in the park is free and mostly untimed. Bays near the main gates have a 3-hour limit. No overnight parking; gate hours change with the season."
+ },
+ {
+  "id": "new-eq-moore-park",
+  "name": "Entertainment Quarter car park",
+  "address": "Lang Road, Moore Park",
+  "at": [
+   151.22648,
+   -33.89428
+  ],
+  "operator": "Wilson Parking (at Entertainment Quarter)",
+  "spaces": 2000,
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "maxStay": 2
+   }
+  ],
+  "source": "https://www.centennialparklands.com.au/visit/plan-your-visit/parking/moore-park-parking",
+  "checked": "2026-10-24",
+  "research": "Centennial Parklands: 2,000-space multi-storey car park, entry off Lang Road; 'Parking for periods less than two hours is free of charge.' Charges after 2 hours are published only by Wilson Parking (not recorded, licence). Flat-rate event parking fees apply on SCG/Allianz Stadium event days (amount not published on a usable site). eqmoorepark.com.au blocks automated access. Point is approximate (EQ precinct, via sydney.com).",
+  "note": "Stays under 2 hours are free. Longer stays and event-day flat rates are charged at Wilson's rates."
+ },
+ {
+  "id": "new-market-city",
+  "name": "Market City car park",
+  "address": "2 Quay Street, Haymarket (car park entrance)",
+  "at": [
+   151.20323,
+   -33.88017
+  ],
+  "operator": "Wilson Parking, managed by Market City",
+  "spaces": 600,
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "bands": [
+     [
+      0.5,
+      9
+     ],
+     [
+      1,
+      19
+     ],
+     [
+      2,
+      29
+     ],
+     [
+      3,
+      35
+     ],
+     [
+      4,
+      40
+     ],
+     [
+      24,
+      45
+     ]
+    ]
+   }
+  ],
+  "source": "https://www.marketcity.com.au/parking/",
+  "checked": "2026-10-24",
+  "research": "Casual fees apply on all levels; '4 hours + (daily maximum)' $45. Early bird, night and weekend day rates are pre-book rates for levels B2 and B3 only, booked online; the page does not state which days early bird and night apply. 'Flexi-saver from $20' up to 24 h not recorded. Validations: $50 spend at Thai Kee IGA = 1 hour free; 2 hours free dining at The Eight (9am-3:30pm); free entry after 6pm (exit by 1:30am) when dining at 1909 precinct; $10 after 6pm with $25 spend at Hay St Market. Over 600 spaces. Terms: marketcity.com.au has no terms-of-use page (none in footer; /terms-of-use not found).",
+  "note": "Casual rates on all levels, with a $45 daily maximum. Online pre-book deals and shop validations can be cheaper."
+ },
+ {
+  "id": "new-usyd-shepherd-st",
+  "name": "University of Sydney \u2013 Shepherd Street Car Park (J10)",
+  "address": "Shepherd Street, Darlington (University of Sydney)",
+  "at": [
+   151.19475,
+   -33.8884
+  ],
+  "operator": "University of Sydney",
+  "rates": [
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "freeFirst": 0,
+    "perHour": 4,
+    "per": 1,
+    "dailyMax": 24
+   }
+  ],
+  "source": "https://sydney.edu.au/campus-life/getting-to-campus.html",
+  "checked": "2026-10-24",
+  "research": "Campus-wide casual rate on Camperdown/Darlington: '$4 per hour, up to a maximum charge of $24 per day'. Page does not state the hours or days charges apply. Pay at card-only meters or CellOPark app; plate recognition, no tickets. Staff/students with UniKey in CellOPark capped $5/day. A Jan 2023 parking pack lists Shepherd Street Carpark as staff/student parking 8:30am-4:30pm Mon-Fri, so visitor access then may be limited. Coordinates from the University's MazeMap.",
+  "note": "Campus rate $4 an hour, max $24 a day. Card or CellOPark only. On weekdays 8:30am-4:30pm it may be staff and student parking."
+ },
+ {
+  "id": "new-unsw-barker-st",
+  "name": "UNSW Barker Street Parking Station (Gate 14)",
+  "address": "Barker Street, Kensington (UNSW Gate 14)",
+  "at": [
+   151.23017,
+   -33.9195
+  ],
+  "operator": "UNSW Sydney",
+  "spaces": 1400,
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "from": 7.5,
+    "to": 19.5,
+    "bands": [
+     [
+      2,
+      15.5
+     ],
+     [
+      3,
+      20.25
+     ],
+     [
+      4,
+      25
+     ],
+     [
+      5,
+      29.75
+     ],
+     [
+      6,
+      34.5
+     ],
+     [
+      7,
+      39.25
+     ],
+     [
+      8,
+      44
+     ],
+     [
+      9,
+      48.75
+     ],
+     [
+      10,
+      53.5
+     ],
+     [
+      11,
+      58.25
+     ],
+     [
+      12,
+      63
+     ]
+    ]
+   },
+   {
+    "kind": "free",
+    "days": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "from": 19.5,
+    "to": 24
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     6
+    ],
+    "from": 0,
+    "to": 24
+   }
+  ],
+  "source": "https://www.unsw.edu.au/estate/getting-here/parking/rates",
+  "checked": "2026-10-24",
+  "research": "All-day casual visitor parking: '$15.50 for 2 hours, then $4.75/hour (up to 12 hours total)'; bands after 2 h are computed from that ($4.75 per whole hour; billing unit not stated). Casual bays on level 1C and top level. Pay on arrival by pay-by-plate meter or CellOPark. Free ('complimentary') 7:30pm-7:30am weekdays and all day weekends and public holidays (https://www.unsw.edu.au/estate/getting-here/parking). ~1,400 spaces after upgrade (UNSW estate page). Coordinates: entry point from UNSW MazeMap.",
+  "note": "Visitors: $15.50 for 2 hours, then $4.75 an hour, up to 12 hours. Free 7:30pm-7:30am on weekdays and all weekend and public holidays."
+ },
+ {
+  "id": "new-unsw-botany-st",
+  "name": "UNSW Botany Street Parking Station (H25, Gate 11)",
+  "address": "Botany Street, Kensington (UNSW Gate 11)",
+  "at": [
+   151.23451,
+   -33.91849
+  ],
+  "operator": "UNSW Sydney",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "from": 7.5,
+    "to": 19.5,
+    "bands": [
+     [
+      2,
+      15.5
+     ],
+     [
+      3,
+      20.25
+     ],
+     [
+      4,
+      25
+     ],
+     [
+      5,
+      29.75
+     ],
+     [
+      6,
+      34.5
+     ],
+     [
+      7,
+      39.25
+     ],
+     [
+      8,
+      44
+     ],
+     [
+      9,
+      48.75
+     ],
+     [
+      10,
+      53.5
+     ],
+     [
+      11,
+      58.25
+     ],
+     [
+      12,
+      63
+     ]
+    ]
+   },
+   {
+    "kind": "free",
+    "days": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "from": 19.5,
+    "to": 24
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     6
+    ],
+    "from": 0,
+    "to": 24
+   }
+  ],
+  "source": "https://www.unsw.edu.au/estate/getting-here/parking/rates",
+  "checked": "2026-10-24",
+  "research": "All-day casual visitor parking: '$15.50 for 2 hours, then $4.75/hour (up to 12 hours total)'; bands after 2 h computed from that ($4.75 per whole hour; billing unit not stated). Casual bays on ground floor and top level. Pay on arrival by pay-by-plate meter or CellOPark. Free 7:30pm-7:30am weekdays and all day weekends and public holidays (https://www.unsw.edu.au/estate/getting-here/parking). Coordinates from UNSW MazeMap.",
+  "note": "Visitors: $15.50 for 2 hours, then $4.75 an hour, up to 12 hours. Free 7:30pm-7:30am on weekdays and all weekend and public holidays."
+ },
+ {
+  "id": "new-unsw-high-st",
+  "name": "UNSW short-term 2P/4P visitor bays (Gates 2 & 8, High St)",
+  "address": "High Street, Kensington (UNSW Gates 2 and 8)",
+  "at": [
+   151.23321,
+   -33.91592
+  ],
+  "operator": "UNSW Sydney",
+  "rates": [
+   {
+    "kind": "hourly",
+    "days": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "from": 7.5,
+    "to": 19.5,
+    "freeFirst": 0,
+    "perHour": 7.75,
+    "per": 1,
+    "maxStay": 4
+   },
+   {
+    "kind": "free",
+    "days": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "from": 19.5,
+    "to": 24
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     6
+    ],
+    "from": 0,
+    "to": 24
+   }
+  ],
+  "source": "https://www.unsw.edu.au/estate/getting-here/parking/rates",
+  "checked": "2026-10-24",
+  "research": "2P and 4P casual visitor parking $7.75/hour, 2 or 4 hours maximum depending on bay. Pay-by-plate meter or CellOPark. Free 7:30pm-7:30am weekdays and all day weekends and public holidays. Point is Gate 8 (UNSW MazeMap); Gate 2 is further west on High St.",
+  "note": "2P and 4P visitor bays, $7.75 an hour. Free 7:30pm-7:30am on weekdays and all weekend and public holidays."
+ },
+ {
+  "id": "new-st-vincents",
+  "name": "St Vincent's Hospital car park",
+  "address": "404 Victoria Street, Darlinghurst",
+  "at": [
+   151.2212,
+   -33.88016
+  ],
+  "operator": "Point Parking",
+  "hours": "Mon-Thu 6:30am-11:30pm; Fri-Sat 6:30am-1:30am; Sun 6:30am-midnight",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 6.5,
+    "to": 24,
+    "bands": [
+     [
+      0.5,
+      5
+     ],
+     [
+      1,
+      10
+     ],
+     [
+      2,
+      17
+     ],
+     [
+      3,
+      21
+     ],
+     [
+      6,
+      30
+     ],
+     [
+      24,
+      50
+     ]
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "Evening",
+    "days": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "enter": [
+     16,
+     23.5
+    ],
+    "exitBy": 23.5,
+    "price": 15
+   },
+   {
+    "kind": "flat",
+    "label": "Evening",
+    "days": [
+     5,
+     6
+    ],
+    "enter": [
+     16,
+     24
+    ],
+    "exitBy": 1.5,
+    "price": 15
+   },
+   {
+    "kind": "flat",
+    "label": "Evening",
+    "days": [
+     0
+    ],
+    "enter": [
+     16,
+     24
+    ],
+    "exitBy": 24,
+    "price": 15
+   }
+  ],
+  "source": "https://www.svhs.org.au/patients-visitors/facility-access/parking",
+  "checked": "2026-10-24",
+  "research": "Casual rates apply every day incl. public holidays; '6 hours +: $50 maximum (per entry day)'. Evening flat rate '$15* entry after 4pm', must exit before close (asterisk not explained). Overnight $50 per night plus daily charges. Height limit 1.95m. Entry from Victoria St via the hospital foyer driveway near Burton St. No concessions currently. Coordinates: centre of the 394-404 Victoria St lot (NSW Planning Portal address API).",
+  "note": "$15 evening rate if you enter after 4pm and leave before closing. Overnight costs $50 a night on top. Height limit 1.95m."
+ },
+ {
+  "id": "new-randwick-hospitals",
+  "name": "Randwick Hospitals Campus visitor car park (Barker St)",
+  "address": "Barker Street, Randwick (entry via Easy Street roundabout)",
+  "at": [
+   151.23878,
+   -33.91861
+  ],
+  "operator": "Point Parking",
+  "hours": "24 hours",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "bands": [
+     [
+      0.5,
+      5.8
+     ],
+     [
+      1,
+      11.6
+     ],
+     [
+      1.5,
+      17.4
+     ],
+     [
+      2,
+      23.2
+     ],
+     [
+      2.5,
+      29
+     ],
+     [
+      24,
+      35
+     ]
+    ]
+   }
+  ],
+  "source": "https://www.schn.health.nsw.gov.au/visiting-and-staying/our-hospitals/finding-us/randwick-parking",
+  "checked": "2026-10-24",
+  "research": "Visitor and patient car park for Sydney Children's, Prince of Wales and Royal Hospital for Women. Rates 'current as of 14 May 2026'. 'More than 2.5 hours' $35 (page does not say if per 24 h); lost ticket $35. Concessions for eligible patients/carers with validation: up to 3 h free, >3 h $6.80, 3-day $13.50, 7-day $27.10. Height 2.0m. Point is approximate (Prince of Wales Hospital, Wikipedia).",
+  "note": "Visitor car park for Prince of Wales, Sydney Children's and the Royal Hospital for Women. Eligible patients and carers can get concession rates with validation. Height limit 2.0m."
+ },
+ {
+  "id": "new-westfield-sydney",
+  "name": "Westfield Sydney car park",
+  "address": "188 Pitt Street, Sydney",
+  "at": [
+   151.20871,
+   -33.87055
+  ],
+  "operator": "Scentre Group",
+  "rates": [],
+  "source": "https://www.westfield.com.au/terms-and-conditions",
+  "checked": "2026-10-24",
+  "research": "terms of use don't allow reuse: https://www.westfield.com.au/terms-and-conditions (s.7). Coordinates from Wikipedia."
+ },
+ {
+  "id": "new-westfield-eastgardens",
+  "name": "Westfield Eastgardens car park",
+  "address": "152 Bunnerong Road, Eastgardens",
+  "at": [
+   151.22436,
+   -33.94468
+  ],
+  "operator": "Scentre Group",
+  "rates": [],
+  "source": "https://www.westfield.com.au/terms-and-conditions",
+  "checked": "2026-10-24",
+  "research": "terms of use don't allow reuse: https://www.westfield.com.au/terms-and-conditions (s.7). Coordinates from Wikipedia."
+ },
+ {
+  "id": "new-sydney-fish-market",
+  "name": "Sydney Fish Market car park",
+  "address": "1 Bridge Road, Glebe",
+  "at": [
+   151.19045,
+   -33.87448
+  ],
+  "operator": "Sydney Fish Market",
+  "rates": [],
+  "source": "https://www.sydneyfishmarket.com.au/plan-your-visit/",
+  "checked": "2026-10-24",
+  "research": "terms of use don't allow reuse: https://www.sydneyfishmarket.com.au/legal/ (cl. 8.1 no material may be reproduced or copied; cl. 4.1 personal non-commercial use only). The plan-your-visit page does publish a full rate table. Basement parking via Bridge Road, card only, plate recognition. Coordinates: NSW Planning Portal lot centre."
+ },
+ {
+  "id": "new-syd-airport-international",
+  "name": "Sydney Airport T1 International car park (P7)",
+  "address": "Sydney Airport T1 International, Mascot",
+  "at": [
+   151.16578,
+   -33.93406
+  ],
+  "operator": "Sydney Airport",
+  "rates": [],
+  "source": "https://www.sydneyairport.com.au/info-sheet/parking-faq",
+  "checked": "2026-10-24",
+  "research": "terms of use don't allow reuse: https://www.sydneyairport.com.au/info-sheet/terms (cl. 3.3.8 no scraping; 3.3.9 no republishing without written permission; 3.3.10 no on-selling information; copyright page allows only personal/in-house/non-commercial copying). Drive-up rates page not read. Point approximate (International Airport station, Wikipedia)."
+ },
+ {
+  "id": "new-syd-airport-domestic",
+  "name": "Sydney Airport T2/T3 Domestic car park (P3)",
+  "address": "Sydney Airport Domestic Terminals, Mascot",
+  "at": [
+   151.18071,
+   -33.93365
+  ],
+  "operator": "Sydney Airport",
+  "rates": [],
+  "source": "https://www.sydneyairport.com.au/info-sheet/parking-faq",
+  "checked": "2026-10-24",
+  "research": "terms of use don't allow reuse: https://www.sydneyairport.com.au/info-sheet/terms (cl. 3.3.8-3.3.10). Point approximate (Domestic Airport station, Wikipedia)."
+ },
+ {
+  "id": "new-darling-quarter",
+  "name": "First Parking Darling Quarter",
+  "address": "1-25 Harbour Street, Sydney (entry via 1-11 Harbour St)",
+  "at": [
+   151.20219,
+   -33.87458
+  ],
+  "operator": "First Parking",
+  "rates": [],
+  "source": "https://www.firstparking.com.au/locations/darling-quarter/",
+  "checked": "2026-10-24",
+  "research": "terms of use don't allow reuse: https://www.firstparking.com.au/terms-of-use/ (no reproduce/publish, no commercialising content without written approval). Coordinates: NSW Planning Portal lot centre for 1 Harbour St."
+ },
+ {
+  "id": "new-broadway-sydney",
+  "name": "Broadway Sydney car park",
+  "address": "Bay Street, Broadway",
+  "at": [
+   151.19389,
+   -33.88389
+  ],
+  "operator": "Mirvac",
+  "rates": [],
+  "source": "https://www.broadwaysydney.com.au/visit/parking",
+  "checked": "2026-10-24",
+  "research": "terms of use don't allow reuse: https://www.mirvac.com/terms-of-use (owner Mirvac's terms: no reproduction without written consent, no robots). The centre's own 'Terms of Use' link could not be opened (broadwaysydney.com.au/terms-of-use returned an error), so reuse could not be cleared; rates on the parking page not recorded. Coordinates from Wikipedia."
+ },
+ {
+  "id": "new-domain-car-park",
+  "name": "Domain Car Park",
+  "address": "Sir John Young Crescent, Woolloomooloo",
+  "at": [
+   151.21786,
+   -33.87053
+  ],
+  "operator": "Wilson Parking",
+  "rates": [],
+  "source": "https://www.botanicgardens.org.au/royal-botanic-garden-sydney/plan-your-visit/getting-here",
+  "checked": "2026-10-24",
+  "research": "Botanic Gardens page names Domain Car Park as nearest car park but links to Wilson Parking for rates; no owner-published rates found. Art Gallery of NSW site could not be read. Point approximate (Sir John Young Cres, NSW Planning Portal)."
+ },
+ {
+  "id": "new-harbourside",
+  "name": "Harbourside car park",
+  "address": "100 Murray Street, Pyrmont",
+  "at": [
+   151.19889,
+   -33.87197
+  ],
+  "operator": "Wilson Parking",
+  "spaces": 1500,
+  "rates": [],
+  "source": "https://www.darlingharbour.com/getting-here",
+  "checked": "2026-10-24",
+  "research": "Place Management NSW page says only 'Parking rates start from $9' and 'book early bird on weekdays for just $15' (pre-book via Wilson, no entry/exit times) - not enough for a rate entry. Centre under redevelopment, car park open, EV charging. Coordinates from Wikipedia (Harbourside)."
+ },
+ {
+  "id": "new-barangaroo-reserve",
+  "name": "Barangaroo Reserve car park",
+  "address": "Towns Place tunnel off Hickson Road, Barangaroo",
+  "at": [
+   151.20268,
+   -33.86059
+  ],
+  "operator": "Wilson Parking",
+  "spaces": 300,
+  "hours": "6:00am to midnight, 7 days",
+  "rates": [],
+  "source": "https://www.barangaroo.com/visit/getting-here/parking/",
+  "checked": "2026-10-24",
+  "research": "Barangaroo site gives spaces and hours but sends you to Wilson for rates; no owner-published rates. Point approximate (Barangaroo Reserve, sydney.com)."
+ },
+ {
+  "id": "new-moore-park-golf",
+  "name": "Moore Park Golf car park",
+  "address": "Cleveland Street, Moore Park (entry via Cleveland St)",
+  "at": [
+   151.22036,
+   -33.89505
+  ],
+  "operator": "Moore Park Golf (Wilson Parking listing)",
+  "rates": [],
+  "source": "https://mooreparkgolf.com.au/wp-content/uploads/2024/09/MPG-Car-Park-Code-of-Conduct.pdf",
+  "checked": "2026-10-24",
+  "research": "Code of conduct: free parking for golf customers with $30 minimum daily spend (validate plate at Golf Shop); members free when using benefits; non-customers pay at pay station or card at boom gate, but no rates published; special events day rate applies (amount not given). Pay within 15 min of exit. Point approximate (1B Cleveland St lot, NSW Planning Portal)."
+ },
+ {
+  "id": "new-scg-event-parking",
+  "name": "SCG / Allianz Stadium event parking (Kippax EP2, Showground EP3)",
+  "address": "Driver Avenue, Moore Park",
+  "at": [
+   151.22472,
+   -33.89167
+  ],
+  "operator": "Venues NSW / Centennial Parklands",
+  "rates": [],
+  "source": "https://www.centennialparklands.com.au/visit/plan-your-visit/parking",
+  "checked": "2026-10-24",
+  "research": "Event days only: grass car parks at Lower Kippax (entry Moore Park Rd) and Showground Field (entry Driver Ave from Lang Rd), cashless, flat-rate event fee; amount not published on the Centennial Parklands pages, scgt.nsw.gov.au blocks automated access. Driver Ave has metered parking on non-event days (rates not listed). Point is the SCG (Wikipedia)."
+ },
+ {
+  "id": "new-the-star",
+  "name": "The Star Sydney car park",
+  "address": "20-80 Pyrmont Street, Pyrmont",
+  "at": [
+   151.19517,
+   -33.86813
+  ],
+  "operator": "The Star Entertainment Group",
+  "rates": [],
+  "source": "https://www.star.com.au/sydney",
+  "checked": "2026-10-24",
+  "research": "star.com.au pages are script-rendered; neither the parking page nor https://www.star.com.au/terms-of-use could be read, so no rates recorded and terms not cleared. Coordinates: NSW Planning Portal lot centre."
+ },
+ {
+  "id": "new-uts-building-10",
+  "name": "UTS Building 10 car park",
+  "address": "Building 10, Thomas Street, Ultimo",
+  "at": [
+   151.20083,
+   -33.88361
+  ],
+  "operator": "Interpark (per UTS 2024 car park options sheet); also listed by Wilson",
+  "rates": [],
+  "source": "https://uts.edu.au/sites/default/files/2024-06/ICA-preconference-UTS-Car-Park-Options.pdf",
+  "checked": "2026-10-24",
+  "research": "UTS sheet gives hours (Mon-Fri 6:30am-10pm, Sat 8am-5:30pm, closed Sun/public holidays) but no rates; no casual rates on a UTS page. Point approximate (UTS, Wikipedia)."
+ },
+ {
+  "id": "new-edgecliff-centre",
+  "name": "Edgecliff Centre car park",
+  "address": "203-233 New South Head Road, Edgecliff",
+  "at": [
+   151.23552,
+   -33.87919
+  ],
+  "operator": "Edgecliff Centre",
+  "rates": [],
+  "source": "https://www.edgecliffcentre.com.au/",
+  "checked": "2026-10-24",
+  "research": "edgecliffcentre.com.au blocks automated access (robots); no rates or terms could be read. Coordinates: NSW Planning Portal lot centre."
  }
 ]
