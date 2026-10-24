@@ -4,7 +4,7 @@
 // Readings are saved on this phone and drawn on its map; with VITE_SNAP_SHARE_URL set they're also sent
 // to a shared store so other drivers get them after the next nightly build.
 import { readSign, describePanel } from '../scripts/lib/sign-words.mjs';
-import { costFor, plainNow, fmtTime, money, DAYS } from './rules.js';
+import { costFor, plainNow, stateAt, fmtTime, money, DAYS, DAYS_LONG } from './rules.js';
 
 const READ_URL = import.meta.env.VITE_SIGN_READ_URL || '';
 const SHARE_URL = import.meta.env.VITE_SNAP_SHARE_URL || '';
@@ -128,7 +128,7 @@ async function openSnap(file, getWhere) {
   el.className = 'snap';
   el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Read a parking sign');
   el.innerHTML = `<div class="snap-card"><div class="snap-top"><b>Snap the sign</b><button type="button" class="snap-x" aria-label="Close"><i class="ph ph-x"></i></button></div>
-    <div class="snap-body"><img class="snap-img" alt="Your photo of the sign"><p class="snap-status">Opening the photo…</p><div class="snap-panels"></div><div class="snap-verdict" hidden></div><div class="snap-where" hidden></div></div>
+    <div class="snap-body"><img class="snap-img" alt="Your photo of the sign"><div class="snap-verdict" hidden></div><div class="snap-where" hidden></div><p class="snap-status">Opening the photo…</p><div class="snap-panels"></div></div>
     <div class="snap-actions"><button type="button" class="snap-save" disabled>Save to this kerb</button></div></div>`;
   document.body.appendChild(el);
   const $ = (s) => el.querySelector(s);
@@ -189,7 +189,8 @@ async function openSnap(file, getWhere) {
     const v = $('.snap-verdict'); v.hidden = false;
     if (!rules.length) { v.innerHTML = ''; return; }
     const c = costFor(props, set, S.day, S.hour, S.stay);
-    const now = plainNow(props, set, S.day, S.hour);
+    const st = stateAt(props, set, S.day, S.hour);
+    const now = st.kind === 'free' ? `The sign doesn't apply on ${DAYS_LONG[S.day]} at ${fmtTime(S.hour)}, so there's no limit right now.${st.until < 24 ? ` It starts again at ${fmtTime(st.until)}.` : ''}` : plainNow(props, set, S.day, S.hour);
     v.className = `snap-verdict ${c.ok ? 'yes' : 'no'}`;
     v.innerHTML = `<b>${c.ok ? `Yes, you can park here for ${C.stayWords()}` : `No, not for ${C.stayWords()}`}</b><span>${c.ok ? `${c.cost > 0 ? `About ${money(c.cost)}. ` : c.unknownRate ? 'Pay at the meter. ' : ''}${now}` : `${c.why}.`}</span><small>${C.when()}. The sign on the street always wins.</small>`;
   };
