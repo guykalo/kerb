@@ -1,6 +1,7 @@
 // Downloads council parking decisions (the record of every sign a council's traffic committee approves) so
 // they can be turned into kerb rules. City of Sydney: Local Pedestrian, Cycling, Traffic Calming and Transport
-// Forum (committee 138), 2017 onwards. Output: docs/decisions-cos.json  [{ id, title, date, rec }]
+// Forum (committee 138), 2017 onwards -> docs/decisions-cos.json [{ id, title, date, rec }].
+// Inner West: Local Traffic Committee / Local Transport Forum minutes -> docs/minutes-iw.json [{ path, date, text }].
 // Run: node scripts/fetch-decisions.mjs [fromYear]
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 
@@ -57,3 +58,25 @@ await pool(keep, 6, async ([id, title]) => {
 out.sort((a, b) => +a.id - +b.id);
 await writeFile('docs/decisions-cos.json', JSON.stringify(out, null, 0));
 console.log(`saved ${out.length}, with text: ${out.filter((d) => d.rec).length}`);
+
+// ---------- Inner West minutes ----------
+const IW = 'https://innerwest.infocouncil.biz/';
+const list = new Set((await readFile('data/iw-minutes.txt', 'utf8')).split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#')));
+try { // the front page lists this year's meetings, so new minutes are picked up without editing the list
+  const r = await fetch(IW, { signal: AbortSignal.timeout(30000) });
+  for (const m of (await r.text()).matchAll(/URL=(Open\/\d{4}\/\d\d\/LT[CF]_\d{8}_MIN_[\w]*?WEB\.htm)/gi)) list.add(m[1]);
+} catch { /* use the list */ }
+let oldIw = [];
+try { oldIw = JSON.parse(await readFile('docs/minutes-iw.json', 'utf8')); } catch { /* first run */ }
+const haveIw = new Map(oldIw.filter((d) => d.text).map((d) => [d.path, d]));
+const iw = [];
+await pool([...list], 4, async (path) => {
+  if (haveIw.has(path)) { iw.push(haveIw.get(path)); return; }
+  let html = '';
+  for (let i = 0; i < 3 && !html; i++) { try { const r = await fetch(IW + path.replace(/_WEB\.htm$/i, '.HTM'), { signal: AbortSignal.timeout(40000) }); if (r.ok) html = await r.text(); } catch { await sleep(2000); } }
+  const dm = /_(\d\d)(\d\d)(\d{4})_/.exec(path);
+  iw.push({ path, date: dm ? `${dm[1]}/${dm[2]}/${dm[3]}` : '', text: html ? text(html) : '' });
+});
+iw.sort((a, b) => a.path.localeCompare(b.path));
+await writeFile('docs/minutes-iw.json', JSON.stringify(iw));
+console.log(`Inner West minutes: ${iw.length}, with text: ${iw.filter((d) => d.text).length}`);

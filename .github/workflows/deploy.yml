@@ -34,6 +34,10 @@ jobs:
           restore-keys: raw-
       - name: Get council parking decisions
         run: (git fetch -q origin council-decisions && git show origin/council-decisions:decisions-cos.json > data/decisions-cos.json) || echo "no decisions yet"
+      - name: Save the live data (fallback if a council server is down)
+        run: |
+          mkdir -p data/published
+          for f in kerbs rules meters carparks; do curl -fsSL "https://guykalo.github.io/kerb/data/$f.json" -o "data/published/$f.json" || true; done
       - name: Download open parking data
         id: fetch
         continue-on-error: true

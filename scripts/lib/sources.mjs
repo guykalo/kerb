@@ -74,7 +74,7 @@ export async function fetchAll() {
     } catch (e) {
       // The council's server is down: keep the last good copy (restored from the Actions cache) if there is one.
       const old = await lastGood(name);
-      if (!old) throw e;
+      if (!old) { (globalThis.__log || console.log)(`  ${name} failed (${e.message.split('\n')[0]}), no saved copy: the build will reuse the live City of Sydney kerbs`); raw.meta.sources[name] = { url: src.url, failed: true }; continue; }
       (globalThis.__log || console.log)(`  ${name} failed (${e.message.split('\n')[0]}), using the last good copy`);
       raw[name] = old; raw.meta.sources[name] = { url: src.url, count: old.length, stale: true };
     }

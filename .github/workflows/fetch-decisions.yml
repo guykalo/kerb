@@ -16,7 +16,11 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       # Start from what's already downloaded, so only new decisions are fetched.
-      - run: mkdir -p docs && (git fetch -q origin council-decisions && git show origin/council-decisions:decisions-cos.json > docs/decisions-cos.json) || true
+      - run: |
+          mkdir -p docs
+          git fetch -q origin council-decisions || exit 0
+          git show origin/council-decisions:decisions-cos.json > docs/decisions-cos.json || true
+          git show origin/council-decisions:minutes-iw.json > docs/minutes-iw.json || true
       - run: node scripts/fetch-decisions.mjs
       - run: |
           cd docs

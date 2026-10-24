@@ -8,7 +8,10 @@ import { buildFromSigns } from './spot.mjs';
 const norm = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
 
 export function buildData(raw) {
-  const { meters, metersQuarterFree: quarter, tariffs, permits, free15, councilCarParks: carparks, streets, meta = {} } = raw;
+  // When the City of Sydney's meter server is down, reuse the City of Sydney kerbs that are live now (raw.published)
+  // and still rebuild everything else.
+  const carry = !raw.meters && raw.published ? raw.published : null;
+  const { meters = [], metersQuarterFree: quarter = [], tariffs = [], permits = [], free15 = [], councilCarParks: carparks = [], streets = [], meta = {} } = raw;
   /* ---------- areas (polygons) ---------- */
   const polyOf = (f) => (f.geometry && f.geometry.rings) || [];
   const withBox = (rings) => ({ rings, box: bbox(rings.flat()) });
@@ -141,6 +144,16 @@ export function buildData(raw) {
 
   /* ---------- meter points (shown when zoomed in) ---------- */
   const meterPts = pts.map((m) => [...round(m.p), m.k, m.n]);
+  if (carry) {
+    const remap = new Map();
+    const kOf = (k) => {
+      if (k < 0) return k;
+      if (!remap.has(k)) { const key = JSON.stringify([carry.rules[k].rules, carry.rules[k].q || 0]); if (!ruleKey.has(key)) { ruleKey.set(key, ruleSets.length); ruleSets.push(carry.rules[k]); } remap.set(k, ruleKey.get(key)); }
+      return remap.get(k);
+    };
+    for (const f of carry.kerbs.features) if (!f.properties.src) kerbGeo.features.push({ ...f, properties: { ...f.properties, k: kOf(f.properties.k) } });
+    for (const m of carry.meters) meterPts.push([m[0], m[1], kOf(m[2]), m[3]]);
+  }
 
   /* ---------- car parks ---------- */
   const centroid = (g) => {
@@ -165,6 +178,7 @@ export function buildData(raw) {
     })),
   ].filter((c) => c.at);
   const carParkList = cps.filter((c, i) => cps.findIndex((x) => x.name === c.name) === i);
+  if (carry) carParkList.push(...carry.carparks.filter((c) => String(c.id).startsWith('cos-')));
 
   /* ---------- other councils ---------- */
   const setKey = (set) => JSON.stringify([set.rules, set.q || 0, set.g || '', set.u || 0]);
@@ -226,7 +240,8 @@ export function buildData(raw) {
     builtAt: new Date().toISOString(),
     permitPatterns,
     fetchedAt: meta.fetchedAt,
-    meters: pts.length,
+    meters: carry ? meterPts.length : pts.length,
+    cityOfSydneyFromLastBuild: !!carry,
     ruleSets: ruleSets.length,
     kerbs: kerbGeo.features.length,
     metered: kerbGeo.features.filter((f) => f.properties.k >= 0).length,

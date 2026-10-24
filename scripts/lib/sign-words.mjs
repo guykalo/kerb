@@ -63,6 +63,8 @@ export function readSign(raw) {
   heads.forEach((h, i) => {
     const body = txt.slice(h.index, i + 1 < heads.length ? heads[i + 1].index : undefined);
     const head = h[1].replace(/\s/g, ' ').trim();
+    // "4P Mobility Parking Only 8am-10pm": the 4P belongs to the zone that follows, not a sign of its own.
+    if (i + 1 < heads.length && /^\d|^P/.test(head) && body.trim() === h[1].trim() && /MOBILITY|DISABILITY|DISABLED|LOADING|CAR ?SHARE|BUS|TAXI/.test(heads[i + 1][1])) return;
     const p = { head, text: body.trim(), times: [], ph: /PUBLIC HOLIDAY/.test(body) };
     const lim = /^(\d{1,2})(?:\/(\d))?\s?P$/.exec(head) || /^P\s?(\d{1,2})$/.exec(head);
     if (lim) { p.kind = 'limit'; p.hours = /^P/.test(head) ? +lim[1] / 60 : lim[2] ? +lim[1] / +lim[2] : +lim[1]; }
@@ -70,6 +72,10 @@ export function readSign(raw) {
     else if (/NO PARKING/.test(head)) p.kind = 'nopark';
     else if (/WORKS ZONE/.test(head)) p.kind = 'works';
     else p.kind = 'zone';
+    // Bays for one kind of vehicle aren't parking for everyone else.
+    if (p.kind === 'limit' && /ELECTRIC VEHICLES?|\bEV\b|WHILE CHARGING/.test(body)) { p.kind = 'zone'; p.head = 'EV CHARGING ONLY'; }
+    if (p.kind === 'limit' && /MOBILITY PARKING|DISABILITY PARKING|DISABLED/.test(body)) { p.kind = 'zone'; p.head = 'MOBILITY PARKING ONLY'; }
+    if (p.kind === 'limit' && /\b(?:MOTOR ?CYCLES?|MOTORBIKES?) ONLY\b/.test(body)) { p.kind = 'zone'; p.head = 'MOTORBIKES ONLY'; }
     if (/TICKET|METER|PAY\b|PARKMETER|\$/.test(body) && p.kind === 'limit') p.ticket = true;
     const rate = /\$\s?(\d+(?:\.\d\d)?)\s*(?:\/|PER)\s*(?:HR|HOUR)/.exec(body);
     if (rate) p.rate = +rate[1];
@@ -108,7 +114,7 @@ export function panelRules(p) {
   }
   return out;
 }
-const titleWords = (s) => s.toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase());
+const titleWords = (s) => s.toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase()).replace(/\bEv\b/, 'EV');
 
 // Plain English for a panel: "2P 8am-10pm every day, permit holders excepted (area 22)".
 export function describePanel(p) {
