@@ -183,7 +183,7 @@ export function buildData(raw) {
     const out = fn(raw[name], reg, { month });
     for (const ft of out.features) { ft.properties.id = nextId++; kerbGeo.features.push(ft); }
     carParkList.push(...out.carparks);
-    regions[name] = { kerbs: out.features.length, carParks: out.carparks.length };
+    regions[name] = { kerbs: out.features.length, carParks: out.carparks.length, ...(out.warnings?.length ? { warnings: out.warnings } : {}) };
   }
 
   if (raw.parkride) { const pr = buildParkRide(raw.parkride); carParkList.push(...pr); regions.parkride = { carParks: pr.length }; }

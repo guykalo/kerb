@@ -1,23 +1,1247 @@
 {
-  "about": "Kerb rules read by hand from council PDFs and maps. Each entry paints one side (or both) of a named street within `radius` metres of `near` [lon, lat]. Rules use Kerb's tuple: [hours, days(0=Sun), from, to, $/hr (-1 = meter, rate unknown), public holidays, 0 park / 1 no parking, note].",
-  "sources": {
-    "rw4p": "Randwick Council 4P beach parking maps (Jan 2021): https://www.randwick.nsw.gov.au/about-council/news/news-items/2021/january/4p-parking-introduced-in-beachside-areas"
+ "about": "Kerb rules read by hand from council PDFs and maps. Each entry paints one side (or both) of a named street within `radius` metres of `near` [lon, lat]. Rules use Kerb's tuple: [hours, days(0=Sun), from, to, $/hr (-1 = meter, rate unknown), public holidays, 0 park / 1 no parking, note].",
+ "sources": {
+  "rw4p": "Randwick Council 4P beach parking maps (Jan 2021): https://www.randwick.nsw.gov.au/about-council/news/news-items/2021/january/4p-parking-introduced-in-beachside-areas",
+  "rwcoogee": "Randwick Council Coogee local business area parking survey map (Sept 2025): https://www.yoursay.randwick.nsw.gov.au"
+ },
+ "streets": [
+  {
+   "street": "Arcadia Street",
+   "suburb": "Coogee",
+   "near": [
+    151.2595,
+    -33.9172
+   ],
+   "radius": 90,
+   "side": [
+    "south",
+    "east"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
   },
-  "streets": [
-    { "street": "Arcadia Street", "suburb": "Coogee", "near": [151.2595, -33.9172], "radius": 90, "side": ["south", "east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Beach Street", "suburb": "Coogee", "near": [151.25722, -33.92545], "radius": 45, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Neptune Street", "suburb": "Coogee", "near": [151.25766, -33.9261], "radius": 170, "side": ["both"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Wolseley Road", "suburb": "Coogee", "near": [151.2593, -33.9278], "radius": 190, "side": ["both"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Marine Parade", "suburb": "Maroubra", "near": [151.2588, -33.9440], "radius": 560, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Bernie Kelly Drive", "suburb": "Maroubra", "near": [151.25472, -33.95047], "radius": 160, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 9, 18, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Donnellan Circuit", "suburb": "Clovelly", "near": [151.26475, -33.91337], "radius": 200, "side": ["north"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Fishermans Road", "suburb": "Malabar", "near": [151.2539, -33.9638], "radius": 200, "side": ["south"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Dacre Street", "suburb": "Malabar", "near": [151.2497, -33.9626], "radius": 170, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Bay Parade", "suburb": "Malabar", "near": [151.2527, -33.9666], "radius": 200, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Murra Murra Place", "suburb": "Little Bay", "near": [151.24965, -33.97958], "radius": 150, "side": ["south"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Pine Avenue", "suburb": "Little Bay", "near": [151.2462, -33.9799], "radius": 220, "side": ["south"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Anzac Parade", "suburb": "La Perouse", "near": [151.2325, -33.9885], "radius": 180, "side": ["both"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Endeavour Avenue", "suburb": "La Perouse", "near": [151.2324, -33.9865], "radius": 150, "side": ["west"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
-    { "street": "Kooringai Avenue", "suburb": "Phillip Bay", "near": [151.2309, -33.9803], "radius": 160, "side": ["both"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" }
-  ]
+  {
+   "street": "Beach Street",
+   "suburb": "Coogee",
+   "near": [
+    151.25722,
+    -33.92545
+   ],
+   "radius": 45,
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Neptune Street",
+   "suburb": "Coogee",
+   "near": [
+    151.25766,
+    -33.9261
+   ],
+   "radius": 170,
+   "side": [
+    "both"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Wolseley Road",
+   "suburb": "Coogee",
+   "near": [
+    151.2593,
+    -33.9278
+   ],
+   "radius": 190,
+   "side": [
+    "both"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Marine Parade",
+   "suburb": "Maroubra",
+   "near": [
+    151.2588,
+    -33.944
+   ],
+   "radius": 560,
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Bernie Kelly Drive",
+   "suburb": "Maroubra",
+   "near": [
+    151.25472,
+    -33.95047
+   ],
+   "radius": 160,
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     9,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Donnellan Circuit",
+   "suburb": "Clovelly",
+   "near": [
+    151.26475,
+    -33.91337
+   ],
+   "radius": 200,
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Fishermans Road",
+   "suburb": "Malabar",
+   "near": [
+    151.2539,
+    -33.9638
+   ],
+   "radius": 200,
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Dacre Street",
+   "suburb": "Malabar",
+   "near": [
+    151.2497,
+    -33.9626
+   ],
+   "radius": 170,
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Bay Parade",
+   "suburb": "Malabar",
+   "near": [
+    151.2527,
+    -33.9666
+   ],
+   "radius": 200,
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Murra Murra Place",
+   "suburb": "Little Bay",
+   "near": [
+    151.24965,
+    -33.97958
+   ],
+   "radius": 150,
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Pine Avenue",
+   "suburb": "Little Bay",
+   "near": [
+    151.2462,
+    -33.9799
+   ],
+   "radius": 220,
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Anzac Parade",
+   "suburb": "La Perouse",
+   "near": [
+    151.2325,
+    -33.9885
+   ],
+   "radius": 180,
+   "side": [
+    "both"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Endeavour Avenue",
+   "suburb": "La Perouse",
+   "near": [
+    151.2324,
+    -33.9865
+   ],
+   "radius": 150,
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Kooringai Avenue",
+   "suburb": "Phillip Bay",
+   "near": [
+    151.2309,
+    -33.9803
+   ],
+   "radius": 160,
+   "side": [
+    "both"
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "src": "rw4p"
+  },
+  {
+   "street": "Dolphin Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.15,
+    0.42
+   ],
+   "rules": [
+    [
+     2,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Dolphin Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.6,
+    0.89
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Dolphin Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.15,
+    0.36
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "4P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Dolphin Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.37,
+    0.77
+   ],
+   "rules": [
+    [
+     2,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Dolphin Street",
+   "to": "Alfreda Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.0,
+    0.29
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     6,
+     12.5,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     2,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 6am-12:30pm Mon-Fri, 2P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Dolphin Street",
+   "to": "Alfreda Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.33,
+    0.53
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Dolphin Street",
+   "to": "Alfreda Street",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.69,
+    1.0
+   ],
+   "rules": [
+    [
+     2,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Dolphin Street",
+   "to": "Alfreda Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.0,
+    0.3
+   ],
+   "rules": [
+    [
+     2,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Brook Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Dolphin Street",
+   "to": "Alfreda Street",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.48,
+    0.86
+   ],
+   "rules": [
+    [
+     2,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Alfreda Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.04,
+    0.27
+   ],
+   "rules": [
+    [
+     2,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     20,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "2P 8am-8pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Alfreda Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.28,
+    0.72
+   ],
+   "rules": [
+    [
+     4,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "4P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Alfreda Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "north"
+   ],
+   "f": [
+    0.81,
+    0.93
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Alfreda Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.03,
+    0.59
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-10pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Alfreda Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.6,
+    0.74
+   ],
+   "rules": [
+    [
+     1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "1P 8am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Alfreda Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Brook Street",
+   "to": "Arden Street",
+   "side": [
+    "south"
+   ],
+   "f": [
+    0.75,
+    0.84
+   ],
+   "rules": [
+    [
+     0,
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     6,
+     17,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0,
+     [
+      0,
+      6
+     ],
+     6,
+     12.5,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ]
+   ],
+   "text": "Loading 6am-5pm Mon-Fri, 6am-12:30pm Sat-Sun",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Arden Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Dolphin Street",
+   "to": "Coogee Bay Road",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.05,
+    0.82
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Arden Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Dolphin Street",
+   "to": "Coogee Bay Road",
+   "side": [
+    "east"
+   ],
+   "f": [
+    0.05,
+    0.97
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     0,
+     24,
+     0,
+     0,
+     1,
+     "Bus zone"
+    ]
+   ],
+   "text": "Bus zone",
+   "src": "rwcoogee"
+  },
+  {
+   "street": "Arden Street",
+   "suburb": "Coogee",
+   "area": [
+    151.256,
+    -33.9195
+   ],
+   "from": "Dolphin Street",
+   "to": "Coogee Bay Road",
+   "side": [
+    "west"
+   ],
+   "f": [
+    0.86,
+    0.97
+   ],
+   "rules": [
+    [
+     0,
+     [
+      0,
+      6
+     ],
+     7,
+     11.5,
+     0,
+     0,
+     1,
+     "Loading zone"
+    ],
+    [
+     0.25,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     11.5,
+     18,
+     0,
+     0,
+     0,
+     ""
+    ]
+   ],
+   "text": "Loading 7am-11:30am Sat-Sun, 1/4P 11:30am-6pm Mon-Sun",
+   "src": "rwcoogee"
+  }
+ ]
 }
