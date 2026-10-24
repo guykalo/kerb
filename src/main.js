@@ -80,6 +80,7 @@ function distM(a, b) {
 
 /* ---------- map ---------- */
 const map = new maplibregl.Map({
+  fadeDuration: 260,
   container: 'map', style: 'https://tiles.openfreemap.org/styles/positron',
   ...START, minZoom: 11, maxZoom: 19.5, attributionControl: false, pitchWithRotate: false, dragRotate: false,
 });
@@ -91,7 +92,7 @@ function restyleBase() {
   const t = BASE[dark() ? 'dark' : 'light'];
   for (const l of map.getStyle().layers) {
     const id = l.id;
-    if (id.startsWith('kerb') || id.startsWith('meter')) continue;
+    if (id.startsWith('kerb') || id.startsWith('meter') || id.startsWith('cp-') || id === 'sat') continue;
     try {
       if (l.type === 'background') map.setPaintProperty(id, 'background-color', t.bg);
       else if (l.type === 'fill') {
@@ -149,7 +150,8 @@ function setSat(on) {
   if (!map.isStyleLoaded()) return;
   if (on && !map.getSource('sat')) map.addSource('sat', { type: 'raster', tiles: [SAT_URL], tileSize: 256, maxzoom: 21, attribution: 'Imagery © NSW Spatial Services' });
   const firstLabel = map.getStyle().layers.find((l) => l.type === 'symbol')?.id;
-  if (on && !map.getLayer('sat')) map.addLayer({ id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-opacity': 1, 'raster-fade-duration': 150 } }, firstLabel);
+  // Zoomed out, photos are dimmed and desaturated so the coloured kerbs and pills still stand out.
+  if (on && !map.getLayer('sat')) map.addLayer({ id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-fade-duration': 150, 'raster-opacity': ['interpolate', ['linear'], ['zoom'], 10, 0.75, 14, 0.9, 16, 1], 'raster-brightness-max': ['interpolate', ['linear'], ['zoom'], 10, 0.4, 13, 0.55, 15.5, 0.85, 17, 1], 'raster-saturation': ['interpolate', ['linear'], ['zoom'], 10, -0.6, 14, -0.3, 16.5, 0], 'raster-contrast': ['interpolate', ['linear'], ['zoom'], 10, -0.15, 16, 0] } }, firstLabel);
   if (map.getLayer('sat')) map.setLayoutProperty('sat', 'visibility', on ? 'visible' : 'none');
   // Labels need a dark halo over photos.
   for (const l of map.getStyle().layers) {
@@ -163,56 +165,59 @@ function setSat(on) {
 }
 
 /* ---------- car parks ---------- */
-// Far out, car parks are grouped into numbered circles drawn by the map itself (fast, no clutter).
-// From zoom 15 the nearby ones become labelled pins with their price, reused rather than rebuilt.
-const PIN_ZOOM = 15;
-const cpMarkers = new Map();
-function cpLabel(cp) {
+// Car parks are drawn by the map itself as price pills, like Airbnb's map: each shows its price whenever there's
+// room, pills that would overlap merge into one "3 car parks · from $15" pill, and the map fades between them.
+const CP_FADE = 260;
+function cpInfo(cp) {
   const price = carParkPrice(cp);
-  if (cp.kind === 'parkride') return prPin(cp);
-  if (price && !price.none) return cp.maxRates && price.p > 0 ? `≤${money(price.p)}` : money(price.p);
+  if (cp.kind === 'parkride') return { label: prPin(cp), tone: 'pr', p: 0 };
+  if (price && !price.none) return { label: cp.maxRates && price.p > 0 ? `≤${money(price.p)}` : money(price.p), tone: price.p === 0 ? 'free' : 'price', p: price.p };
   const est = !price ? estimateFor(cp) : null;
-  if (est) return `~${money(est.mid)}`;
-  return '';
+  if (est) return { label: `~${money(est.mid)} est.`, tone: 'est', p: 99999 };
+  return { label: '', tone: 'none', p: 99999 };
+}
+function cpData() {
+  return { type: 'FeatureCollection', features: CARPARKS.map((cp) => {
+    const i = cpInfo(cp);
+    return { type: 'Feature', properties: { id: cp.id, label: i.label, tone: i.tone, p: i.p, sel: S.sel === cp.id ? 1 : 0 }, geometry: { type: 'Point', coordinates: cp.at } };
+  }) };
+}
+// Rounded pill images the map can stretch around text (drawn once at 2x for sharp edges).
+function pillImage(fill, stroke, dashed) {
+  const W = 56, H = 44, r = 20, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const g = cv.getContext('2d');
+  g.beginPath(); g.roundRect(3, 3, W - 6, H - 6, r); g.fillStyle = fill; g.fill();
+  if (dashed) g.setLineDash([5, 4]);
+  g.lineWidth = 3; g.strokeStyle = stroke; g.stroke();
+  return { image: g.getImageData(0, 0, W, H), opts: { pixelRatio: 2, stretchX: [[22, 34]], stretchY: [[20, 24]], content: [16, 8, 40, 36] } };
 }
 function cpLayers() {
   if (!CARPARKS.length) return;
-  const c = C();
-  const data = { type: 'FeatureCollection', features: CARPARKS.map((cp) => ({ type: 'Feature', properties: { id: cp.id }, geometry: { type: 'Point', coordinates: cp.at } })) };
-  if (!map.getSource('cps')) map.addSource('cps', { type: 'geojson', data, cluster: true, clusterRadius: 46, clusterMaxZoom: PIN_ZOOM - 1 });
-  for (const id of ['cp-cluster', 'cp-cluster-n', 'cp-dot', 'cp-dot-p']) if (map.getLayer(id)) map.removeLayer(id);
+  const c = C(), green = '#00704a';
+  const pills = { 'pill-price': ['#fbfcfb', green], 'pill-free': ['#fbfcfb', css('--free')], 'pill-est': [dark() ? '#1c2a35' : '#f2f5f6', dark() ? '#7d93a1' : '#8ea1ad', true], 'pill-none': ['#fbfcfb', green], 'pill-pr': ['#fbfcfb', green], 'pill-sel': [c.accent, c.accent], 'pill-cluster': [c.fg, c.accent] };
+  for (const [id, [f, st, d]] of Object.entries(pills)) { const { image, opts } = pillImage(f, st, d); if (map.hasImage(id)) map.removeImage(id); map.addImage(id, image, opts); }
+  if (!map.getSource('cps')) map.addSource('cps', { type: 'geojson', data: cpData(), cluster: true, clusterRadius: 34, clusterMaxZoom: 15, clusterProperties: { minp: ['min', ['get', 'p']] } });
+  for (const id of ['cp-cluster', 'cp-pill', 'cp-sel']) if (map.getLayer(id)) map.removeLayer(id);
   const vis = S.hidden.has('carpark') ? 'none' : 'visible';
-  map.addLayer({ id: 'cp-cluster', type: 'circle', source: 'cps', maxzoom: PIN_ZOOM, filter: ['has', 'point_count'], layout: { visibility: vis },
-    paint: { 'circle-color': c.fg, 'circle-radius': ['step', ['get', 'point_count'], 13, 5, 16, 20, 20], 'circle-stroke-color': c.accent, 'circle-stroke-width': 2, 'circle-opacity': 0.92 } });
-  map.addLayer({ id: 'cp-cluster-n', type: 'symbol', source: 'cps', maxzoom: PIN_ZOOM, filter: ['has', 'point_count'], layout: { visibility: vis, 'text-field': ['concat', 'P ', ['get', 'point_count_abbreviated']], 'text-font': ['Noto Sans Bold'], 'text-size': 11.5, 'text-allow-overlap': true }, paint: { 'text-color': c.bg } });
-  map.addLayer({ id: 'cp-dot', type: 'circle', source: 'cps', maxzoom: PIN_ZOOM, filter: ['!', ['has', 'point_count']], layout: { visibility: vis }, paint: { 'circle-color': '#fbfcfb', 'circle-radius': 9, 'circle-stroke-color': '#00704a', 'circle-stroke-width': 2 } });
-  map.addLayer({ id: 'cp-dot-p', type: 'symbol', source: 'cps', maxzoom: PIN_ZOOM, filter: ['!', ['has', 'point_count']], layout: { visibility: vis, 'text-field': 'P', 'text-font': ['Noto Sans Bold'], 'text-size': 11, 'text-allow-overlap': true }, paint: { 'text-color': '#00704a' } });
+  const common = { 'text-font': ['Noto Sans Bold'], 'icon-text-fit': 'both', 'icon-text-fit-padding': [1, 6, 1, 6], 'text-padding': 2, visibility: vis };
+  map.addLayer({ id: 'cp-cluster', type: 'symbol', source: 'cps', filter: ['has', 'point_count'], layout: { ...common, 'icon-image': 'pill-cluster', 'text-size': 12,
+    'text-field': ['case', ['<', ['get', 'minp'], 99999], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' · from $', ['to-string', ['round', ['get', 'minp']]]], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' car parks']],
+    'icon-allow-overlap': false, 'text-allow-overlap': false }, paint: { 'text-color': c.bg } });
+  map.addLayer({ id: 'cp-pill', type: 'symbol', source: 'cps', filter: ['all', ['!', ['has', 'point_count']], ['!=', ['get', 'sel'], 1]], layout: { ...common,
+    'icon-image': ['concat', 'pill-', ['get', 'tone']], 'text-size': ['case', ['==', ['get', 'tone'], 'est'], 11.5, 12.5],
+    'text-field': ['case', ['==', ['get', 'label'], ''], 'P', ['format', 'P  ', { 'text-color': green }, ['get', 'label'], {}]],
+    'symbol-sort-key': ['get', 'p'], 'icon-allow-overlap': false, 'text-allow-overlap': false },
+    paint: { 'text-color': ['match', ['get', 'tone'], 'est', dark() ? '#a9bac5' : '#5d7280', 'free', '#0f7a43', '#0f2230'] } });
+  map.addLayer({ id: 'cp-sel', type: 'symbol', source: 'cps', filter: ['==', ['get', 'sel'], 1], layout: { ...common, 'icon-image': 'pill-sel', 'text-size': 13,
+    'text-field': ['case', ['==', ['get', 'label'], ''], 'P', ['concat', 'P  ', ['get', 'label']]], 'icon-allow-overlap': true, 'text-allow-overlap': true }, paint: { 'text-color': c.bg } });
 }
+let cpDataKey = '';
 function drawCarParks() {
-  const show = !S.hidden.has('carpark') && map.getZoom() >= PIN_ZOOM - 0.01;
-  for (const l of ['cp-cluster', 'cp-cluster-n', 'cp-dot', 'cp-dot-p']) if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', S.hidden.has('carpark') ? 'none' : 'visible');
-  const b = map.getBounds(), padX = (b.getEast() - b.getWest()) * 0.15, padY = (b.getNorth() - b.getSouth()) * 0.15;
-  const want = new Set();
-  if (show) for (const cp of CARPARKS) {
-    const [x, y] = cp.at;
-    if (x < b.getWest() - padX || x > b.getEast() + padX || y < b.getSouth() - padY || y > b.getNorth() + padY) continue;
-    want.add(cp.id);
-    let m = cpMarkers.get(cp.id);
-    if (!m) {
-      const el = document.createElement('button');
-      el.type = 'button'; el.className = 'cp-pin';
-      el.addEventListener('click', (e) => { e.stopPropagation(); select(cp.id, true); });
-      m = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(cp.at).addTo(map);
-      cpMarkers.set(cp.id, m);
-    }
-    const el = m.getElement(), label = cpLabel(cp);
-    const html = `<b>P</b>${label ? `<span>${label}</span>` : ''}`;
-    if (el.innerHTML !== html) el.innerHTML = html;
-    el.classList.toggle('sel', S.sel === cp.id);
-    el.classList.toggle('bare', !label);
-    el.setAttribute('aria-label', `${cp.name}${label ? `: ${label}` : ''}`);
-  }
-  for (const [id, m] of cpMarkers) if (!want.has(id)) { m.remove(); cpMarkers.delete(id); }
+  for (const l of ['cp-cluster', 'cp-pill', 'cp-sel']) if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', S.hidden.has('carpark') ? 'none' : 'visible');
+  const src = map.getSource('cps');
+  if (!src) return;
+  const data = cpData(), key = JSON.stringify(data.features.map((f) => [f.properties.label, f.properties.sel]));
+  if (key !== cpDataKey) { cpDataKey = key; src.setData(data); }
 }
 // Park&Ride: free with a public transport trip. occ[day][hour] is how full it usually is (% from the past week).
 function occAt(cp, day, h) {
@@ -494,8 +499,8 @@ function cpRow(cp, d) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
   const pr = cp.kind === 'parkride', v = pr ? occAt(cp, S.day, S.hour) : null;
   const est = !price && !pr ? estimateFor(cp) : null;
-  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? (price.why === 'long' ? 'Price for this stay not published' : 'No rate for this time') : price ? price.k : est ? `Estimate ${money(est.low)}-${money(est.high)}${cp.operator ? `, run by ${cp.operator}` : ''}` : `Run by ${cp.operator}. Rates not published`;
-  b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price free">Free</span>` : price && !price.none ? `<span class="price${price.p === 0 ? ' free' : ''}">${money(price.p)}</span>` : est ? `<span class="price est">~${money(est.mid)}</span>` : ''}<span class="walk">${walkText(d)}</span></span>`;
+  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? (price.why === 'long' ? 'Price for this stay not published' : 'No rate for this time') : price ? price.k : est ? `Kerb's estimate ${money(est.low)}-${money(est.high)}, not their real rates${cp.operator ? `. Run by ${cp.operator}` : ''}` : `Run by ${cp.operator}. Rates not published`;
+  b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price free">Free</span>` : price && !price.none ? `<span class="price${price.p === 0 ? ' free' : ''}">${money(price.p)}</span>` : est ? `<span class="price est">~${money(est.mid)}</span>` : ''}<span class="walk">${est ? 'estimate · ' : ''}${walkText(d)}</span></span>`;
   b.onclick = () => select(cp.id, true);
   return b;
 }
@@ -1132,12 +1137,12 @@ function update(light) {
 
 map.on('click', 'cp-cluster', (e) => {
   const f = e.features[0];
-  map.getSource('cps').getClusterExpansionZoom(f.properties.cluster_id).then((z) => map.easeTo({ center: f.geometry.coordinates, zoom: Math.max(z, PIN_ZOOM) + 0.1 }));
+  map.getSource('cps').getClusterExpansionZoom(f.properties.cluster_id).then((z) => map.easeTo({ center: f.geometry.coordinates, zoom: z + 0.3, duration: 500 }));
 });
-map.on('click', 'cp-dot', (e) => select(e.features[0].properties.id, true));
-for (const l of ['cp-cluster', 'cp-dot']) { map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer')); map.on('mouseleave', l, () => (map.getCanvas().style.cursor = '')); }
+for (const l of ['cp-pill', 'cp-sel']) map.on('click', l, (e) => select(e.features[0].properties.id, true));
+for (const l of ['cp-cluster', 'cp-pill', 'cp-sel']) { map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer')); map.on('mouseleave', l, () => (map.getCanvas().style.cursor = '')); }
 map.on('click', (e) => {
-  if (map.getLayer('cp-dot') && map.queryRenderedFeatures(e.point, { layers: ['cp-cluster', 'cp-dot'] }).length) return;
+  if (map.getLayer('cp-pill') && map.queryRenderedFeatures(e.point, { layers: ['cp-cluster', 'cp-pill', 'cp-sel'] }).length) return;
   const hits = map.queryRenderedFeatures([[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]], { layers: ['kerb-line', 'kerb-short', 'kerb-faint'].filter((l) => map.getLayer(l)) });
   if (hits.length) select(hits[0].properties.id, false);
   else if (S.sel != null) { S.sel = null; update(); }
@@ -1147,7 +1152,7 @@ for (const l of ['kerb-line', 'kerb-short', 'kerb-faint']) {
   map.on('mouseleave', l, () => (map.getCanvas().style.cursor = ''));
 }
 let moveTimer = null;
-map.on('moveend', () => { clearTimeout(moveTimer); drawCarParks(); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
+map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
 
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); } if (S.sat) setSat(true); drawRibbon(); });
 addEventListener('resize', () => { setPeek(); drawRibbon(); });
