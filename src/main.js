@@ -194,7 +194,7 @@ function pillImage(fill, stroke, dashed) {
 function cpLayers() {
   if (!CARPARKS.length) return;
   const c = C(), green = '#00704a';
-  const pills = { 'pill-price': ['#fbfcfb', green], 'pill-free': ['#fbfcfb', css('--free')], 'pill-est': [dark() ? '#1c2a35' : '#f2f5f6', dark() ? '#7d93a1' : '#8ea1ad', true], 'pill-none': ['#fbfcfb', green], 'pill-pr': ['#fbfcfb', green], 'pill-sel': [c.accent, c.accent], 'pill-cluster': [c.fg, c.accent] };
+  const pills = { 'pill-price': ['#fbfcfb', green], 'pill-free': ['#fbfcfb', css('--free')], 'pill-est': [dark() ? '#b4c3cd' : '#e2e9ee', dark() ? '#f4f8fa' : '#5f7684', true], 'pill-none': ['#fbfcfb', green], 'pill-pr': ['#fbfcfb', green], 'pill-sel': [c.accent, c.accent], 'pill-cluster': [c.fg, c.accent] };
   for (const [id, [f, st, d]] of Object.entries(pills)) { const { image, opts } = pillImage(f, st, d); if (map.hasImage(id)) map.removeImage(id); map.addImage(id, image, opts); }
   if (!map.getSource('cps')) map.addSource('cps', { type: 'geojson', data: cpData(), cluster: true, clusterRadius: 34, clusterMaxZoom: 15, clusterProperties: { minp: ['min', ['get', 'p']] } });
   for (const id of ['cp-cluster', 'cp-pill', 'cp-sel']) if (map.getLayer(id)) map.removeLayer(id);
@@ -204,10 +204,10 @@ function cpLayers() {
     'text-field': ['case', ['==', ['get', 'minp'], 0], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' · incl. free'], ['<', ['get', 'minp'], 99999], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' · from $', ['to-string', ['round', ['get', 'minp']]]], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' car parks']],
     'icon-allow-overlap': false, 'text-allow-overlap': false }, paint: { 'text-color': c.bg } });
   map.addLayer({ id: 'cp-pill', type: 'symbol', source: 'cps', filter: ['all', ['!', ['has', 'point_count']], ['!=', ['get', 'sel'], 1]], layout: { ...common,
-    'icon-image': ['concat', 'pill-', ['get', 'tone']], 'text-size': ['case', ['==', ['get', 'tone'], 'est'], 11.5, 12.5],
+    'icon-image': ['concat', 'pill-', ['get', 'tone']], 'text-size': 12.5,
     'text-field': ['case', ['==', ['get', 'label'], ''], 'P', ['format', 'P  ', { 'text-color': green }, ['get', 'label'], {}]],
     'symbol-sort-key': ['get', 'p'], 'icon-allow-overlap': false, 'text-allow-overlap': false },
-    paint: { 'text-color': ['match', ['get', 'tone'], 'est', dark() ? '#a9bac5' : '#5d7280', 'free', '#0f7a43', '#0f2230'] } });
+    paint: { 'text-color': ['match', ['get', 'tone'], 'est', '#1d3140', 'free', '#0f7a43', '#0f2230'] } });
   map.addLayer({ id: 'cp-sel', type: 'symbol', source: 'cps', filter: ['==', ['get', 'sel'], 1], layout: { ...common, 'icon-image': 'pill-sel', 'text-size': 13,
     'text-field': ['case', ['==', ['get', 'label'], ''], 'P', ['concat', 'P  ', ['get', 'label']]], 'icon-allow-overlap': true, 'text-allow-overlap': true }, paint: { 'text-color': c.bg } });
 }
@@ -293,14 +293,49 @@ const hm = (h) => fmtTime(h % 24);
 // Kerb's own estimate for car parks whose rates we can't publish: the spread of what car parks nearby that do
 // publish their rates (councils, venues) charge for the same arrival time and stay. Never shown as a real price.
 const NRMA_DAY = 'about $77 to $81 a day (NRMA, 2025)';
+// Street meter rates near a point: the council's own $/hr, used to tell a CBD-core car park from a fringe one.
+let meterGrid = null;
+function meterRateNear(pt) {
+  if (!meterGrid) {
+    meterGrid = new Map();
+    for (const f of KERBS?.features || []) {
+      const rs = RULES[f.properties.k];
+      const rate = rs ? Math.max(0, ...rs.rules.map((r) => r[4] || 0)) : 0;
+      if (!(rate > 0)) continue;
+      const c = f.geometry.coordinates[Math.floor(f.geometry.coordinates.length / 2)];
+      const key = `${Math.floor(c[0] / 0.004)}:${Math.floor(c[1] / 0.004)}`;
+      if (!meterGrid.has(key)) meterGrid.set(key, []);
+      meterGrid.get(key).push([c, rate]);
+    }
+  }
+  const cx = Math.floor(pt[0] / 0.004), cy = Math.floor(pt[1] / 0.004);
+  let sw = 0, sr = 0;
+  for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) for (const [c, rate] of meterGrid.get(`${cx + i}:${cy + j}`) || []) {
+    const d = distM(c, pt);
+    if (d > 400) continue;
+    const w = 1 / (d + 60); sw += w; sr += w * rate;
+  }
+  return sw ? sr / sw : null;
+}
+// Kerb's own estimate for a car park whose owner doesn't let us publish rates. It blends what the nearest
+// car parks with published rates charge for the same stay (closer ones count more), scaled by how the
+// council's street meter rates here compare with the meters around each of those car parks.
 function estimateFor(cp) {
   if (cp.kind === 'parkride' || cp.rates?.length) return null;
   const near = CARPARKS.filter((c) => c.estBasis && c.rates?.length && c !== cp).map((c) => ({ c, d: distM(c.at, cp.at), q: carParkPrice(c) }))
-    .filter((x) => x.d < 2500 && x.q && !x.q.none).sort((a, b) => a.d - b.d).slice(0, 5);
+    .filter((x) => x.d < 3000 && x.q && !x.q.none && x.q.p > 0).sort((a, b) => a.d - b.d).slice(0, 6);
   if (near.length < 2) return null;
-  const v = near.map((x) => x.q.p).sort((a, b) => a - b);
-  const mid = v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
-  return { low: Math.floor(v[0]), high: Math.ceil(v[v.length - 1]), mid: Math.round(mid), from: near.map((x) => x.c.name) };
+  const here = meterRateNear(cp.at);
+  let sw = 0, sp = 0;
+  const vals = near.map((x) => {
+    const there = here && meterRateNear(x.c.at);
+    const k = here && there ? Math.min(1.5, Math.max(0.65, here / there)) : 1;
+    const v = x.q.p * k, w = 1 / (x.d + 250) ** 2;
+    sw += w; sp += w * v;
+    return v;
+  }).sort((a, b) => a - b);
+  const mid = sp / sw;
+  return { low: Math.floor(vals[0]), high: Math.ceil(vals[vals.length - 1]), mid: Math.round(mid), from: near.slice(0, 4).map((x) => x.c.name), meter: here };
 }
 function rateLines(cp) {
   const MN = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -732,7 +767,7 @@ function busyHTML(p) {
 
 function estHTML(cp, e, stayTxt) {
   return `<div class="verdict est"><div><small>${spanText(stayTxt)}</small>Kerb's estimate</div><span class="big">~${money(e.mid)}</span></div>
-      <p class="plain">Probably ${money(e.low)} to ${money(e.high)}. ${cp.operator ? `${cp.operator} doesn't let us publish its rates, so this` : 'This'} is an estimate from what car parks nearby charge for the same time: ${e.from.join(', ')}.${S.stay >= 5 || S.night ? ` For a full day, Sydney car parks average ${NRMA_DAY}.` : ''}</p>
+      <p class="plain">Probably ${money(e.low)} to ${money(e.high)}. ${cp.operator ? `${cp.operator} doesn't let us publish its rates, so this` : 'This'} is an estimate from what car parks nearby charge for the same time (${e.from.join(', ')}), adjusted for how the council's street meters here compare with theirs${e.meter ? ` (about ${money(e.meter)}/hr here)` : ''}.${S.stay >= 5 || S.night ? ` For a full day, Sydney car parks average ${NRMA_DAY}.` : ''}</p>
       <p class="note">Not the real price. Busy CBD car parks often charge more, and early bird or online deals can be cheaper. The board at the entrance is what you'll pay.</p>`;
 }
 function prDetail(cp) {
