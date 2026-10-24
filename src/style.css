@@ -52,7 +52,10 @@ button { cursor: pointer; }
 .search input::placeholder { color: var(--muted); opacity: 1; }
 .search input::-webkit-search-cancel-button { filter: grayscale(1); }
 .results { position: absolute; top: 52px; left: 0; right: 0; margin: 0; padding: 6px; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); max-height: 50vh; overflow: auto; }
-.results li button { width: 100%; text-align: left; border: 0; background: transparent; padding: 9px 10px; border-radius: 10px; display: flex; flex-direction: column; }
+.results li button { width: 100%; text-align: left; border: 0; background: transparent; padding: 9px 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px; }
+.results li button > i { font-size: 18px; color: var(--muted); flex: none; }
+.results .rt { display: flex; flex-direction: column; min-width: 0; }
+.results .rt span, .results .rt small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .results li button:hover, .results li button:focus-visible { background: var(--surface-2); }
 .results small { color: var(--muted); }
 .iconbtn { width: 46px; height: 46px; flex: none; border-radius: 50%; border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: var(--shadow); display: grid; place-items: center; font-size: 20px; }
@@ -200,6 +203,11 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
 .legend { position: absolute; z-index: 4; left: 0; right: calc(max(12px, env(safe-area-inset-right, 0px)) + 50px); bottom: calc(var(--vis, 250px) + 8px); display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding: 2px 4px 2px max(12px, env(safe-area-inset-left, 0px)); }
 @media (prefers-reduced-motion: no-preference) { .legend, .fullbtn { transition: bottom .32s cubic-bezier(.2, .9, .25, 1); } }
 .fullbtn { position: absolute; z-index: 4; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(var(--vis, 250px) + 6px); width: 42px; height: 42px; font-size: 20px; }
+.satbtn { position: absolute; z-index: 4; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(var(--vis, 250px) + 56px); width: 42px; height: 42px; font-size: 20px; }
+.satbtn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+@media (prefers-reduced-motion: no-preference) { .satbtn { transition: bottom .32s cubic-bezier(.2, .9, .25, 1); } }
+.cp-pin.bare { padding: 3px; }
+.cp-pin span { white-space: nowrap; }
 .legend::-webkit-scrollbar { display: none; }
 .legend button { flex: none; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 600; box-shadow: 0 2px 10px rgb(0 0 0 / .08); white-space: nowrap; }
 .legend button[aria-pressed="false"] { opacity: .45; }
@@ -232,6 +240,7 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
   .dock { padding-top: 16px; }
   .legend { left: 432px; right: auto; bottom: 16px; padding: 0; flex-wrap: wrap; overflow: visible; }
   .fullbtn { display: none; }
+  .satbtn { bottom: 16px; right: 16px; }
   .maplibregl-ctrl-top-right { top: 0 !important; }
 }
 

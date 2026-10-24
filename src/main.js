@@ -125,7 +125,7 @@ function kerbLayers() {
     map.addSource('meters', { type: 'geojson', data: { type: 'FeatureCollection', features: METERS.map(([x, y, k, n]) => ({ type: 'Feature', properties: { k, n }, geometry: { type: 'Point', coordinates: [x, y] } })) } });
   }
   for (const id of ['kerb-glow', 'kerb-faint', 'kerb-line', 'kerb-short', 'kerb-sel', 'meter-dot']) if (map.getLayer(id)) map.removeLayer(id);
-  map.addLayer({ id: 'kerb-glow', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(3.2), 'line-blur': w(2.4), 'line-opacity': dark() ? 0.35 : 0.18 } });
+  map.addLayer({ id: 'kerb-glow', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(3.2), 'line-blur': w(2.4), 'line-opacity': S.sat ? 0.55 : dark() ? 0.35 : 0.18 } });
   map.addLayer({ id: 'kerb-faint', type: 'line', source: 'kerbs', filter: ['all', ['in', ['get', 'c'], ['literal', ['unknown', 'permit', 'likely']]], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'round' }, paint: { 'line-color': col, 'line-width': w(0.55), 'line-opacity': ['case', ['==', ['get', 'c'], 'permit'], 0.4, ['==', ['get', 'c'], 'likely'], 0.85, 0.5], 'line-dasharray': [1.5, 1.5] } });
   map.addLayer({ id: 'kerb-line', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(1) } });
   map.addLayer({ id: 'kerb-short', type: 'line', source: 'kerbs', filter: ['all', ['==', ['get', 'c'], 'short'], ['!', ['in', 'short', ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'butt' }, paint: { 'line-color': col, 'line-width': w(0.9), 'line-dasharray': [1.2, 1] } });
@@ -140,22 +140,79 @@ function recolour() {
   if (src) src.setData(KERBS);
 }
 
-/* ---------- car parks ---------- */
-const cpMarkers = [];
-function drawCarParks() {
-  cpMarkers.forEach((m) => m.remove()); cpMarkers.length = 0;
-  if (S.hidden.has('carpark')) return;
-  for (const cp of CARPARKS) {
-    const el = document.createElement('button');
-    el.type = 'button'; el.className = 'cp-pin' + (S.sel === cp.id ? ' sel' : '');
-    el.setAttribute('aria-label', cp.name);
-    const price = carParkPrice(cp);
-    const est = !price ? estimateFor(cp) : null;
-    el.innerHTML = `<b>P</b>${cp.kind === 'parkride' ? prPin(cp) : est ? `~${money(est.mid)}` : price && !price.none ? (cp.maxRates && price.p > 0 ? `≤${money(price.p)}` : money(price.p)) : price?.none ? (price.why === 'long' ? 'Car park' : 'Closed?') : 'Car park'}`;
-    el.addEventListener('click', (e) => { e.stopPropagation(); select(cp.id, true); });
-    cpMarkers.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(cp.at).addTo(map));
-    el.setAttribute('aria-label', `${cp.name}: ${el.textContent.slice(1)}`); // MapLibre replaces it with "Map marker
+/* ---------- satellite (NSW Spatial Services aerial imagery, CC BY 4.0) ---------- */
+const SAT_URL = 'https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Imagery/MapServer/tile/{z}/{y}/{x}';
+try { S.sat = localStorage.getItem('kerb-sat') === '1'; } catch { S.sat = false; }
+function setSat(on) {
+  S.sat = on;
+  try { localStorage.setItem('kerb-sat', on ? '1' : '0'); } catch { /* private mode */ }
+  if (!map.isStyleLoaded()) return;
+  if (on && !map.getSource('sat')) map.addSource('sat', { type: 'raster', tiles: [SAT_URL], tileSize: 256, maxzoom: 21, attribution: 'Imagery © NSW Spatial Services' });
+  const firstLabel = map.getStyle().layers.find((l) => l.type === 'symbol')?.id;
+  if (on && !map.getLayer('sat')) map.addLayer({ id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-opacity': 1, 'raster-fade-duration': 150 } }, firstLabel);
+  if (map.getLayer('sat')) map.setLayoutProperty('sat', 'visibility', on ? 'visible' : 'none');
+  // Labels need a dark halo over photos.
+  for (const l of map.getStyle().layers) {
+    if (l.type !== 'symbol' || l.id.startsWith('cp-') || !l.layout?.['text-field']) continue;
+    try { if (on) { map.setPaintProperty(l.id, 'text-color', '#ffffff'); map.setPaintProperty(l.id, 'text-halo-color', 'rgba(0,0,0,.75)'); } } catch { /* skip */ }
   }
+  if (!on) restyleBase();
+  if (map.getLayer('kerb-glow')) map.setPaintProperty('kerb-glow', 'line-opacity', on ? 0.55 : dark() ? 0.35 : 0.18);
+  const b = $('#satBtn');
+  if (b) { b.setAttribute('aria-pressed', String(on)); b.innerHTML = on ? '<i class="ph ph-map-trifold"></i>' : '<i class="ph ph-globe-hemisphere-east"></i>'; b.setAttribute('aria-label', on ? 'Show the street map' : 'Show satellite photos'); }
+}
+
+/* ---------- car parks ---------- */
+// Far out, car parks are grouped into numbered circles drawn by the map itself (fast, no clutter).
+// From zoom 15 the nearby ones become labelled pins with their price, reused rather than rebuilt.
+const PIN_ZOOM = 15;
+const cpMarkers = new Map();
+function cpLabel(cp) {
+  const price = carParkPrice(cp);
+  if (cp.kind === 'parkride') return prPin(cp);
+  if (price && !price.none) return cp.maxRates && price.p > 0 ? `≤${money(price.p)}` : money(price.p);
+  const est = !price ? estimateFor(cp) : null;
+  if (est) return `~${money(est.mid)}`;
+  return '';
+}
+function cpLayers() {
+  if (!CARPARKS.length) return;
+  const c = C();
+  const data = { type: 'FeatureCollection', features: CARPARKS.map((cp) => ({ type: 'Feature', properties: { id: cp.id }, geometry: { type: 'Point', coordinates: cp.at } })) };
+  if (!map.getSource('cps')) map.addSource('cps', { type: 'geojson', data, cluster: true, clusterRadius: 46, clusterMaxZoom: PIN_ZOOM - 1 });
+  for (const id of ['cp-cluster', 'cp-cluster-n', 'cp-dot', 'cp-dot-p']) if (map.getLayer(id)) map.removeLayer(id);
+  const vis = S.hidden.has('carpark') ? 'none' : 'visible';
+  map.addLayer({ id: 'cp-cluster', type: 'circle', source: 'cps', maxzoom: PIN_ZOOM, filter: ['has', 'point_count'], layout: { visibility: vis },
+    paint: { 'circle-color': c.fg, 'circle-radius': ['step', ['get', 'point_count'], 13, 5, 16, 20, 20], 'circle-stroke-color': c.accent, 'circle-stroke-width': 2, 'circle-opacity': 0.92 } });
+  map.addLayer({ id: 'cp-cluster-n', type: 'symbol', source: 'cps', maxzoom: PIN_ZOOM, filter: ['has', 'point_count'], layout: { visibility: vis, 'text-field': ['concat', 'P ', ['get', 'point_count_abbreviated']], 'text-font': ['Noto Sans Bold'], 'text-size': 11.5, 'text-allow-overlap': true }, paint: { 'text-color': c.bg } });
+  map.addLayer({ id: 'cp-dot', type: 'circle', source: 'cps', maxzoom: PIN_ZOOM, filter: ['!', ['has', 'point_count']], layout: { visibility: vis }, paint: { 'circle-color': '#fbfcfb', 'circle-radius': 9, 'circle-stroke-color': '#00704a', 'circle-stroke-width': 2 } });
+  map.addLayer({ id: 'cp-dot-p', type: 'symbol', source: 'cps', maxzoom: PIN_ZOOM, filter: ['!', ['has', 'point_count']], layout: { visibility: vis, 'text-field': 'P', 'text-font': ['Noto Sans Bold'], 'text-size': 11, 'text-allow-overlap': true }, paint: { 'text-color': '#00704a' } });
+}
+function drawCarParks() {
+  const show = !S.hidden.has('carpark') && map.getZoom() >= PIN_ZOOM - 0.01;
+  for (const l of ['cp-cluster', 'cp-cluster-n', 'cp-dot', 'cp-dot-p']) if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', S.hidden.has('carpark') ? 'none' : 'visible');
+  const b = map.getBounds(), padX = (b.getEast() - b.getWest()) * 0.15, padY = (b.getNorth() - b.getSouth()) * 0.15;
+  const want = new Set();
+  if (show) for (const cp of CARPARKS) {
+    const [x, y] = cp.at;
+    if (x < b.getWest() - padX || x > b.getEast() + padX || y < b.getSouth() - padY || y > b.getNorth() + padY) continue;
+    want.add(cp.id);
+    let m = cpMarkers.get(cp.id);
+    if (!m) {
+      const el = document.createElement('button');
+      el.type = 'button'; el.className = 'cp-pin';
+      el.addEventListener('click', (e) => { e.stopPropagation(); select(cp.id, true); });
+      m = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(cp.at).addTo(map);
+      cpMarkers.set(cp.id, m);
+    }
+    const el = m.getElement(), label = cpLabel(cp);
+    const html = `<b>P</b>${label ? `<span>${label}</span>` : ''}`;
+    if (el.innerHTML !== html) el.innerHTML = html;
+    el.classList.toggle('sel', S.sel === cp.id);
+    el.classList.toggle('bare', !label);
+    el.setAttribute('aria-label', `${cp.name}${label ? `: ${label}` : ''}`);
+  }
+  for (const [id, m] of cpMarkers) if (!want.has(id)) { m.remove(); cpMarkers.delete(id); }
 }
 // Park&Ride: free with a public transport trip. occ[day][hour] is how full it usually is (% from the past week).
 function occAt(cp, day, h) {
@@ -944,6 +1001,7 @@ function setOpen(v) { setSheet(v ? 'open' : 'peek'); }
   };
   list.addEventListener('touchend', tEnd); list.addEventListener('touchcancel', tEnd);
   $('#fullBtn').addEventListener('click', () => setSheet(sheet === 'min' ? 'peek' : 'min'));
+  $('#satBtn').addEventListener('click', () => setSat(!S.sat));
 })();
 let pendingList = false;
 
@@ -956,37 +1014,88 @@ visualViewport?.addEventListener('resize', () => { clearTimeout(settle.t); settl
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { settle(); map.triggerRepaint(); } });
 addEventListener('pageshow', settle);
 map.on('webglcontextlost', () => toast('The map paused. It will come back in a moment.'));
-map.on('webglcontextrestored', () => { restyleBase(); if (KERBS) { kerbLayers(); recolour(); } });
+map.on('webglcontextrestored', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); recolour(); } if (S.sat) setSat(true); });
 
 /* ---------- search ---------- */
+// Suggestions start at the second letter: streets and car parks Kerb knows appear instantly,
+// then places from Photon (OpenStreetMap) fill in a moment later.
 const q = $('#q'), results = $('#results');
-let searchTimer = null, searchCtl = null;
-q.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(runSearch, 250); });
+let searchTimer = null, searchCtl = null, localIdx = null;
+const fold = (t) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+function buildIndex() {
+  const seen = new Map();
+  for (const f of KERBS?.features || []) {
+    const p = f.properties;
+    if (!p.s) continue;
+    const key = `${p.s}|${p.b || ''}`;
+    if (!seen.has(key)) seen.set(key, { title: p.s, sub: p.b || 'Street', at: mids.get(p.id), n: 0, kind: 'street' });
+    seen.get(key).n++;
+  }
+  const list = [...seen.values()];
+  for (const cp of CARPARKS) list.push({ title: cp.name, sub: cp.address || 'Car park', at: cp.at, n: 50, kind: 'carpark', id: cp.id });
+  for (const x of list) x.key = fold(`${x.title} ${x.sub}`);
+  localIdx = list;
+}
+function localMatches(text) {
+  if (!localIdx) buildIndex();
+  const t = fold(text), words = t.split(' ');
+  const hits = [];
+  for (const x of localIdx) {
+    const starts = x.key.startsWith(t) || x.key.includes(` ${t}`);
+    if (!starts && !words.every((w) => x.key.includes(w))) continue;
+    hits.push({ x, score: (starts ? 0 : 50) - Math.min(40, x.n) + (x.kind === 'carpark' ? 5 : 0) });
+  }
+  return hits.sort((a, b) => a.score - b.score).slice(0, 5).map((h) => h.x);
+}
+function pick(item) {
+  results.hidden = true; q.value = item.title; q.blur(); S.sel = null;
+  if (item.kind === 'carpark') { setDest(null); q.value = item.title; select(item.id, true); return; }
+  setDest({ at: item.at, name: item.sub && item.kind === 'street' ? `${item.title}, ${item.sub}` : item.title }); setOpen(true);
+}
+function showResults(local, places, loading) {
+  results.replaceChildren();
+  const add = (item, icon) => {
+    const li = document.createElement('li');
+    const b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = `<i class="ph ${icon}" aria-hidden="true"></i><span class="rt"><span>${item.title}</span><small>${item.sub || ''}</small></span>`;
+    b.onclick = () => pick(item);
+    li.appendChild(b); results.appendChild(li);
+  };
+  local.forEach((x) => add(x, x.kind === 'carpark' ? 'ph-car' : 'ph-road-horizon'));
+  const seen = new Set(local.map((x) => fold(x.title)));
+  places.filter((x) => !seen.has(fold(x.title))).slice(0, 6 - Math.min(3, local.length)).forEach((x) => add(x, 'ph-map-pin'));
+  if (loading && !results.children.length) results.innerHTML = '<li><button type="button" disabled>Searching…</button></li>';
+  if (!loading && !results.children.length) results.innerHTML = '<li><button type="button" disabled>No places found. Try a street name or suburb.</button></li>';
+  results.hidden = false;
+}
+let lastPlaces = [];
+q.addEventListener('input', () => {
+  const text = q.value.trim();
+  clearTimeout(searchTimer);
+  if (text.length < 2) { results.hidden = true; return; }
+  showResults(localMatches(text), lastPlaces.filter((p) => fold(p.title).includes(fold(text).split(' ')[0])), true);
+  searchTimer = setTimeout(runSearch, 160);
+});
+q.addEventListener('focus', () => { if (q.value.trim().length >= 2) q.dispatchEvent(new Event('input')); });
 q.addEventListener('keydown', (e) => { if (e.key === 'Escape') { results.hidden = true; q.blur(); } });
 q.addEventListener('blur', () => setTimeout(settle, 120));
-$('#searchForm').addEventListener('submit', (e) => { e.preventDefault(); const first = results.querySelector('button'); if (first) first.click(); else runSearch(); });
+$('#searchForm').addEventListener('submit', (e) => { e.preventDefault(); const first = results.querySelector('button:not([disabled])'); if (first) first.click(); else runSearch(); });
 document.addEventListener('click', (e) => { if (!e.target.closest('.search')) results.hidden = true; });
 async function runSearch() {
   const text = q.value.trim();
-  if (text.length < 3) { results.hidden = true; return; }
+  if (text.length < 2) return;
   searchCtl?.abort(); searchCtl = new AbortController();
   try {
-    const u = `https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&lat=-33.873&lon=151.207&limit=6&bbox=150.6,-34.2,151.4,-33.5&lang=en`;
+    const c = map.getCenter();
+    const u = `https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&lat=${c.lat.toFixed(4)}&lon=${c.lng.toFixed(4)}&limit=8&bbox=150.5,-34.3,151.45,-33.4&lang=en`;
     const j = await fetch(u, { signal: searchCtl.signal }).then((r) => r.json());
-    results.replaceChildren();
-    const feats = (j.features || []).filter((f) => f.properties.countrycode === 'AU');
-    if (!feats.length) { results.innerHTML = `<li><button type="button" disabled>No places found. Try a street name and suburb.</button></li>`; results.hidden = false; return; }
-    for (const f of feats) {
+    if (q.value.trim() !== text) return; // the user kept typing
+    lastPlaces = (j.features || []).filter((f) => f.properties.countrycode === 'AU').map((f) => {
       const p = f.properties;
-      const li = document.createElement('li');
-      const b = document.createElement('button'); b.type = 'button';
-      const title = p.name || [p.housenumber, p.street].filter(Boolean).join(' ');
-      b.innerHTML = `<span>${title}</span><small>${[p.street && p.name ? p.street : '', p.district || p.locality, p.city].filter(Boolean).join(', ')}</small>`;
-      b.onclick = () => { results.hidden = true; q.value = title; q.blur(); S.sel = null; setDest({ at: f.geometry.coordinates, name: title }); setOpen(true); };
-      li.appendChild(b); results.appendChild(li);
-    }
-    results.hidden = false;
-  } catch (e) { if (e.name !== 'AbortError') toast("Search isn't responding. Try again in a moment."); }
+      return { title: p.name || [p.housenumber, p.street].filter(Boolean).join(' '), sub: [p.street && p.name ? p.street : '', p.district || p.locality, p.city].filter(Boolean).join(', '), at: f.geometry.coordinates, kind: 'place' };
+    }).filter((x) => x.title);
+    showResults(localMatches(text), lastPlaces, false);
+  } catch (e) { if (e.name !== 'AbortError') showResults(localMatches(text), [], false); }
 }
 
 /* ---------- locate ---------- */
@@ -1020,7 +1129,14 @@ function update(light) {
   });
 }
 
+map.on('click', 'cp-cluster', (e) => {
+  const f = e.features[0];
+  map.getSource('cps').getClusterExpansionZoom(f.properties.cluster_id).then((z) => map.easeTo({ center: f.geometry.coordinates, zoom: Math.max(z, PIN_ZOOM) + 0.1 }));
+});
+map.on('click', 'cp-dot', (e) => select(e.features[0].properties.id, true));
+for (const l of ['cp-cluster', 'cp-dot']) { map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer')); map.on('mouseleave', l, () => (map.getCanvas().style.cursor = '')); }
 map.on('click', (e) => {
+  if (map.getLayer('cp-dot') && map.queryRenderedFeatures(e.point, { layers: ['cp-cluster', 'cp-dot'] }).length) return;
   const hits = map.queryRenderedFeatures([[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]], { layers: ['kerb-line', 'kerb-short', 'kerb-faint'].filter((l) => map.getLayer(l)) });
   if (hits.length) select(hits[0].properties.id, false);
   else if (S.sel != null) { S.sel = null; update(); }
@@ -1030,9 +1146,9 @@ for (const l of ['kerb-line', 'kerb-short', 'kerb-faint']) {
   map.on('mouseleave', l, () => (map.getCanvas().style.cursor = ''));
 }
 let moveTimer = null;
-map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
+map.on('moveend', () => { clearTimeout(moveTimer); drawCarParks(); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
 
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) kerbLayers(); drawRibbon(); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); } if (S.sat) setSat(true); drawRibbon(); });
 addEventListener('resize', () => { setPeek(); drawRibbon(); });
 
 /* ---------- boot ---------- */
@@ -1057,5 +1173,7 @@ map.on('style.load', async () => {
   try { await dataReady; } catch { return; }
   recolour();
   kerbLayers();
+  cpLayers();
+  if (S.sat) setSat(true);
   update();
 });
