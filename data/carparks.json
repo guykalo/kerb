@@ -1,1 +1,951 @@
-[]
+[
+ {
+  "id": "cos-1",
+  "name": "Goulburn Street Car Park",
+  "operator": "City of Sydney (run by Secure Parking)",
+  "maxRates": true,
+  "rates": [
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "perHour": 14,
+    "per": 1,
+    "dailyMax": 55
+   },
+   {
+    "kind": "flat",
+    "label": "Weekend (maximum)",
+    "days": [
+     0,
+     6
+    ],
+    "enter": [
+     0,
+     24
+    ],
+    "exitBy": 24,
+    "price": 20
+   }
+  ],
+  "source": "https://www.cityofsydney.nsw.gov.au/-/media/corporate/files/publications/policies/revenue-policy-fees-charges/2026-statement-of-revenue-policy-small-file-for-web.pdf",
+  "checked": "2026-10-24",
+  "research": "These are the City of Sydney's maximum rates for 2026/27: casual up to $14 an hour and $55 a day, evenings Mon-Fri up to $20 and weekends and public holidays up to $20 (entry and exit conditions apply, not published). The rate board at the entrance may be lower. Motorbikes $2 an hour, max $14.",
+  "note": "City of Sydney's maximum rates: up to $14 an hour, $55 a day, and up to $20 on weekday evenings and weekends (entry and exit conditions apply). The board at the entrance may be cheaper. Motorbikes $2 an hour."
+ },
+ {
+  "id": "cos-2",
+  "name": "Kings Cross Car Park",
+  "operator": "City of Sydney (run by Secure Parking)",
+  "maxRates": true,
+  "rates": [
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "perHour": 12,
+    "per": 1,
+    "dailyMax": 50
+   },
+   {
+    "kind": "flat",
+    "label": "Weekend (maximum)",
+    "days": [
+     0,
+     6
+    ],
+    "enter": [
+     0,
+     24
+    ],
+    "exitBy": 24,
+    "price": 20
+   }
+  ],
+  "source": "https://www.cityofsydney.nsw.gov.au/-/media/corporate/files/publications/policies/revenue-policy-fees-charges/2026-statement-of-revenue-policy-small-file-for-web.pdf",
+  "checked": "2026-10-24",
+  "research": "These are the City of Sydney's maximum rates for 2026/27: casual up to $12 an hour and $50 a day, evenings Mon-Fri up to $20 and weekends up to $20 (entry and exit conditions apply, not published). The rate board at the entrance may be lower. Motorbikes $2 an hour, max $14.",
+  "note": "City of Sydney's maximum rates: up to $12 an hour, $50 a day, and up to $20 on weekday evenings and weekends (entry and exit conditions apply). The board at the entrance may be cheaper. Motorbikes $2 an hour."
+ },
+ {
+  "id": "wav-0",
+  "name": "Eastgate Car Park",
+  "address": "Eastgate, Bondi Junction (enter via Ebley Street or Newland Street)",
+  "operator": "Waverley Council",
+  "hours": "5AM to 11.30PM daily; closed Good Friday, Easter Sunday and Christmas Day",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 5,
+    "to": 23.5,
+    "bands": [
+     [
+      1,
+      0
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      3,
+      10.6
+     ],
+     [
+      3.5,
+      20
+     ],
+     [
+      4,
+      25
+     ],
+     [
+      4.5,
+      30
+     ],
+     [
+      5,
+      35
+     ],
+     [
+      24,
+      43
+     ]
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "Late bird",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     18,
+     21
+    ],
+    "exitBy": 23.5,
+    "price": 12.8
+   },
+   {
+    "kind": "flat",
+    "label": "All day (rooftop level only)",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     5,
+     23.5
+    ],
+    "exitBy": 23.5,
+    "price": 19.8
+   }
+  ],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Rates from the car parks page and the same figures in Waverley's Pricing Policy Fees & Charges 2026-2027 (https://www.waverley.nsw.gov.au/media/documents/council/operational_plans_and_fees_and_charges/Pricing_policy_fees_and_charges.pdf). First hour free; leave for at least 30 minutes for another free hour on same-day re-entry; a 30-minute gap is needed to move to the Library car park. Late bird: the web page says 'Night rate (6pm\u20139pm) $12.80 flat' and the fees PDF says 'Late bird Parking (6pm to close)'. Recorded as entry 6pm\u20139pm, leave by closing (11.30pm). All-day $19.80 is rooftop level only. Overnight costs $42.00 per night on top of parking fees. Major Event Parking $23.60 applies on advertised days only (not recorded). Lost ticket $43.00. Monthly $365.00. Licence plate recognition is used. The fees PDF lists a card surcharge on car parks (0.8%, 1 July\u201330 Sept 2026).",
+  "note": "First hour free. Wait 30 minutes before coming back for another free hour. The $19.80 all-day rate is for the rooftop only. Overnight stays cost $42 a night on top. Closed Good Friday, Easter Sunday and Christmas Day."
+ },
+ {
+  "id": "wav-1",
+  "name": "Waverley Library Car Park",
+  "address": "Ron Lander Centre / Waverley Library, Bondi Junction (enter via Ebley Street)",
+  "operator": "Waverley Council",
+  "hours": "5AM to 11:00PM daily; closed Good Friday, Easter Sunday and Christmas Day",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 5,
+    "to": 23,
+    "bands": [
+     [
+      1,
+      3.8
+     ],
+     [
+      2,
+      9.8
+     ],
+     [
+      3,
+      12.6
+     ],
+     [
+      3.5,
+      20
+     ],
+     [
+      4,
+      25
+     ],
+     [
+      4.5,
+      30
+     ],
+     [
+      5,
+      35
+     ],
+     [
+      24,
+      43
+     ]
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "Early bird",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     5,
+     9
+    ],
+    "exitAfter": 15.5,
+    "exitBy": 23,
+    "price": 19.8
+   }
+  ],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Rates from the car parks page, matching the 2026-27 fees PDF (https://www.waverley.nsw.gov.au/media/documents/council/operational_plans_and_fees_and_charges/Pricing_policy_fees_and_charges.pdf). Early bird $19.80: the web page says 'entry before 9.30AM and exit after 3.30PM'; the fees PDF says 'arrive before 9am and exit after 3:30pm'. Recorded with the stricter 9am. Neither source limits the Library early bird to weekdays (the Hollywood Ave one is Mon\u2013Fri), so all days are recorded as published. Library users get 2 hours free through validation (not recorded as a general rate). Overnight costs $42.00 per night on top of parking fees. Lost ticket $43.00. Monthly $365.00. A 30-minute gap is needed to move to Eastgate.",
+  "note": "Early bird: arrive before 9am, leave after 3:30pm. Closed Good Friday, Easter Sunday and Christmas Day."
+ },
+ {
+  "id": "wav-2",
+  "name": "Hollywood Avenue Car Park",
+  "address": "Hollywood Avenue, Bondi Junction (enter via Waverley Street)",
+  "operator": "Waverley Council",
+  "hours": "5AM to 11:00PM daily; closed Good Friday, Easter Sunday and Christmas Day",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 5,
+    "to": 23,
+    "bands": [
+     [
+      1,
+      3.8
+     ],
+     [
+      2,
+      9.8
+     ],
+     [
+      3,
+      12.6
+     ],
+     [
+      3.5,
+      20
+     ],
+     [
+      4,
+      25
+     ],
+     [
+      4.5,
+      30
+     ],
+     [
+      5,
+      35
+     ],
+     [
+      24,
+      43
+     ]
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "Early bird",
+    "days": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "enter": [
+     5,
+     9
+    ],
+    "exitAfter": 15.5,
+    "exitBy": 23,
+    "price": 19.8
+   },
+   {
+    "kind": "flat",
+    "label": "Weekend shopper",
+    "days": [
+     0,
+     6
+    ],
+    "enter": [
+     5,
+     23
+    ],
+    "exitBy": 23,
+    "price": 22.4
+   }
+  ],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Rates from the car parks page. Days and conditions come from the 2026-27 fees PDF (https://www.waverley.nsw.gov.au/media/documents/council/operational_plans_and_fees_and_charges/Pricing_policy_fees_and_charges.pdf): 'Early bird parking (available Monday \u2013 Friday, arrive before 9am and exit after 3:30pm) $19.80' and 'Weekend Shopper Rate (available on Saturdays and Sundays only, no time restrictions) $22.40'. The web page says early bird entry is 'before 9.30AM', so the stricter 9am is recorded. Overnight costs $42.00 per night on top of parking fees. Lost ticket $43.00. Monthly $365.00 (separate residents' monthly rate by application).",
+  "note": "Early bird Mon-Fri: arrive before 9am, leave after 3:30pm. Weekend shopper rate Sat-Sun. Closed Good Friday, Easter Sunday and Christmas Day."
+ },
+ {
+  "id": "wav-9",
+  "name": "Queen Elizabeth Drive Carpark",
+  "address": "Queen Elizabeth Drive, Bondi Beach",
+  "operator": "Waverley Council (metered beach parking)",
+  "rates": [
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 7,
+    "to": 19,
+    "perHour": 12.4,
+    "per": 1,
+    "maxStay": 4
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 19,
+    "to": 24
+   }
+  ],
+  "source": "https://www.waverley.nsw.gov.au/media/documents/council/operational_plans_and_fees_and_charges/Pricing_policy_fees_and_charges.pdf",
+  "checked": "2026-10-24",
+  "research": "Fees PDF section 20.4: 'Bondi Beach long term beach parking \u2013 Queen Elizabeth Drive and Park Drive North $12.40 hourly fee'. The parking meters page (https://www.waverley.nsw.gov.au/residents/parking/parking_meters) says meters on Queen Elizabeth Drive and Park Drive North and South switch off at 7pm; start time not published, hence arrival window 0\u201319. Billing increment not published (recorded per hour). No daily maximum or time limit published for non-permit holders. Beach parking permit holders park unlimited in these metered spaces. Pay by coin, card, contactless, Pay by Plate or Park'nPay; no tickets printed. Kerb's Waverley parking survey shows these as 4-hour meters from 7am to 7pm (P240 at Park Drive North), so arrivals from 7am to 7pm pay, with a 4-hour limit, and the meters are off after 7pm. Arrive before 7am and you pay from 7am.",
+  "note": "Beach parking. Meters run 7am to 7pm with a 4-hour limit. Beach permit holders park free."
+ },
+ {
+  "id": "wav-16",
+  "name": "Park Drive Carpark",
+  "address": "Park Drive, Bondi Beach",
+  "operator": "Waverley Council (metered beach parking)",
+  "rates": [
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 7,
+    "to": 19,
+    "perHour": 12.4,
+    "per": 1,
+    "maxStay": 4
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 19,
+    "to": 24
+   }
+  ],
+  "source": "https://www.waverley.nsw.gov.au/media/documents/council/operational_plans_and_fees_and_charges/Pricing_policy_fees_and_charges.pdf",
+  "checked": "2026-10-24",
+  "research": "Fees PDF section 20.4 splits Park Drive: 'Queen Elizabeth Drive and Park Drive North $12.40 hourly fee' (all year); 'Bondi Beach \u2013 Park Drive South \u2013 Summer Rate \u2013 Sept to May $12.40'; 'Park Drive South \u2013 Winter Rate \u2013 June to August $7.30'. It is not clear whether this record is North or South. $12.40 is correct for both from September to May (now). In June\u2013August Park Drive South is $7.30/h; the schema has no season field. Meters switch off at 7pm (https://www.waverley.nsw.gov.au/residents/parking/parking_meters); start time and billing increment not published. Kerb's Waverley parking survey shows these as 4-hour meters from 7am to 7pm (P240 at Park Drive North), so arrivals from 7am to 7pm pay, with a 4-hour limit, and the meters are off after 7pm. Arrive before 7am and you pay from 7am.",
+  "note": "Beach parking. Meters run 7am to 7pm with a 4-hour limit. Park Drive South drops to $7.30 an hour from June to August. Beach permit holders park free."
+ },
+ {
+  "id": "wav-8",
+  "name": "Bronte Cutting",
+  "address": "Bronte Cutting, Bronte Beach",
+  "operator": "Waverley Council (metered beach parking)",
+  "rates": [
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "perHour": 9.7,
+    "per": 1,
+    "months": [
+     9,
+     10,
+     11,
+     12,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "All day",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     0,
+     24
+    ],
+    "exitBy": 24,
+    "price": 52,
+    "months": [
+     9,
+     10,
+     11,
+     12,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "months": [
+     6,
+     7,
+     8
+    ]
+   }
+  ],
+  "source": "https://www.waverley.nsw.gov.au/media/documents/council/operational_plans_and_fees_and_charges/Pricing_policy_fees_and_charges.pdf",
+  "checked": "2026-10-24",
+  "research": "SEASONAL. Fees PDF section 20.4: 'Bronte long term beach parking \u2013 Bronte Cutting \u2013 Summer Rate (September to May) $9.70 hourly fee'; 'Winter Rate (June to August) No charge'; '(all day rate) $52.00 per day'. Recorded rates are the summer (Sep\u2013May) rates. From June to August parking here is free, but the schema has no season field. Meter operating hours not published for Bronte (only QE Drive/Park Drive 7pm switch-off is stated). Billing increment not published.",
+  "note": "Beach parking: $9.70 an hour or $52 all day from September to May, free from June to August."
+ },
+ {
+  "id": "wav-6",
+  "name": "Hugh Bamford Reserve",
+  "address": "Hugh Bamford Reserve, Military Road, North Bondi",
+  "operator": "Waverley Council",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/recreation/parks_and_reserves/hugh_bamford_reserve",
+  "checked": "2026-10-24",
+  "research": "Council reserve page says only 'Limited on site parking'. No fees or time limits published, and it is not in the parking-meter list in the 2026-27 fees PDF. Not confirmed as pay parking, so rates []."
+ },
+ {
+  "id": "wav-7",
+  "name": "Ray O'Keefe Reserve",
+  "address": "Eastern end of Ramsgate Ave, Ben Buckler Point, North Bondi",
+  "operator": "Waverley Council",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/recreation/parks_and_reserves/ben_buckler_point_reserves",
+  "checked": "2026-10-24",
+  "research": "Council page says 'Limited timed small parking area' plus a mobility bay on Ramsgate Ave; no fee or time limit stated. The 2026-27 fees PDF has 'Bondi Beach long term beach parking on beach perimeter \u2013 Ramsgate Avenue and North Campbell Parade $12.40 hourly fee', but nothing confirms that this reserve's parking area is metered under that line. Rates [] rather than assume."
+ },
+ {
+  "id": "wav-11",
+  "name": "Westfield 1",
+  "address": "Westfield Bondi Junction, Bondi Junction",
+  "operator": "Westfield (private)",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Westfield Bondi Junction's own car park, not council. Waverley's site publishes no rates for it. Westfield's own Getting Here page (westfield.com.au/bondijunction/services/getting-here, not a council source) says '2 hours free parking', 45-minute gap needed before re-entry for another free period, entries P3 Junction St or Grafton St, P4 Grafton St or Hollywood Ave, P6 Grafton St, R1 Hollywood Ave; it gives no rates after 2 hours, so no rate is recorded. Westfield 1, 2 and 3 (wav-11, wav-15, wav-3) look like entrances to the same Westfield car park: same notes on all three.",
+  "note": "Westfield Bondi Junction's own car park."
+ },
+ {
+  "id": "wav-15",
+  "name": "Westfield 2",
+  "address": "Westfield Bondi Junction, Bondi Junction",
+  "operator": "Westfield (private)",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Westfield Bondi Junction's own car park, not council. Waverley's site publishes no rates for it. Westfield's own Getting Here page (westfield.com.au/bondijunction/services/getting-here, not a council source) says '2 hours free parking', 45-minute gap needed before re-entry for another free period, entries P3 Junction St or Grafton St, P4 Grafton St or Hollywood Ave, P6 Grafton St, R1 Hollywood Ave; it gives no rates after 2 hours, so no rate is recorded. Westfield 1, 2 and 3 (wav-11, wav-15, wav-3) look like entrances to the same Westfield car park: same notes on all three.",
+  "note": "Westfield Bondi Junction's own car park."
+ },
+ {
+  "id": "wav-3",
+  "name": "Westfield 3",
+  "address": "Westfield Bondi Junction, Bondi Junction",
+  "operator": "Westfield (private)",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Westfield Bondi Junction's own car park, not council. Waverley's site publishes no rates for it. Westfield's own Getting Here page (westfield.com.au/bondijunction/services/getting-here, not a council source) says '2 hours free parking', 45-minute gap needed before re-entry for another free period, entries P3 Junction St or Grafton St, P4 Grafton St or Hollywood Ave, P6 Grafton St, R1 Hollywood Ave; it gives no rates after 2 hours, so no rate is recorded. Westfield 1, 2 and 3 (wav-11, wav-15, wav-3) look like entrances to the same Westfield car park: same notes on all three.",
+  "note": "Westfield Bondi Junction's own car park."
+ },
+ {
+  "id": "wav-4",
+  "name": "Victoria Street Carpark",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Not one of the three council-operated car parks on Waverley's car parks page (which says Council owns and operates Eastgate, Waverley Library and Hollywood Avenue) and not in the parking-meter section of Waverley's 2026-27 fees and charges. No rates for it on waverley.nsw.gov.au. Likely a privately operated car park from the older public car parks dataset; rates [] rather than guessing."
+ },
+ {
+  "id": "wav-5",
+  "name": "Watson Street",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Not one of the three council-operated car parks on Waverley's car parks page (which says Council owns and operates Eastgate, Waverley Library and Hollywood Avenue) and not in the parking-meter section of Waverley's 2026-27 fees and charges. No rates for it on waverley.nsw.gov.au. Likely a privately operated car park from the older public car parks dataset; rates [] rather than guessing."
+ },
+ {
+  "id": "wav-10",
+  "name": "Westpoint/ Seapoint Carpark",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Not one of the three council-operated car parks on Waverley's car parks page (which says Council owns and operates Eastgate, Waverley Library and Hollywood Avenue) and not in the parking-meter section of Waverley's 2026-27 fees and charges. No rates for it on waverley.nsw.gov.au. Likely a privately operated car park from the older public car parks dataset; rates [] rather than guessing."
+ },
+ {
+  "id": "wav-12",
+  "name": "Swiss Grand Hotel",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Not one of the three council-operated car parks on Waverley's car parks page (which says Council owns and operates Eastgate, Waverley Library and Hollywood Avenue) and not in the parking-meter section of Waverley's 2026-27 fees and charges. No rates for it on waverley.nsw.gov.au. Likely a privately operated car park from the older public car parks dataset; rates [] rather than guessing. Swiss Grand is a hotel car park in Bondi Beach."
+ },
+ {
+  "id": "wav-13",
+  "name": "Syd Einfeld Drive 1 - west",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Not one of the three council-operated car parks on Waverley's car parks page (which says Council owns and operates Eastgate, Waverley Library and Hollywood Avenue) and not in the parking-meter section of Waverley's 2026-27 fees and charges. No rates for it on waverley.nsw.gov.au. Likely a privately operated car park from the older public car parks dataset; rates [] rather than guessing."
+ },
+ {
+  "id": "wav-14",
+  "name": "Syd Einfeld Drive 3 - east",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Not one of the three council-operated car parks on Waverley's car parks page (which says Council owns and operates Eastgate, Waverley Library and Hollywood Avenue) and not in the parking-meter section of Waverley's 2026-27 fees and charges. No rates for it on waverley.nsw.gov.au. Likely a privately operated car park from the older public car parks dataset; rates [] rather than guessing."
+ },
+ {
+  "id": "wav-17",
+  "name": "Wellington Place Carpark",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Not one of the three council-operated car parks on Waverley's car parks page (which says Council owns and operates Eastgate, Waverley Library and Hollywood Avenue) and not in the parking-meter section of Waverley's 2026-27 fees and charges. No rates for it on waverley.nsw.gov.au. Likely a privately operated car park from the older public car parks dataset; rates [] rather than guessing."
+ },
+ {
+  "id": "wav-18",
+  "name": "Officeworks",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Not one of the three council-operated car parks on Waverley's car parks page (which says Council owns and operates Eastgate, Waverley Library and Hollywood Avenue) and not in the parking-meter section of Waverley's 2026-27 fees and charges. No rates for it on waverley.nsw.gov.au. Likely a privately operated car park from the older public car parks dataset; rates [] rather than guessing."
+ },
+ {
+  "id": "wav-19",
+  "name": "Car park 20",
+  "rates": [],
+  "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
+  "checked": "2026-10-24",
+  "research": "Not one of the three council-operated car parks on Waverley's car parks page (which says Council owns and operates Eastgate, Waverley Library and Hollywood Avenue) and not in the parking-meter section of Waverley's 2026-27 fees and charges. No rates for it on waverley.nsw.gov.au. Likely a privately operated car park from the older public car parks dataset; rates [] rather than guessing."
+ },
+ {
+  "id": "wool-0",
+  "name": "Cross Street Car Park",
+  "address": "Cross Street, corner of Jamberoo Lane, Double Bay",
+  "operator": "Nationwide Parking (Council car park)",
+  "spaces": 396,
+  "hours": "Mon\u2013Wed 6:00am\u201311:00pm; Thu\u2013Fri 6:00am\u2013midnight; Sat 6:00am\u20131:00am; Sun 6:00am\u201310:00pm",
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     1,
+     2,
+     3
+    ],
+    "from": 6,
+    "to": 23,
+    "maxStay": 1
+   },
+   {
+    "kind": "free",
+    "days": [
+     4,
+     5
+    ],
+    "from": 6,
+    "to": 24,
+    "maxStay": 1
+   },
+   {
+    "kind": "free",
+    "days": [
+     6
+    ],
+    "from": 6,
+    "to": 24,
+    "maxStay": 1
+   },
+   {
+    "kind": "free",
+    "days": [
+     0
+    ],
+    "from": 6,
+    "to": 22,
+    "maxStay": 1
+   }
+  ],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/car-parks",
+  "checked": "2026-10-24",
+  "research": "'Up to one hour free parking.' Stays over 1 hour are charged, but those rates are not on the council site (it refers to nationwideparking.com.au, not read). The free entries only cover stays of up to 1 hour. Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. 396 spaces incl. 7 mobility; undercover; enquiries 1300 173 287. The individual page (Cross-Street-Car-Park) is blocked to the fetcher, so the source is the main car parks page.",
+  "note": "First hour free. Longer stays are charged at Nationwide Parking's rates, which the council doesn't publish."
+ },
+ {
+  "id": "wool-7",
+  "name": "Kiaora Place Car Park",
+  "address": "Kiaora Place / Kiaora Lane, Double Bay",
+  "operator": "Nationwide Parking (Council car park)",
+  "spaces": 442,
+  "hours": "Mon\u2013Wed 6:00am\u20132:00am; Thu\u2013Sat 6:00am\u20133:00am; Sun & public holidays 6:00am\u20131:00am",
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 6,
+    "to": 24,
+    "maxStay": 1
+   }
+  ],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Kiaora-Place-Double-Bay",
+  "checked": "2026-10-24",
+  "research": "'Up to one hour free parking.' A second free hour is available to Woolworths and Dan Murphy's customers ('specific conditions apply', not detailed). Charges after the free period are not on the council site (it refers to Nationwide Parking's website). Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. 442 spaces incl. 8 mobility; mostly undercover.",
+  "note": "First hour free, and a second free hour for Woolworths and Dan Murphy's customers (conditions apply). Longer stays are charged at Nationwide Parking's rates."
+ },
+ {
+  "id": "wool-10",
+  "name": "Cosmopolitan Centre Car Park",
+  "address": "Cosmopolitan Centre, Double Bay (entrance from Short Street)",
+  "operator": "Nationwide Parking (Council car park)",
+  "spaces": 78,
+  "hours": "Mon\u2013Wed 7:00am\u201311:00pm; Thu\u2013Fri 7:00am\u2013midnight; Sat 8:00am\u20131:00am; Sun 8:00am\u20137:00pm",
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     1,
+     2,
+     3
+    ],
+    "from": 7,
+    "to": 23,
+    "maxStay": 1
+   },
+   {
+    "kind": "free",
+    "days": [
+     4,
+     5
+    ],
+    "from": 7,
+    "to": 24,
+    "maxStay": 1
+   },
+   {
+    "kind": "free",
+    "days": [
+     6
+    ],
+    "from": 8,
+    "to": 24,
+    "maxStay": 1
+   },
+   {
+    "kind": "free",
+    "days": [
+     0
+    ],
+    "from": 8,
+    "to": 19,
+    "maxStay": 1
+   }
+  ],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Cosmopolitan-Centre",
+  "checked": "2026-10-24",
+  "research": "'Up to one hour free parking.' Charges after 1 hour are not on the council site (it refers to Nationwide Parking's website). Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. 78 spaces incl. 3 mobility; undercover.",
+  "note": "First hour free. Longer stays are charged at Nationwide Parking's rates."
+ },
+ {
+  "id": "wool-9",
+  "name": "33 Cross Street Car Park",
+  "address": "33 Cross Street, Double Bay",
+  "operator": "Wilson Parking (private)",
+  "rates": [],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/33-Cross-Street",
+  "checked": "2026-10-24",
+  "research": "Council page: 'This is a privately run car park and charges apply', with a link to Wilson Parking. No rates on the council site; Wilson's site not used, per instructions.",
+  "note": "Privately run car park, charges apply."
+ },
+ {
+  "id": "wool-1",
+  "name": "Wilberforce Avenue Car Park",
+  "address": "Wilberforce Avenue, Rose Bay",
+  "operator": "Woollahra Council",
+  "spaces": 84,
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "maxStay": 2
+   }
+  ],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Wilberforce-Ave-Rose-Bay",
+  "checked": "2026-10-24",
+  "research": "'Up to two hours free parking. No additional time permitted.' Open air, 84 spaces. The page does not say which days or hours the 2-hour limit applies; check signs.",
+  "note": "Up to two hours free. No longer stays allowed."
+ },
+ {
+  "id": "wool-2",
+  "name": "Queen Street Car Park (Dorhauer Lane)",
+  "address": "Dorhauer Lane, off Queen Street, West Woollahra (next to Zigolini's Cafe)",
+  "operator": "Woollahra Council",
+  "spaces": 15,
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "maxStay": 1
+   }
+  ],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Queen-Street-West-Woollahra",
+  "checked": "2026-10-24",
+  "research": "'Up to one hour free parking.' Open air, 15 spaces. The page does not say whether a longer stay is allowed or charged, nor the days or hours the limit applies.",
+  "note": "Up to an hour free."
+ },
+ {
+  "id": "wool-4",
+  "name": "Eastpoint Food Fair Car Park",
+  "address": "Off New McLean Street, under Eastpoint Food Fair, Edgecliff",
+  "operator": "Privately run (Eastpoint Food Fair)",
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "maxStay": 2
+   }
+  ],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/car-parks",
+  "checked": "2026-10-24",
+  "research": "Council page: privately run, 'Up to two hours free parking'. Charges after 2 hours and opening hours are not on the council site (it links to eastpointfoodfair.com.au/centre-info/, not read). The free entry covers stays of up to 2 hours only.",
+  "note": "Privately run. First two hours free; longer stays are charged."
+ },
+ {
+  "id": "wool-11",
+  "name": "Ian Street Car Park",
+  "address": "Entrance from Dover Road near Ian Street, Rose Bay",
+  "operator": "Woollahra Council",
+  "spaces": 52,
+  "rates": [],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Ian-Street-Rose-Bay",
+  "checked": "2026-10-24",
+  "research": "52 spaces plus 1 car share space. Council page gives no time limit, free period, hours or fees. Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. ",
+  "note": "Council car park with 52 spaces. Check the signs for time limits."
+ },
+ {
+  "id": "wool-3",
+  "name": "Cliff Street Car Park (Camp Cove)",
+  "address": "Cliff Street, Watsons Bay",
+  "operator": "Woollahra Council",
+  "rates": [],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Camp-Cove-Car-Park",
+  "checked": "2026-10-24",
+  "research": "Council page only says 'Car parks are available in: Cliff Street, Pacific Street' under Watsons Bay; no spaces, hours, limits or fees. The Camp Cove Car Park menu page shows the same listing. Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. "
+ },
+ {
+  "id": "wool-12",
+  "name": "Pacific Street Car Park",
+  "address": "Pacific Street, Watsons Bay",
+  "operator": "Woollahra Council",
+  "rates": [],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Pacific-Street-Car-Park-Watsons-Bay",
+  "checked": "2026-10-24",
+  "research": "Listed under Watsons Bay with no spaces, hours, limits or fees. Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. "
+ },
+ {
+  "id": "wool-5",
+  "name": "Lyne Park Carpark 1",
+  "address": "Lyne Park, Rose Bay",
+  "operator": "Woollahra Council",
+  "rates": [],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Lyne-Park-Carpark",
+  "checked": "2026-10-24",
+  "research": "'Lyne Park Carpark' and 'Lyne Park Ferry Car Park' appear only as menu links; neither page has location, spaces, limits or fees. Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. "
+ },
+ {
+  "id": "wool-6",
+  "name": "Lyne Park Carpark 2",
+  "address": "Lyne Park, Rose Bay",
+  "operator": "Woollahra Council",
+  "rates": [],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Lyne-Park-Ferry-Car-Park",
+  "checked": "2026-10-24",
+  "research": "Possibly the 'Lyne Park Ferry Car Park' menu entry (not confirmed). That page gives no details. Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. "
+ },
+ {
+  "id": "wool-8",
+  "name": "Council Chambers Carpark",
+  "address": "Woollahra Council Chambers, Double Bay",
+  "operator": "Woollahra Council",
+  "rates": [],
+  "source": "https://www.woollahra.nsw.gov.au/Services/Parking/Car-Parks/Council-Chambers-Carpark",
+  "checked": "2026-10-24",
+  "research": "Appears only as a menu link; the page gives no address, access rules, hours or fees. Woollahra's car parks page gives no hourly or daily rates; it points to the operators' websites for pricing. Woollahra's 2026-27 Fees and Charges PDF (https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf) has Traffic & Parking on page 43, but the PDF reader stops at about page 28. The Operational Plan PDF with fees also stops before the fee schedule. "
+ }
+]

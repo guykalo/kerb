@@ -186,7 +186,7 @@ export function buildData(raw) {
   // records with a new id are car parks the open data doesn't have.
   let priced = 0;
   for (const e of extraCarParks) {
-    const { source, ...rest } = e;
+    const { source, research, ...rest } = e; // research notes stay in the repo, not in the app
     const rec = { ...rest, rateSource: source };
     if (rec.rates && rec.rates.length) priced++;
     const cur = carParkList.find((c) => c.id === e.id);

@@ -147,7 +147,7 @@ function drawCarParks() {
     el.type = 'button'; el.className = 'cp-pin' + (S.sel === cp.id ? ' sel' : '');
     el.setAttribute('aria-label', cp.name);
     const price = carParkPrice(cp);
-    el.innerHTML = `<b>P</b>${cp.kind === 'parkride' ? prPin(cp) : price && !price.none ? money(price.p) : price?.none ? 'Closed' : 'Car park'}`;
+    el.innerHTML = `<b>P</b>${cp.kind === 'parkride' ? prPin(cp) : price && !price.none ? (cp.maxRates && price.p > 0 ? `≤${money(price.p)}` : money(price.p)) : price?.none ? (price.why === 'long' ? 'Car park' : 'Closed?') : 'Car park'}`;
     el.addEventListener('click', (e) => { e.stopPropagation(); select(cp.id, true); });
     cpMarkers.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(cp.at).addTo(map));
     el.setAttribute('aria-label', `${cp.name}: ${el.textContent.slice(1)}`); // MapLibre replaces it with "Map marker
@@ -187,8 +187,11 @@ function occHTML(cp) {
 
 // Car park prices come from data/carparks.json, checked by hand against each owner's own website.
 // cp.rates lists every published option; the cheapest one that fits the arrival time and stay wins.
+const MONTH = +new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Sydney', month: 'numeric' }).format(new Date());
 function rateQuote(r, day, h, stay) {
   if (!r.days || !r.days.includes(day)) return null;
+  if (r.months && !r.months.includes(MONTH)) return null;
+  if (r.maxStay && r.kind !== 'free' && stay > r.maxStay + 1e-9) return null;
   const end = h + stay;
   const inWin = (from = 0, to = 24) => h >= from - 1e-9 && h < to;
   if (r.kind === 'free') return inWin(r.from, r.to) && (!r.maxStay || stay <= r.maxStay + 1e-9) ? { k: r.maxStay ? `Free up to ${r.maxStay} hr${r.maxStay > 1 ? 's' : ''}` : 'Free', p: 0 } : null;
@@ -215,15 +218,21 @@ function rateQuote(r, day, h, stay) {
 function carParkPrice(cp, day = S.day, h = S.hour, stay = S.stay) {
   if (!cp.rates || !cp.rates.length) return null;
   const qs = cp.rates.map((r) => rateQuote(r, day, h, stay)).filter(Boolean);
-  return qs.length ? qs.reduce((a, x) => (x.p < a.p ? x : a)) : { none: true };
+  if (qs.length) { const q = qs.reduce((a, x) => (x.p < a.p ? x : a)); return cp.maxRates && q.p > 0 ? { ...q, k: `${q.k}, at most` } : q; }
+  // Nothing fits: is it the length of stay, or the time of day?
+  const short = cp.rates.some((r) => rateQuote({ ...r, maxStay: undefined }, day, h, 0.25));
+  return { none: true, why: short ? 'long' : 'time' };
 }
 const hm = (h) => fmtTime(h % 24);
 function rateLines(cp) {
+  const MN = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const season = (r) => (r.months ? ` (${MN[r.months[0]]}-${MN[r.months[r.months.length - 1]]})` : '');
   return cp.rates.map((r) => {
-    const days = fmtDays(r.days);
-    if (r.kind === 'free') return [`Free${r.maxStay ? ` up to ${r.maxStay} hrs` : ''}`, days];
-    if (r.kind === 'casual') return [`Casual${r.from || r.to < 24 ? `, arrive ${hm(r.from)}-${hm(r.to)}` : ''}`, days, r.bands.map((b) => `<span>${b[0] < 1 ? `${b[0] * 60} min` : `${b[0]} hr${b[0] > 1 ? 's' : ''}`}</span><b>${money(b[1])}</b>`).join('')];
-    if (r.kind === 'hourly') return [r.freeFirst ? `First ${r.freeFirst} hr${r.freeFirst > 1 ? 's' : ''} free, then ${money(r.perHour)}/hr` : `${money(r.perHour)} an hour`, `${days}${r.dailyMax != null ? `, max ${money(r.dailyMax)} a day` : ''}`];
+    const days = fmtDays(r.days) + season(r) + (r.maxStay && r.kind !== 'free' ? `, up to ${r.maxStay} hrs` : '');
+    const win = r.from || (r.to != null && r.to < 24) ? `, arrive ${hm(r.from || 0)}-${hm(r.to ?? 24)}` : '';
+    if (r.kind === 'free') return [`Free${r.maxStay ? ` up to ${r.maxStay} hr${r.maxStay > 1 ? 's' : ''}` : ''}`, days + win];
+    if (r.kind === 'casual') return ['Casual', days + win, r.bands.map((b) => `<span>${b[0] < 1 ? `${b[0] * 60} min` : `${b[0]} hr${b[0] > 1 ? 's' : ''}`}</span><b>${money(b[1])}</b>`).join('')];
+    if (r.kind === 'hourly') return [r.freeFirst ? `First ${r.freeFirst} hr${r.freeFirst > 1 ? 's' : ''} free, then ${money(r.perHour)}/hr` : `${money(r.perHour)} an hour`, `${days}${win}${r.dailyMax != null ? `, max ${money(r.dailyMax)} a day` : ''}`];
     return [`${r.label || 'Flat rate'} ${money(r.price)}`, `${days}, in ${hm(r.enter[0])}-${hm(r.enter[1])}${r.exitAfter != null ? `, out after ${hm(r.exitAfter)}` : ''}${r.exitBy != null ? `, out by ${hm(r.exitBy)}${r.exitBy < r.enter[0] ? ' next day' : ''}` : ''}`];
   });
 }
@@ -391,7 +400,7 @@ function cpRow(cp, d) {
   const price = carParkPrice(cp);
   const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
   const pr = cp.kind === 'parkride', v = pr ? occAt(cp, S.day, S.hour) : null;
-  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? 'No rate for this time' : price ? price.k : `Run by ${cp.operator}. Rates not published`;
+  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? (price.why === 'long' ? 'Price for this stay not published' : 'No rate for this time') : price ? price.k : `Run by ${cp.operator}. Rates not published`;
   b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price free">Free</span>` : price && !price.none ? `<span class="price${price.p === 0 ? ' free' : ''}">${money(price.p)}</span>` : ''}<span class="walk">${walkText(d)}</span></span>`;
   b.onclick = () => select(cp.id, true);
   return b;
@@ -575,11 +584,11 @@ function renderDetail() {
       <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
       <div><h2>${cp.name}</h2><div class="where">${[cp.address, cp.entry ? `Entry from ${cp.entry}` : '', cp.spots ? `${cp.spots} spaces` : ''].filter(Boolean).join('. ')}.</div></div>
       ${cp.kind === 'parkride' ? prDetail(cp) : price && !price.none ? `<div class="verdict"><div><small>${stayTxt}, ${DAYS[S.day]} ${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}</small>${price.k}</div><span class="big" style="color:var(--${price.p === 0 ? 'free' : 'fg'})">${money(price.p)}</span></div>`
-        : price?.none ? `<div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>No published rate for this time</div></div><p class="plain">It may be closed then, or the rate isn't published. Check the board at the entrance.</p>`
+        : price?.none ? `<div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>${price.why === 'long' ? 'No published price for a stay this long' : 'No published rate for this time'}</div></div><p class="plain">${price.why === 'long' ? "The owner only publishes the shorter stays below. Longer stays are charged at the operator's rates, so check the board at the entrance." : "It may be closed then, or the rate isn't published. Check the board at the entrance."}</p>`
         : `<p class="plain">${cp.operator ? `Run by ${cp.operator}. ` : ''}The rates aren't published anywhere we can use yet, so check the board at the entrance before you go in.</p>`}
       ${cp.rates?.length ? `<h3 class="h3">Rates</h3>${rateBoard(cp)}` : ''}
       ${cp.hours ? `<p class="plain">Open ${cp.hours}.</p>` : ''}
-      ${cp.notes ? `<p class="plain">${cp.notes}</p>` : ''}
+      ${cp.note ? `<p class="plain">${cp.note}</p>` : ''}
       ${cp.phone ? `<p class="plain">Phone <span class="num">${cp.phone}</span></p>` : ''}
       ${cp.checked ? `<p class="note">Rates checked ${new Date(cp.checked).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}${cp.rateSource ? ` on <a href="${cp.rateSource}" target="_blank" rel="noopener">the ${cp.operator || 'owner'}'s website</a>` : ''}. Rates change, so the board at the entrance always wins.</p>` : ''}
       ${actionsHTML(cp.at, cp.id)}`;
