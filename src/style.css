@@ -163,6 +163,15 @@ button { cursor: pointer; }
 .busy .c.cur { outline: 2px solid var(--fg); outline-offset: 1px; }
 .busy .h { color: var(--muted); text-align: center; font-weight: 600; }
 .busy .d { color: var(--muted); font-weight: 600; }
+.occ, .occ-axis { display: grid; grid-template-columns: repeat(19, 1fr); gap: 3px; }
+.occ { height: 64px; align-items: end; padding: 6px; border-radius: var(--r); background: var(--surface-2); }
+.ob { border-radius: 3px 3px 1px 1px; background: var(--line); }
+.ob.easy { background: color-mix(in srgb, var(--free) 75%, transparent); }
+.ob.moderate { background: color-mix(in srgb, var(--paid) 80%, transparent); }
+.ob.hard { background: color-mix(in srgb, var(--restricted) 80%, transparent); }
+.ob.cur { outline: 2px solid var(--fg); outline-offset: 1px; }
+.occ-axis { padding: 0 6px; margin-top: -6px; font-size: 11px; color: var(--muted); font-weight: 600; }
+.occ-axis span { justify-self: center; white-space: nowrap; }
 .note { font-size: 12.5px; color: var(--muted); margin: 0; }
 .signtext { font-size: 12.5px; color: var(--muted); background: var(--surface-2); padding: 10px 12px; border-radius: 10px; margin: 0; }
 .cta { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); padding: 10px 14px; border-radius: 999px; font-weight: 650; text-decoration: none; color: var(--fg); align-self: flex-start; }

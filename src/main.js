@@ -138,11 +138,43 @@ function drawCarParks() {
     el.type = 'button'; el.className = 'cp-pin' + (S.sel === cp.id ? ' sel' : '');
     el.setAttribute('aria-label', cp.name);
     const price = carParkPrice(cp);
-    el.innerHTML = `<b>P</b>${price ? money(price.p) : 'Car park'}`;
+    el.innerHTML = `<b>P</b>${cp.kind === 'parkride' ? prPin(cp) : price ? money(price.p) : 'Car park'}`;
     el.addEventListener('click', (e) => { e.stopPropagation(); select(cp.id, true); });
     cpMarkers.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(cp.at).addTo(map));
   }
 }
+// Park&Ride: free with a public transport trip. occ[day][hour] is how full it usually is (% from the past week).
+function occAt(cp, day, h) {
+  const row = cp.occ && cp.occ[day];
+  if (!row) return null;
+  const H = Math.floor(h) % 24;
+  for (const k of [0, -1, 1, -2, 2]) { const v = row[(H + k + 24) % 24]; if (v != null) return v; }
+  return null;
+}
+const spacesLeft = (cp, pct) => Math.max(0, Math.round(cp.spots * (1 - pct / 100)));
+function prPin(cp) {
+  const v = occAt(cp, S.day, S.hour);
+  if (v == null) return 'Free';
+  return v >= 95 ? 'Free · usually full' : `Free · ~${spacesLeft(cp, v)} left`;
+}
+function prFullBy(cp, day) {
+  const row = cp.occ && cp.occ[day];
+  if (!row) return null;
+  const h = row.findIndex((v, i) => i >= 4 && v != null && v >= 95);
+  return h < 0 ? null : h;
+}
+function occHTML(cp) {
+  const row = (cp.occ && cp.occ[S.day]) || [];
+  const now = Math.floor(S.hour);
+  const bars = [];
+  for (let h = 5; h <= 23; h++) {
+    const v = occAt(cp, S.day, h);
+    const lv = v == null ? '' : v >= 95 ? 'hard' : v >= 70 ? 'moderate' : 'easy';
+    bars.push(`<span class="ob ${lv}${h === now ? ' cur' : ''}" style="height:${v == null ? 4 : Math.max(4, v)}%" title="${fmtTime(h)}: ${v == null ? 'no data' : v + '% full'}"></span>`);
+  }
+  return `<div class="occ">${bars.join('')}</div><div class="occ-axis"><span style="grid-column:2">6am</span><span style="grid-column:8">noon</span><span style="grid-column:14">6pm</span><span style="grid-column:19">11pm</span></div>`;
+}
+
 // Prices for car parks only exist where they've been checked by hand (data/carparks.json).
 function carParkPrice(cp) {
   if (!cp.bands) return null;
@@ -310,7 +342,9 @@ function carParkRows() {
   for (const { cp, d } of near) {
     const price = carParkPrice(cp);
     const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
-    b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${price ? price.k : `Run by ${cp.operator}`}</div></span><span class="right">${price ? `<span class="price">${money(price.p)}</span>` : ''}<span class="walk">${walkText(d)}</span></span>`;
+    const pr = cp.kind === 'parkride', v = pr ? occAt(cp, S.day, S.hour) : null;
+    const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price ? price.k : `Run by ${cp.operator}`;
+    b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price">Free</span>` : price ? `<span class="price">${money(price.p)}</span>` : ''}<span class="walk">${walkText(d)}</span></span>`;
     b.onclick = () => select(cp.id, true);
     body.appendChild(b);
   }
@@ -410,6 +444,18 @@ function busyHTML(p) {
   return `<div class="busy">${head}${rows}</div>`;
 }
 
+function prDetail(cp) {
+  const v = occAt(cp, S.day, S.hour), full = prFullBy(cp, S.day);
+  const now = v == null ? '' : v >= 95
+    ? `Usually full at ${fmtTime(S.hour)} on ${DAYS_LONG[S.day]}s.`
+    : `Usually about ${spacesLeft(cp, v)} of ${cp.spots} spaces free at ${fmtTime(S.hour)} on ${DAYS_LONG[S.day]}s.`;
+  return `<div class="verdict"><div><small>Park&amp;Ride, up to 18 hours</small>Free if you catch public transport</div><span class="big">Free</span></div>
+      <p class="plain">Tap on and off a train, bus, ferry or light rail trip with the same Opal or bank card, then tap out as you leave. Fees apply if you don't travel or you stay longer than 18 hours.</p>
+      ${cp.occ ? `<h3 class="h3">How full it gets on ${DAYS_LONG[S.day]}s</h3>${occHTML(cp)}
+      <p class="plain">${now}${full != null && (v == null || v < 95) ? ` It's usually full by ${fmtTime(full)}.` : ''}</p>
+      <p class="note">From Transport for NSW's car park counters over the past week. Public holidays and school holidays will be quieter.</p>` : ''}`;
+}
+
 function renderDetail() {
   const f = typeof S.sel === 'number' ? byId.get(S.sel) : null;
   const cp = !f && CARPARKS.find((c) => c.id === S.sel);
@@ -441,9 +487,9 @@ function renderDetail() {
     const price = carParkPrice(cp);
     d.innerHTML = `
       <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
-      <div><h2>${cp.name}</h2><div class="where">${cp.address}. Entry from ${cp.entry}.</div></div>
-      ${price ? `<div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>${price.k}</div><span class="big">${money(price.p)}</span></div>`
-        : `<p class="plain">A City of Sydney car park run by ${cp.operator}. Rates aren't published as open data, so check with ${cp.operator} before you go.</p>`}
+      <div><h2>${cp.name}</h2><div class="where">${[cp.address, cp.entry ? `Entry from ${cp.entry}` : '', cp.spots ? `${cp.spots} spaces` : ''].filter(Boolean).join('. ')}.</div></div>
+      ${cp.kind === 'parkride' ? prDetail(cp) : price ? `<div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>${price.k}</div><span class="big">${money(price.p)}</span></div>`
+        : `<p class="plain">A ${cp.source || 'council'} car park${cp.operator && cp.operator !== cp.source ? ` run by ${cp.operator}` : ''}. Rates aren't published as open data, so check the signs or the operator's website before you go.</p>`}
       ${cp.phone ? `<p class="plain">Phone <span class="num">${cp.phone}</span></p>` : ''}
       ${cp.checked ? `<p class="note">Prices checked ${cp.checked} on the operator's website.</p>` : ''}
       <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${cp.at[1]},${cp.at[0]}" target="_blank" rel="noopener"><i class="ph ph-navigation-arrow"></i>Directions</a>`;

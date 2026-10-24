@@ -2,6 +2,7 @@
 import { parseSignText } from './parse-rules.mjs';
 import { densify, distToSeg, dist, inRings, bbox, round } from './geo.mjs';
 import { buildWaverley, buildWoollahra } from './regions.mjs';
+import { buildParkRide } from './tfnsw.mjs';
 
 const norm = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
 
@@ -184,6 +185,8 @@ export function buildData(raw) {
     carParkList.push(...out.carparks);
     regions[name] = { kerbs: out.features.length, carParks: out.carparks.length };
   }
+
+  if (raw.parkride) { const pr = buildParkRide(raw.parkride); carParkList.push(...pr); regions.parkride = { carParks: pr.length }; }
 
   const stats = {
     builtAt: new Date().toISOString(),
