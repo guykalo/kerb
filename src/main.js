@@ -557,7 +557,7 @@ function renderDetail() {
 
 const starInner = (on) => `<i class="ph${on ? '-fill' : ''} ph-star"></i>${on ? 'Saved' : 'Save'}`;
 function actionsHTML(at, id) {
-  const [lon, lat] = at, on = isSaved(id);
+  const [lon, lat] = at.map((v) => +v.toFixed(6)), on = isSaved(id);
   return `<div class="actions">
       <button class="cta" type="button" data-act="save" aria-pressed="${on}">${starInner(on)}</button>
       <button class="cta" type="button" data-act="share"><i class="ph ph-share-network"></i>Share</button>
