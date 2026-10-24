@@ -47,7 +47,7 @@ export function stateAt(props, rules, day, h) {
   const on = today.find((r) => r[6] === 1 && h >= r[2] && h < r[3]) || today.find((r) => h >= r[2] && h < r[3]);
   if (on) {
     if (on[6] === 1) return { kind: 'restricted', rule: on, until: on[3], note: on[7], set };
-    return { kind: on[4] > 0 ? 'meter' : 'limit', rule: on, until: on[3], set };
+    return { kind: on[4] !== 0 ? 'meter' : 'limit', rule: on, until: on[3], set }; // rate -1 = meter, rate not published
   }
   if (set.u) return { kind: 'free', until: 24, why: 'unrestricted', set };
   if (set.g === 'free') {
@@ -76,7 +76,7 @@ export function costFor(props, rules, day, h, stay) {
   if (props.k < 0) return { ok: null, why: 'No published rules for this kerb yet' };
   const set = rules[props.k];
   const step = 0.25, n = Math.max(1, Math.round(stay / step));
-  let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0, waived = 0;
+  let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0, waived = 0, unknownRate = false;
   for (let i = 0; i < n; i++) {
     const t = h + i * step, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
     const s = stateAt(props, rules, d, hh);
@@ -88,13 +88,14 @@ export function costFor(props, rules, day, h, stay) {
     if (run > limit + 1e-9) return { ok: false, why: BEN.mps ? `${limit === 0.5 ? '30-minute' : `${limit}-hour`} limit with a permit until ${fmtTime(s.rule[3])}` : `${pLabel(s.rule[0])} limit until ${fmtTime(s.rule[3])}` };
     if (s.kind === 'limit') continue;
     if (BEN.mps) { waived += step; continue; }
-    cost += s.rule[4] * step; paid += step;
+    if (s.rule[4] < 0) unknownRate = true; else cost += s.rule[4] * step;
+    paid += step;
     if (firstPaidAt == null) { firstPaidAt = t; rate = s.rule[4]; }
   }
   // Ticket machines in free 15-minute zones give the first quarter hour free.
   const quarterFree = set.q || props.f15;
   if (quarterFree && paid > 0) cost = Math.max(0, cost - Math.min(paid, 0.25) * (cost / paid));
-  return { ok: true, cost, quarterFree: !!quarterFree && stay <= 0.25, paidHours: paid, freeHours: stay - paid, firstPaidAt, rate, waived };
+  return { ok: true, cost, quarterFree: !!quarterFree && stay <= 0.25 && !unknownRate, paidHours: paid, freeHours: stay - paid, firstPaidAt, rate, waived, unknownRate };
 }
 
 // Category used for colouring the kerb for the chosen stay.
@@ -102,7 +103,7 @@ export function category(props, rules, day, h, stay) {
   if (props.k < 0) return props.lk ? 'likely' : props.pa ? 'permit' : 'unknown';
   const c = costFor(props, rules, day, h, stay);
   if (!c.ok) { const k = stateAt(props, rules, day, h).kind; return k === 'meter' || k === 'limit' ? 'short' : 'restricted'; }
-  return c.cost === 0 ? 'free' : 'paid';
+  return c.cost === 0 && !c.unknownRate ? 'free' : 'paid';
 }
 
 // One line in plain English about right now.
@@ -113,7 +114,7 @@ export function plainNow(props, rules, day, h) {
     ? `Resident permit ${props.pa}. The council hasn't published the signs here, so check the sign: visitors are usually time-limited.`
     : `The council hasn't published the signs for this kerb yet. Check the sign before you park.`;
   const permit = s.rule && s.rule[7] ? ` ${s.rule[7]}.` : '';
-  if (s.kind === 'meter') return `Pay ${money(s.rule[4])} an hour, up to ${pWords(s.rule[0])}, until ${fmtTime(s.rule[3])}.${permit}`;
+  if (s.kind === 'meter') return `${s.rule[4] < 0 ? 'Pay at the meter (the council doesn\'t publish the rate)' : `Pay ${money(s.rule[4])} an hour`}, up to ${pWords(s.rule[0])}, until ${fmtTime(s.rule[3])}.${permit}`;
   if (s.kind === 'limit') return `Free for up to ${pWords(s.rule[0])}${s.rule[3] < 24 || s.rule[2] > 0 ? ` until ${fmtTime(s.rule[3])}` : ''}.${permit}`;
   if (s.kind === 'restricted' && s.note) return `${s.note}${s.until < 24 ? ` until ${fmtTime(s.until)}` : ''}. You can't park here.`;
   if (s.kind === 'restricted') return `No ticket parking until ${fmtTime(s.until)}. Usually a clearway, bus or loading zone at this time.`;

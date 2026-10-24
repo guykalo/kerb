@@ -322,9 +322,9 @@ function renderList() {
   body.replaceChildren();
   if (!KERBS) { body.innerHTML = `<div class="empty"><strong>Loading the kerbs…</strong>Pulling in every meter in the City of Sydney.</div>`; return; }
   const centre = map.getCenter().toArray();
-  const inCoverage = centre[0] > BOUNDS[0] - 0.01 && centre[0] < BOUNDS[2] + 0.01 && centre[1] > BOUNDS[1] - 0.01 && centre[1] < BOUNDS[3] + 0.01;
+  const inCoverage = KERBS.features.some((f) => { const m = mids.get(f.properties.id); return Math.abs(m[0] - centre[0]) < 0.015 && Math.abs(m[1] - centre[1]) < 0.012; });
   if (!inCoverage) {
-    body.innerHTML = `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), Waverley (Bondi, Bronte, Bondi Junction) and Woollahra (Rose Bay, Double Bay, Paddington). More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`;
+    body.innerHTML = `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington), Manly and Chatswood. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`;
     carParkRows();
     return;
   }
@@ -337,21 +337,21 @@ function renderList() {
     if (d > NEAR_M) continue;
     const c = p.k < 0 ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
     const key = `${p.s}|${p.b}|${p.sd || ''}`;
-    const score = (c.ok ? 0 : 1e6) + (c.ok ? c.cost * 40 : 0) + (c.likely ? 250 : 0) + d;
+    const score = (c.ok ? 0 : 1e6) + (c.ok ? c.cost * 40 : 0) + (c.unknownRate ? 400 : 0) + (c.likely ? 250 : 0) + d;
     const cur = best.get(key);
     if (!cur || score < cur.score) best.set(key, { f, p, c, d, score });
   }
   const opts = [...best.values()].sort((a, b) => a.score - b.score);
-  const free = opts.filter((o) => o.c.ok && o.c.cost === 0 && !o.c.likely);
+  const free = opts.filter((o) => o.c.ok && o.c.cost === 0 && !o.c.likely && !o.c.unknownRate);
   const likely = opts.filter((o) => o.c.likely);
-  const paid = opts.filter((o) => o.c.ok && o.c.cost > 0);
+  const paid = opts.filter((o) => o.c.ok && (o.c.cost > 0 || o.c.unknownRate));
   const no = opts.filter((o) => !o.c.ok);
 
   const sum = document.createElement('div');
   sum.className = 'summary';
   const stayTxt = S.stay === 0.25 ? '15 minutes' : S.stay === 1 ? 'an hour' : `${S.stay} hours`;
-  if (free[0]) sum.innerHTML = `Free for ${stayTxt}: <strong>${free[0].p.s}</strong>, ${walkText(free[0].d)} from the middle of the map.${paid[0] ? ` Cheapest meter: <strong>${paid[0].p.s}</strong> at ${money(paid[0].c.cost)}.` : ''}`;
-  else if (paid[0]) sum.innerHTML = `No free kerbs nearby for ${stayTxt}. Cheapest meter: <strong>${paid[0].p.s}</strong> at ${money(paid[0].c.cost)}.`;
+  if (free[0]) sum.innerHTML = `Free for ${stayTxt}: <strong>${free[0].p.s}</strong>, ${walkText(free[0].d)} from the middle of the map.${paid[0] ? ` Cheapest meter: <strong>${paid[0].p.s}</strong> at ${costText(paid[0].c)}.` : ''}`;
+  else if (paid[0]) sum.innerHTML = `No free kerbs nearby for ${stayTxt}. Cheapest meter: <strong>${paid[0].p.s}</strong> at ${costText(paid[0].c)}.`;
   else if (likely[0]) sum.innerHTML = `Probably free: <strong>${likely[0].p.s}</strong>, ${walkText(likely[0].d)} away. The council doesn't publish its signs here, so check before you park.`;
   else sum.innerHTML = `No kerb data near the middle of the map. Move the map to a street with coloured kerbs.`;
   body.appendChild(sum);
@@ -369,7 +369,7 @@ function renderList() {
   carParkRows();
   const foot = document.createElement('div'); foot.className = 'foot';
   const upd = META ? new Date(META.fetchedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', timeZone: 'Australia/Sydney' }) : '';
-  foot.innerHTML = `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey and Woollahra's resident permit areas, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
+  foot.innerHTML = `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey, Woollahra's resident permit areas, and street sign surveys for Manly (2020) and Chatswood, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
   body.appendChild(foot);
 }
 
@@ -383,7 +383,7 @@ function optRow(o) {
   const lv = busyLevel(busy(o.p, RULES, S.day, S.hour));
   b.innerHTML = `<span class="bar" style="background:var(--${cat === 'short' ? 'paid' : cat})"></span>
     <span style="min-width:0"><div class="name">${o.p.s}</div><div class="sub">${[o.p.sd, o.p.b].filter(Boolean).join(', ')}${o.p.sd || o.p.b ? '. ' : ''}${sub}</div></span>
-    <span class="right">${o.c.ok ? `<span class="price ${o.c.cost === 0 ? 'free' : ''}">${money(o.c.cost)}</span>` : ''}<span class="walk">${walkText(o.d)}${o.c.ok ? `, ${BUSY_WORD[lv].toLowerCase()}` : ''}</span></span>`;
+    <span class="right">${o.c.ok ? `<span class="price ${o.c.cost === 0 && !o.c.unknownRate ? 'free' : ''}">${costText(o.c)}</span>` : ''}<span class="walk">${walkText(o.d)}${o.c.ok ? `, ${BUSY_WORD[lv].toLowerCase()}` : ''}</span></span>`;
   b.onclick = () => select(o.p.id, true);
   return b;
 }
@@ -490,11 +490,12 @@ function rulePlate(r) {
   const days = fmtDays(r[1]).replace('Every day', '');
   const inner = r[6] === 1
     ? `<div class="plate red"><div class="l big2">${(r[7] || 'No parking').toUpperCase()}</div><div class="l">${time}</div>${days ? `<div class="l">${days}</div>` : ''}</div>`
-    : `<div class="plate"><div class="p">${pLabel(r[0])}</div>${r[4] > 0 ? '<div class="l">Ticket</div>' : ''}<div class="l">${time}</div>${days ? `<div class="l">${days}</div>` : ''}${r[7] ? `<div class="s">${r[7]}</div>` : ''}${r[4] > 0 ? `<div class="s">$${r[4]}/hr</div>` : ''}</div>`;
+    : `<div class="plate"><div class="p">${pLabel(r[0])}</div>${r[4] > 0 ? '<div class="l">Ticket</div>' : r[4] < 0 ? '<div class="l">Meter</div>' : ''}<div class="l">${time}</div>${days ? `<div class="l">${days}</div>` : ''}${r[7] ? `<div class="s">${r[7]}</div>` : ''}${r[4] > 0 ? `<div class="s">$${r[4]}/hr</div>` : ''}</div>`;
   return `<figure class="plate-wrap${on ? '' : ' off'}">${inner}<figcaption>${on ? `In force at ${fmtTime(S.hour)}` : `Not in force at ${fmtTime(S.hour)}`}</figcaption></figure>`;
 }
 
 // Says in plain words why the stay costs what it does.
+const costText = (c) => (c.unknownRate ? (c.cost > 0 ? `${money(c.cost)}+` : 'Meter') : money(c.cost));
 function verdictText(p, c) {
   if (p.lk) return { head: 'Probably free', why: '' };
   if (c.ok === null) return { head: 'No published rules', why: '' };
@@ -513,6 +514,7 @@ function verdictText(p, c) {
         : `There are no meter hours on ${DAYS_LONG[S.day]}s.`;
     return { head: 'Free the whole time', why };
   }
+  if (c.unknownRate) return { head: c.freeHours > 0 && c.firstPaidAt > S.hour ? `Free until ${fmtTime(c.firstPaidAt)}, then pay at the meter` : 'Pay at the meter', why: `It's a metered kerb, but the council doesn't publish the rate. The meter shows it, and the Park'nPay app does too.` };
   if (c.freeHours > 0 && c.firstPaidAt > S.hour) return { head: `Free until ${fmtTime(c.firstPaidAt)}, then pay`, why: `The meter starts at ${fmtTime(c.firstPaidAt)}, so you pay for ${c.paidHours === 1 ? '1 hour' : `${c.paidHours} hours`} at ${money(c.rate)} an hour.` };
   if (c.freeHours > 0) return { head: 'Pay, then free', why: `You pay ${money(c.rate)} an hour until the meter finishes, then the rest is free.` };
   return { head: `${money(c.rate)} an hour`, why: '' };
@@ -568,13 +570,13 @@ function renderDetail() {
       <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
       <div><h2>${p.s}</h2><div class="where">${[p.sd, p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} paid spaces` : ''].filter(Boolean).join(', ')}</div></div>
       <div class="verdict"><div><small>${stayTxt}, ${DAYS[S.day]} ${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}</small>${v.head}</div>
-        ${p.lk ? `<span class="big" style="color:var(--free)">$0?</span>` : c.ok ? `<span class="big" style="color:var(--${c.cost === 0 ? 'free' : 'fg'})">${money(c.cost)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
+        ${p.lk ? `<span class="big" style="color:var(--free)">$0?</span>` : c.ok ? `<span class="big" style="color:var(--${c.cost === 0 && !c.unknownRate ? 'free' : 'fg'})">${costText(c)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
       <p class="plain">${v.why || plainNow(p, RULES, S.day, S.hour)}${p.f15 ? ' This street is in a free 15-minute zone, so a ticket gets you the first quarter hour free.' : ''}</p>
       ${set ? `<h3 class="h3">What the signs say</h3><div class="plates">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div>
       <h3 class="h3">Across the week</h3>${weekHTML(p)}
       <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
-      <p class="note">Source: ${set.src ? `${set.src} parking survey${set.text && set.src ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
+      <p class="note">Source: ${set.src ? `${set.src}${/survey/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
       ` : `<p class="note">${p.lk ? 'Based on Woollahra Council\'s resident permit areas: streets outside a permit scheme are usually unrestricted, but the council doesn\'t publish its signs.' : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>`}
       <div class="photos" id="signPhotos" hidden></div>
       ${actionsHTML(mids.get(p.id), p.id)}`;
@@ -623,7 +625,7 @@ async function shareSel(f, cp) {
     const p = f.properties; at = mids.get(p.id);
     const c = p.lk ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
     const v = verdictText(p, c);
-    text = `${p.s}${p.sd ? ` (${p.sd.toLowerCase()})` : ''}: ${v.head}${c.ok && !c.likely ? `, ${money(c.cost)}` : ''} for ${when}.`;
+    text = `${p.s}${p.sd ? ` (${p.sd.toLowerCase()})` : ''}: ${v.head}${c.ok && !c.likely ? `, ${costText(c)}` : ''} for ${when}.`;
   } else {
     at = cp.at;
     const occ = cp.kind === 'parkride' ? occAt(cp, S.day, S.hour) : null;

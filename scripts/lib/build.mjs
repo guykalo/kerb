@@ -3,6 +3,7 @@ import { parseSignText } from './parse-rules.mjs';
 import { densify, distToSeg, dist, inRings, bbox, round } from './geo.mjs';
 import { buildWaverley, buildWoollahra } from './regions.mjs';
 import { buildParkRide } from './tfnsw.mjs';
+import { buildFromSigns } from './spot.mjs';
 
 const norm = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
 
@@ -172,7 +173,11 @@ export function buildData(raw) {
   const month = +new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Sydney', month: 'numeric' }).format(new Date());
   let nextId = Math.max(0, ...kerbGeo.features.map((x) => x.properties.id)) + 1;
   const regions = {};
-  for (const [name, fn] of [['waverley', buildWaverley], ['woollahra', buildWoollahra]]) {
+  const MANLY_BEACH = [[151.2885, -33.7975], [151.2867, -33.8005], [151.2858, -33.8025]];
+  const fromSigns = (opts) => (r, rg) => { const o = buildFromSigns(r, rg, opts); o.unparsed.forEach(([t, n]) => unparsed.set(t, (unparsed.get(t) || 0) + n)); return o; };
+  for (const [name, fn] of [['waverley', buildWaverley], ['woollahra', buildWoollahra],
+    ['manly', fromSigns({ src: 'Transport for NSW sign survey (2020)', place: 'Manly', beach: MANLY_BEACH })],
+    ['willoughby', fromSigns({ src: 'Willoughby Council sign survey', place: 'Chatswood' })]]) {
     if (!raw[name]) continue;
     const out = fn(raw[name], reg, { month });
     for (const ft of out.features) { ft.properties.id = nextId++; kerbGeo.features.push(ft); }
