@@ -347,17 +347,18 @@ function renderList() {
   const best = new Map();
   for (const f of KERBS.features) {
     const p = f.properties;
-    if (p.k < 0 && !p.lk) continue;
+    if (p.k < 0 && !p.lk && !p.pa) continue;
     const d = distM(mids.get(p.id), centre);
     if (d > nearM) continue;
-    const c = p.k < 0 ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
+    const c = p.k < 0 ? (p.lk ? { ok: true, cost: 0, likely: true } : { ok: true, cost: 0, permitOnly: true }) : costFor(p, RULES, S.day, S.hour, S.stay);
     const key = `${p.s}|${p.b}|${p.sd || ''}`;
-    const score = (c.ok ? 0 : 1e6) + (c.ok ? c.cost * 40 : 0) + (c.unknownRate ? 400 : 0) + (c.likely ? 250 : 0) + d;
+    const score = (c.ok ? 0 : 1e6) + (c.ok ? c.cost * 40 : 0) + (c.unknownRate ? 400 : 0) + (c.likely ? 250 : 0) + (c.permitOnly ? 350 : 0) + d;
     const cur = best.get(key);
     if (!cur || score < cur.score) best.set(key, { f, p, c, d, score });
   }
   const opts = [...best.values()].sort((a, b) => a.score - b.score);
-  const free = opts.filter((o) => o.c.ok && o.c.cost === 0 && !o.c.likely && !o.c.unknownRate);
+  const free = opts.filter((o) => o.c.ok && o.c.cost === 0 && !o.c.likely && !o.c.unknownRate && !o.c.permitOnly);
+  const permits = opts.filter((o) => o.c.permitOnly);
   const likely = opts.filter((o) => o.c.likely);
   const paid = opts.filter((o) => o.c.ok && (o.c.cost > 0 || o.c.unknownRate));
   const no = opts.filter((o) => !o.c.ok);
@@ -368,6 +369,7 @@ function renderList() {
   if (free[0]) sum.innerHTML = `Free for ${stayTxt}: <strong>${free[0].p.s}</strong>, ${walkText(free[0].d)} ${S.dest ? `from ${S.dest.name}` : 'from the middle of the map'}.${paid[0] ? ` ${meterLine(paid[0])}` : ''}`;
   else if (paid[0]) sum.innerHTML = `No free kerbs nearby for ${stayTxt}. ${meterLine(paid[0])}`;
   else if (likely[0]) sum.innerHTML = `Probably free: <strong>${likely[0].p.s}</strong>, ${walkText(likely[0].d)} away. The council doesn't publish its signs here, so check before you park.`;
+  else if (permits[0]) sum.innerHTML = `The council doesn't publish the signs ${S.dest ? `near ${S.dest.name}` : 'here'}. The kerbs nearby are resident permit areas, where visitors are usually limited to 1 or 2 hours, so check the sign.`;
   else sum.innerHTML = S.dest ? `No kerb data within a ${S.walk}-minute walk of ${S.dest.name}. Try a longer walk.` : `No kerb data near the middle of the map. Move the map to a street with coloured kerbs.`;
   body.appendChild(sum);
   compareLine(free, paid, centre, nearM);
@@ -381,6 +383,7 @@ function renderList() {
   group('Free for your stay', free);
   group('Meters', paid);
   group('Probably free', likely, 8);
+  group('Permit areas: check the sign', permits, 8);
   group(`Can't stay ${stayTxt}`, no, 6);
   carParkRows();
   const foot = document.createElement('div'); foot.className = 'foot';
@@ -394,12 +397,12 @@ function optRow(o) {
   const cat = category(o.p, RULES, S.day, S.hour, S.stay);
   const s = stateAt(o.p, RULES, S.day, S.hour);
   const sub = o.c.ok
-    ? (o.c.likely ? 'No permit scheme, check the sign' : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}` : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
+    ? (o.c.permitOnly ? `Resident permit ${o.p.pa}. Visitors usually time-limited` : o.c.likely ? 'No permit scheme, check the sign' : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}` : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
     : o.c.why;
   const lv = busyLevel(busy(o.p, RULES, S.day, S.hour));
   b.innerHTML = `<span class="bar" style="background:var(--${cat === 'short' ? 'paid' : cat})"></span>
     <span style="min-width:0"><div class="name">${o.p.s}</div><div class="sub">${[o.p.sd, o.p.b].filter(Boolean).join(', ')}${o.p.sd || o.p.b ? '. ' : ''}${sub}</div></span>
-    <span class="right">${o.c.ok ? `<span class="price ${o.c.cost === 0 && !o.c.unknownRate ? 'free' : ''}">${costText(o.c)}</span>` : ''}<span class="walk">${walkText(o.d)}${o.c.ok ? `, ${BUSY_WORD[lv].toLowerCase()}` : ''}</span></span>`;
+    <span class="right">${o.c.permitOnly ? '<span class="price">?</span>' : o.c.ok ? `<span class="price ${o.c.cost === 0 && !o.c.unknownRate ? 'free' : ''}">${costText(o.c)}</span>` : ''}<span class="walk">${walkText(o.d)}${o.c.ok ? `, ${BUSY_WORD[lv].toLowerCase()}` : ''}</span></span>`;
   b.onclick = () => select(o.p.id, true);
   return b;
 }

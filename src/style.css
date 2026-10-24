@@ -80,7 +80,7 @@ button { cursor: pointer; }
 .dayout { color: var(--muted); font-weight: 600; font-size: 12.5px; white-space: nowrap; line-height: 1; }
 .stay { display: flex; background: var(--surface-2); border-radius: 999px; padding: 3px; gap: 1px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
 .stay::-webkit-scrollbar { display: none; }
-.stay button { flex: none; border: 0; background: transparent; border-radius: 999px; padding: 6px 8px; font-weight: 600; font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stay button { flex: none; border: 0; background: transparent; border-radius: 999px; padding: 6px 6.5px; font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .stay button[aria-pressed="true"] { background: var(--fg); color: var(--surface); }
 
 /* The ribbon: a 24-hour strip of what the kerbs in view do across the day, with the arrival time as a needle. */
