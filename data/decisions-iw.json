@@ -1,0 +1,5570 @@
+[
+{
+"street": "Gehrig Lane",
+"suburb": "Camperdown",
+"side": [
+"north"
+],
+"a": {
+"x": "Chester Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Chester Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "02/02/2017",
+"ref": 3
+},
+{
+"street": "Gehrig Lane",
+"suburb": "Camperdown",
+"side": [
+"north"
+],
+"a": {
+"x": "Chester Street",
+"m": 10,
+"dir": "east"
+},
+"b": {
+"x": "Chester Street",
+"m": 27,
+"dir": "east"
+},
+"sign": "No Parking",
+"date": "02/02/2017",
+"ref": 3
+},
+{
+"street": "Australia Street",
+"suburb": "Camperdown",
+"side": [
+"west"
+],
+"a": {
+"x": "Bishopgate Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Bishopgate Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "02/03/2017",
+"ref": 12
+},
+{
+"street": "Australia Street",
+"suburb": "Camperdown",
+"side": [
+"west"
+],
+"a": {
+"x": "Bishopgate Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Bishopgate Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "02/03/2017",
+"ref": 12
+},
+{
+"street": "Harrow Road",
+"suburb": "Stanmore",
+"side": [
+"north"
+],
+"a": {
+"x": "Harrow Lane",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Harrow Lane",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "02/03/2017",
+"ref": 12
+},
+{
+"street": "Harrow Road",
+"suburb": "Stanmore",
+"side": [
+"north"
+],
+"a": {
+"x": "Harrow Lane",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Harrow Lane",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "02/03/2017",
+"ref": 12
+},
+{
+"street": "Longport Street",
+"suburb": "Lewisham",
+"side": [
+"north"
+],
+"a": {
+"x": "Old Canterbury Road",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Old Canterbury Road",
+"m": 20,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "02/03/2017",
+"ref": 15
+},
+{
+"street": "Longport Street",
+"suburb": "Lewisham",
+"side": [
+"north"
+],
+"a": {
+"x": "Old Canterbury Road",
+"m": 20,
+"dir": "west"
+},
+"b": {
+"x": "Old Canterbury Road",
+"m": 70,
+"dir": "west"
+},
+"sign": "No Parking 6:30am-9:30am and 3:30pm-6:30pm Mon-Fri",
+"date": "02/03/2017",
+"ref": 15
+},
+{
+"street": "Unwins Bridge Road",
+"suburb": "St Peters",
+"side": [
+"east"
+],
+"a": {
+"x": "Silver Street",
+"m": 10,
+"dir": "north"
+},
+"b": {
+"x": "Silver Street",
+"m": 16,
+"dir": "north"
+},
+"sign": "No Parking 7am-9am",
+"date": "06/04/2017",
+"ref": 27
+},
+{
+"street": "Unwins Bridge Road",
+"suburb": "St Peters",
+"side": [
+"east"
+],
+"a": {
+"x": "Silver Street",
+"m": 10,
+"dir": "south"
+},
+"b": {
+"x": "Silver Street",
+"m": 16,
+"dir": "south"
+},
+"sign": "No Parking 7am-9am",
+"date": "06/04/2017",
+"ref": 27
+},
+{
+"street": "Flood Street",
+"suburb": "Leichhardt",
+"side": [
+"both"
+],
+"from": "Lords Road",
+"to": "Albert Street",
+"sign": "2P 8am-6pm Mon-Fri Permit Holders Excepted Area L1",
+"date": "06/04/2017",
+"ref": 29
+},
+{
+"street": "Salisbury Road",
+"suburb": "Camperdown",
+"side": [
+"north"
+],
+"from": "Denison Street",
+"to": "Australia Lane",
+"sign": "No Parking",
+"date": "06/04/2017",
+"ref": 30
+},
+{
+"street": "Corunna Road",
+"suburb": "Stanmore",
+"side": [
+"north"
+],
+"from": "Canon Street",
+"to": "Percival Road",
+"sign": "2P 8:30am-6pm Mon-Fri Permit Holders Excepted Area M15",
+"date": "07/09/2017",
+"ref": 38
+},
+{
+"street": "Corunna Road",
+"suburb": "Stanmore",
+"side": [
+"south"
+],
+"from": "Percival Road",
+"to": "Northumberland Avenue",
+"sign": "2P 8:30am-6pm Mon-Fri Permit Holders Excepted Area M15",
+"date": "07/09/2017",
+"ref": 38
+},
+{
+"street": "Corunna Road",
+"suburb": "Stanmore",
+"side": [
+"north"
+],
+"from": "Northumberland Avenue",
+"to": "Northumberland Lane East",
+"sign": "2P 8:30am-6pm Mon-Fri Permit Holders Excepted Area M15",
+"date": "07/09/2017",
+"ref": 38
+},
+{
+"street": "Macaulay Road",
+"suburb": "Stanmore",
+"side": [
+"south"
+],
+"from": "Percival Avenue",
+"to": "Northumberland Lane West",
+"sign": "2P 8:30am-6pm Mon-Fri Permit Holders Excepted Area M15",
+"date": "07/09/2017",
+"ref": 38
+},
+{
+"street": "Percival Road",
+"suburb": "Stanmore",
+"side": [
+"east"
+],
+"from": "Corunna Lane",
+"to": "Corunna Road",
+"sign": "1P 8:30am-6pm Mon-Fri 8:30am-12:30pm Sat Permit Holders Excepted Area M15",
+"date": "07/09/2017",
+"ref": 38
+},
+{
+"street": "Thornton Street",
+"suburb": "Rozelle",
+"side": [
+"south"
+],
+"a": {
+"x": "Darling Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Darling Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "07/09/2017",
+"ref": 42
+},
+{
+"street": "Piper Street",
+"suburb": "Annandale",
+"side": [
+"north"
+],
+"a": {
+"x": "Annandale Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Annandale Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "07/12/2017",
+"ref": 52
+},
+{
+"street": "Piper Street",
+"suburb": "Annandale",
+"side": [
+"north"
+],
+"a": {
+"x": "Annandale Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Annandale Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "07/12/2017",
+"ref": 52
+},
+{
+"street": "Piper Street",
+"suburb": "Annandale",
+"side": [
+"south"
+],
+"a": {
+"x": "Annandale Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Annandale Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "07/12/2017",
+"ref": 52
+},
+{
+"street": "Piper Street",
+"suburb": "Annandale",
+"side": [
+"south"
+],
+"a": {
+"x": "Annandale Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Annandale Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "07/12/2017",
+"ref": 52
+},
+{
+"street": "Annandale Street",
+"suburb": "Annandale",
+"side": [
+"west"
+],
+"a": {
+"x": "Piper Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Piper Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "07/12/2017",
+"ref": 52
+},
+{
+"street": "Trafalgar Street",
+"suburb": "Petersham",
+"side": [
+"east"
+],
+"a": {
+"x": "Nelson Place",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Nelson Place",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "07/12/2017",
+"ref": 57
+},
+{
+"street": "Sunbeam Avenue",
+"suburb": "Croydon",
+"side": [
+"west"
+],
+"a": {
+"x": "Croydon Road",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Croydon Road",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "07/12/2017",
+"ref": 60
+},
+{
+"street": "Queen Street",
+"suburb": "Ashfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Clissold Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Clissold Street",
+"m": 15,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "07/12/2017",
+"ref": 60
+},
+{
+"street": "Elizabeth Street",
+"suburb": "Croydon",
+"side": [
+"south"
+],
+"a": {
+"x": "Bastable Street",
+"m": 36,
+"dir": "west"
+},
+"b": {
+"x": "Bastable Street",
+"m": 45,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "07/12/2017",
+"ref": 61
+},
+{
+"street": "Elizabeth Street",
+"suburb": "Croydon",
+"side": [
+"south"
+],
+"a": {
+"x": "Bastable Street",
+"m": 12,
+"dir": "west"
+},
+"b": {
+"x": "Bastable Street",
+"m": 35,
+"dir": "west"
+},
+"sign": "2P 9am-3pm Mon-Fri",
+"date": "07/12/2017",
+"ref": 61
+},
+{
+"street": "Brenan Street",
+"suburb": "Lilyfield",
+"side": [
+"north"
+],
+"from": "Percival Street",
+"to": "Railway Parade",
+"sign": "No Parking 7am-7pm Motor Vehicles Under 4.5t GVM Excepted",
+"date": "06/02/2018",
+"ref": 66
+},
+{
+"street": "Brenan Street",
+"suburb": "Lilyfield",
+"side": [
+"south"
+],
+"from": "Starling Street",
+"to": "Railway Parade",
+"sign": "No Parking 7am-7pm Motor Vehicles Under 4.5t GVM Excepted",
+"date": "06/02/2018",
+"ref": 66
+},
+{
+"street": "Railway Street",
+"suburb": "Petersham",
+"side": [
+"west"
+],
+"a": {
+"x": "Carrington Lane",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Carrington Lane",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "06/02/2018",
+"ref": 69
+},
+{
+"street": "Railway Street",
+"suburb": "Petersham",
+"side": [
+"west"
+],
+"a": {
+"x": "Carrington Lane",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Carrington Lane",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "06/02/2018",
+"ref": 69
+},
+{
+"street": "Croydon Road",
+"suburb": "Croydon",
+"side": [
+"west"
+],
+"a": {
+"x": "Anthony Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Anthony Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "06/03/2018",
+"ref": 73
+},
+{
+"street": "Croydon Road",
+"suburb": "Croydon",
+"side": [
+"east"
+],
+"a": {
+"x": "Anthony Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Anthony Street",
+"m": 20,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "06/03/2018",
+"ref": 73
+},
+{
+"street": "Croydon Road",
+"suburb": "Croydon",
+"side": [
+"west"
+],
+"a": {
+"x": "Anthony Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Anthony Street",
+"m": 20,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "06/03/2018",
+"ref": 73
+},
+{
+"street": "Anthony Street",
+"suburb": "Croydon",
+"side": [
+"north"
+],
+"a": {
+"x": "Croydon Road",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Croydon Road",
+"m": 20,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "06/03/2018",
+"ref": 73
+},
+{
+"street": "Anthony Street",
+"suburb": "Croydon",
+"side": [
+"south"
+],
+"a": {
+"x": "Croydon Road",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Croydon Road",
+"m": 20,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "06/03/2018",
+"ref": 73
+},
+{
+"street": "Anthony Street",
+"suburb": "Croydon",
+"side": [
+"north"
+],
+"a": {
+"x": "Croydon Road",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Croydon Road",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "06/03/2018",
+"ref": 73
+},
+{
+"street": "Anthony Street",
+"suburb": "Croydon",
+"side": [
+"south"
+],
+"a": {
+"x": "Croydon Road",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Croydon Road",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "06/03/2018",
+"ref": 73
+},
+{
+"street": "Northumberland Lane East",
+"suburb": "Stanmore",
+"side": [
+"west"
+],
+"from": "Macaulay Road",
+"to": "Macaulay Lane",
+"sign": "Unrestricted",
+"date": "06/03/2018",
+"ref": 85
+},
+{
+"street": "Railway Street",
+"suburb": "Petersham",
+"side": [
+"east"
+],
+"from": "Croydon Street",
+"to": "Brighton Street",
+"sign": "2P 8am-10pm Mon-Fri Permit Holders Excepted Area M5",
+"date": "10/04/2018",
+"ref": 89
+},
+{
+"street": "Barker Street",
+"suburb": "Lewisham",
+"side": [
+"south"
+],
+"from": "Old Canterbury Road",
+"to": "Barker Lane",
+"sign": "2P 8:30am-6pm Mon-Fri Permit Holders Excepted Area M16",
+"date": "10/04/2018",
+"ref": 90
+},
+{
+"street": "St John Street",
+"suburb": "Lewisham",
+"side": [
+"south"
+],
+"from": "Old Canterbury Road",
+"to": "Brown Street",
+"sign": "2P 8:30am-6pm Mon-Fri Permit Holders Excepted Area M16",
+"date": "10/04/2018",
+"ref": 90
+},
+{
+"street": "Illawarra Road",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Harnett Avenue",
+"m": 20,
+"dir": "north"
+},
+"b": {
+"x": "Harnett Avenue",
+"m": 31,
+"dir": "north"
+},
+"sign": "1P 8.30am-6.00pm",
+"date": "10/04/2018",
+"ref": 94
+},
+{
+"street": "Regent Street",
+"suburb": "Leichhardt",
+"side": [
+"north"
+],
+"a": {
+"x": "Edith Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Edith Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "01/05/2018",
+"ref": 100
+},
+{
+"street": "Regent Street",
+"suburb": "Leichhardt",
+"side": [
+"north"
+],
+"a": {
+"x": "Edith Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Edith Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "01/05/2018",
+"ref": 100
+},
+{
+"street": "Edith Street",
+"suburb": "Leichhardt",
+"side": [
+"east"
+],
+"a": {
+"x": "Regent Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Regent Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "01/05/2018",
+"ref": 100
+},
+{
+"street": "Edith Street",
+"suburb": "Leichhardt",
+"side": [
+"west"
+],
+"a": {
+"x": "Regent Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Regent Street",
+"m": 9,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "01/05/2018",
+"ref": 100
+},
+{
+"street": "Dudley Street",
+"suburb": "Haberfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Waratah Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Waratah Street",
+"m": 7.5,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "05/06/2018",
+"ref": 107
+},
+{
+"street": "Waratah Street",
+"suburb": "Haberfield",
+"side": [
+"north"
+],
+"a": {
+"x": "Dudley Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Dudley Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "05/06/2018",
+"ref": 107
+},
+{
+"street": "Philpott Street",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Gordon Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Gordon Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "05/06/2018",
+"ref": 109
+},
+{
+"street": "Philpott Street",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Gordon Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Gordon Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "05/06/2018",
+"ref": 109
+},
+{
+"street": "Addison Road",
+"suburb": "Marrickville",
+"side": [
+"north"
+],
+"from": "Philpott Street",
+"to": "Fotheringham Lane",
+"sign": "1P 8.30am-6pm Mon-Fri 8.30am-12.30pm Sat",
+"date": "05/06/2018",
+"ref": 112
+},
+{
+"street": "Pearl Lane",
+"suburb": "Newtown",
+"side": [
+"east"
+],
+"a": {
+"x": "Holmwood Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Holmwood Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "03/07/2018",
+"ref": 116
+},
+{
+"street": "Watson Avenue",
+"suburb": "Croydon Park",
+"side": [
+"west"
+],
+"a": {
+"x": "Georges River Road",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Georges River Road",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "03/07/2018",
+"ref": 123
+},
+{
+"street": "Moore Street",
+"suburb": "Leichhardt",
+"side": [
+"north"
+],
+"a": {
+"x": "Ainsworth Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Ainsworth Street",
+"m": 12,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "07/08/2018",
+"ref": 130
+},
+{
+"street": "Moore Street",
+"suburb": "Leichhardt",
+"side": [
+"north"
+],
+"a": {
+"x": "Ainsworth Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Ainsworth Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "07/08/2018",
+"ref": 130
+},
+{
+"street": "Edith Street",
+"suburb": "St Peters",
+"side": [
+"south"
+],
+"from": "Roberts Street",
+"to": "Princes Highway",
+"sign": "No Parking",
+"date": "07/08/2018",
+"ref": 134
+},
+{
+"street": "Edith Street",
+"suburb": "St Peters",
+"side": [
+"south"
+],
+"a": {
+"x": "Roberts Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Roberts Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "07/08/2018",
+"ref": 134
+},
+{
+"street": "Edith Street",
+"suburb": "St Peters",
+"side": [
+"south"
+],
+"a": {
+"x": "Princes Highway",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Princes Highway",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "07/08/2018",
+"ref": 134
+},
+{
+"street": "Palace Street",
+"suburb": "Ashfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Holden Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Holden Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "07/08/2018",
+"ref": 137
+},
+{
+"street": "Palace Street",
+"suburb": "Ashfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Holden Street",
+"m": 10,
+"dir": "west"
+},
+"b": {
+"x": "Holden Street",
+"m": 32,
+"dir": "west"
+},
+"sign": "Bus Zone",
+"date": "07/08/2018",
+"ref": 137
+},
+{
+"street": "Rowley Lane",
+"suburb": "Camperdown",
+"side": [
+"both"
+],
+"from": "Kingston Lane",
+"to": "St Marys Lane",
+"sign": "No Parking",
+"date": "04/09/2018",
+"ref": 143
+},
+{
+"street": "Yara Avenue",
+"suburb": "Rozelle",
+"side": [
+"south"
+],
+"a": {
+"x": "Margaret Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Margaret Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 145
+},
+{
+"street": "Yara Avenue",
+"suburb": "Rozelle",
+"side": [
+"north"
+],
+"a": {
+"x": "Margaret Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Margaret Street",
+"m": 14,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 145
+},
+{
+"street": "Margaret Street",
+"suburb": "Rozelle",
+"side": [
+"west"
+],
+"a": {
+"x": "Yara Avenue",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Yara Avenue",
+"m": 11,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 145
+},
+{
+"street": "Margaret Street",
+"suburb": "Rozelle",
+"side": [
+"west"
+],
+"a": {
+"x": "Yara Avenue",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Yara Avenue",
+"m": 7,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 145
+},
+{
+"street": "Weynton Street",
+"suburb": "Annandale",
+"side": [
+"south"
+],
+"a": {
+"x": "Piper Lane",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Piper Lane",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 146
+},
+{
+"street": "Weynton Street",
+"suburb": "Annandale",
+"side": [
+"south"
+],
+"a": {
+"x": "Piper Lane",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Piper Lane",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 146
+},
+{
+"street": "O'Neill Lane",
+"suburb": "Lilyfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Grove Lane",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Grove Lane",
+"m": 18,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 147
+},
+{
+"street": "Reynolds Street",
+"suburb": "Balmain",
+"side": [
+"north"
+],
+"a": {
+"x": "Evans Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Evans Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 148
+},
+{
+"street": "Reynolds Street",
+"suburb": "Balmain",
+"side": [
+"south"
+],
+"a": {
+"x": "Evans Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Evans Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 148
+},
+{
+"street": "Annesley Street",
+"suburb": "Leichhardt",
+"side": [
+"north"
+],
+"a": {
+"x": "Balmain Road",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Balmain Road",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 149
+},
+{
+"street": "Annesley Street",
+"suburb": "Leichhardt",
+"side": [
+"south"
+],
+"a": {
+"x": "Balmain Road",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Balmain Road",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 149
+},
+{
+"street": "Balmain Road",
+"suburb": "Leichhardt",
+"side": [
+"east"
+],
+"a": {
+"x": "Annesley Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Annesley Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 149
+},
+{
+"street": "Seaview Street",
+"suburb": "Ashfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Yeo Avenue",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Yeo Avenue",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 152
+},
+{
+"street": "Seaview Street",
+"suburb": "Ashfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Yeo Avenue",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Yeo Avenue",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/09/2018",
+"ref": 152
+},
+{
+"street": "Fitzroy Street",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"from": "Smith Street",
+"to": "Edinburgh Road",
+"sign": "2P 8:30am-6:30pm Mon-Fri Permit Holders Excepted Area M19",
+"date": "02/10/2018",
+"ref": 153
+},
+{
+"street": "Marian Street",
+"suburb": "Enmore",
+"side": [
+"west"
+],
+"a": {
+"x": "Cross Lane",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Cross Lane",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "02/10/2018",
+"ref": 156
+},
+{
+"street": "Marian Street",
+"suburb": "Enmore",
+"side": [
+"west"
+],
+"a": {
+"x": "Cross Lane",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Cross Lane",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "02/10/2018",
+"ref": 156
+},
+{
+"street": "Brighton Street",
+"suburb": "Petersham",
+"side": [
+"south"
+],
+"from": "Palace Street",
+"to": "Station Street",
+"sign": "2P 8:30am-10pm Mon-Fri Permit Holders Excepted Area M5",
+"date": "02/10/2018",
+"ref": 157
+},
+{
+"street": "Balmain Road",
+"suburb": "Lilyfield",
+"side": [
+"south"
+],
+"a": {
+"x": "The Boulevarde",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "The Boulevarde",
+"m": 11,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "06/11/2018",
+"ref": 168
+},
+{
+"street": "The Boulevarde",
+"suburb": "Lilyfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Balmain Road",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Balmain Road",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "06/11/2018",
+"ref": 168
+},
+{
+"street": "The Boulevarde",
+"suburb": "Lilyfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Balmain Road",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Balmain Road",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "06/11/2018",
+"ref": 168
+},
+{
+"street": "The Boulevarde",
+"suburb": "Lilyfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Balmain Road",
+"m": 10,
+"dir": "south"
+},
+"b": {
+"x": "Balmain Road",
+"m": 15.4,
+"dir": "south"
+},
+"sign": "P15 Minute 7:00am-5:30pm Mon-Fri",
+"date": "06/11/2018",
+"ref": 168
+},
+{
+"street": "Yara Avenue",
+"suburb": "Rozelle",
+"side": [
+"east"
+],
+"a": {
+"x": "Warayama Place",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Warayama Place",
+"m": 12,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/12/2018",
+"ref": 173
+},
+{
+"street": "Ash Lane",
+"suburb": "Haberfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Wolseley Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Wolseley Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/12/2018",
+"ref": 174
+},
+{
+"street": "Ash Lane",
+"suburb": "Haberfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Northcote Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Northcote Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "04/12/2018",
+"ref": 174
+},
+{
+"street": "Ash Lane",
+"suburb": "Haberfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Northcote Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Northcote Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/12/2018",
+"ref": 174
+},
+{
+"street": "Cheltenham Street",
+"suburb": "Rozelle",
+"side": [
+"south"
+],
+"a": {
+"x": "Foucart Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Foucart Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/12/2018",
+"ref": 175
+},
+{
+"street": "Denison Street",
+"suburb": "Rozelle",
+"side": [
+"west"
+],
+"a": {
+"x": "Brockley Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Brockley Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "04/12/2018",
+"ref": 175
+},
+{
+"street": "Denison Street",
+"suburb": "Rozelle",
+"side": [
+"west"
+],
+"a": {
+"x": "Brockley Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Brockley Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/12/2018",
+"ref": 175
+},
+{
+"street": "Silver Street",
+"suburb": "St Peters",
+"side": [
+"both"
+],
+"a": {
+"x": "Unwins Bridge Road",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Unwins Bridge Road",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/12/2018",
+"ref": 182
+},
+{
+"street": "Forbes Street",
+"suburb": "Croydon Park",
+"side": [
+"west"
+],
+"a": {
+"x": "Georges River Road",
+"m": 10,
+"dir": "south"
+},
+"b": {
+"x": "Georges River Road",
+"m": 44,
+"dir": "south"
+},
+"sign": "2P 8:30am-6pm Mon-Fri, 8:30am-12:30pm Sat",
+"date": "04/12/2018",
+"ref": 186
+},
+{
+"street": "Longport Street",
+"suburb": "Lewisham",
+"side": [
+"north"
+],
+"from": "Old Canterbury Road",
+"to": "Grosvenor Crescent",
+"sign": "No Parking 6:30am-9:30am, 3:30pm-6:30pm Mon-Fri",
+"date": "04/02/2019",
+"ref": 194
+},
+{
+"street": "Cannon Lane",
+"suburb": "Stanmore",
+"side": [
+"both"
+],
+"from": "Corunna Road",
+"to": "Westbourne Street",
+"sign": "No Parking",
+"date": "04/02/2019",
+"ref": 197
+},
+{
+"street": "Frampton Lane",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Seymour Lane",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Seymour Lane",
+"m": 15,
+"dir": "north"
+},
+"sign": "No Parking",
+"date": "04/02/2019",
+"ref": 204
+},
+{
+"street": "Young Street",
+"suburb": "Annandale",
+"side": [
+"east"
+],
+"a": {
+"x": "Collins Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Collins Street",
+"m": 13.4,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/02/2019",
+"ref": 209
+},
+{
+"street": "White Street",
+"suburb": "Lilyfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Moore Lane",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Moore Lane",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 211
+},
+{
+"street": "Grove Street",
+"suburb": "Birchgrove",
+"side": [
+"west"
+],
+"a": {
+"x": "The Terrace",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "The Terrace",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 212
+},
+{
+"street": "Grove Street",
+"suburb": "Birchgrove",
+"side": [
+"west"
+],
+"a": {
+"x": "The Terrace",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "The Terrace",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 212
+},
+{
+"street": "Cavey Street",
+"suburb": "Marrickville",
+"side": [
+"both"
+],
+"a": {
+"x": "Calvert Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Calvert Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 215
+},
+{
+"street": "Fitzroy Lane",
+"suburb": "Newtown",
+"side": [
+"south"
+],
+"from": "Australia Street",
+"to": "Brooks Lane",
+"sign": "No Parking",
+"date": "04/03/2019",
+"ref": 216
+},
+{
+"street": "Fitzroy Lane",
+"suburb": "Newtown",
+"side": [
+"north"
+],
+"a": {
+"x": "Brooks Lane",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Brooks Lane",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 216
+},
+{
+"street": "Pearl Lane",
+"suburb": "Newtown",
+"side": [
+"both"
+],
+"from": "Holmwood Lane",
+"to": "Dickson Street",
+"sign": "No Parking",
+"date": "04/03/2019",
+"ref": 217
+},
+{
+"street": "Cannon Lane",
+"suburb": "Stanmore",
+"side": [
+"both"
+],
+"from": "Margaret Street",
+"to": "Corunna Road",
+"sign": "No Parking",
+"date": "04/03/2019",
+"ref": 218
+},
+{
+"street": "Easton Street",
+"suburb": "Rozelle",
+"side": [
+"north"
+],
+"a": {
+"x": "Foucart Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Foucart Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 220
+},
+{
+"street": "Easton Street",
+"suburb": "Rozelle",
+"side": [
+"south"
+],
+"a": {
+"x": "Foucart Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Foucart Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 220
+},
+{
+"street": "Foucart Street",
+"suburb": "Rozelle",
+"side": [
+"east"
+],
+"a": {
+"x": "Easton Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Easton Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 220
+},
+{
+"street": "Henry Street",
+"suburb": "Ashfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Page Avenue",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Page Avenue",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 222
+},
+{
+"street": "Henry Street",
+"suburb": "Ashfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Earle Avenue",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Earle Avenue",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 222
+},
+{
+"street": "Henry Street",
+"suburb": "Ashfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Lucy Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Lucy Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 222
+},
+{
+"street": "Earle Avenue",
+"suburb": "Ashfield",
+"side": [
+"north"
+],
+"a": {
+"x": "Henry Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Henry Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 222
+},
+{
+"street": "Edwin Street",
+"suburb": "Tempe",
+"side": [
+"south"
+],
+"a": {
+"x": "Stanley Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Stanley Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 223
+},
+{
+"street": "Edwin Street",
+"suburb": "Tempe",
+"side": [
+"south"
+],
+"a": {
+"x": "Stanley Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Stanley Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 223
+},
+{
+"street": "Stanley Street",
+"suburb": "Tempe",
+"side": [
+"both"
+],
+"a": {
+"x": "Edwin Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Edwin Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 223
+},
+{
+"street": "Cannon Street",
+"suburb": "Stanmore",
+"side": [
+"east"
+],
+"a": {
+"x": "Corunna Road",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Corunna Road",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 224
+},
+{
+"street": "Corunna Road",
+"suburb": "Stanmore",
+"side": [
+"south"
+],
+"a": {
+"x": "Cannon Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Cannon Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 224
+},
+{
+"street": "Cannon Street",
+"suburb": "Stanmore",
+"side": [
+"west"
+],
+"a": {
+"x": "Corunna Road",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Corunna Road",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 224
+},
+{
+"street": "Cannon Street",
+"suburb": "Stanmore",
+"side": [
+"west"
+],
+"a": {
+"x": "Corunna Road",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Corunna Road",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 224
+},
+{
+"street": "Australia Street",
+"suburb": "Camperdown",
+"side": [
+"east"
+],
+"a": {
+"x": "Parramatta Road",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Parramatta Road",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "04/03/2019",
+"ref": 227
+},
+{
+"street": "Australia Street",
+"suburb": "Camperdown",
+"side": [
+"east"
+],
+"a": {
+"x": "Parramatta Road",
+"m": 10,
+"dir": "south"
+},
+"b": {
+"x": "Parramatta Road",
+"m": 24,
+"dir": "south"
+},
+"sign": "1/4P 8:30am-6pm",
+"date": "04/03/2019",
+"ref": 227
+},
+{
+"street": "Beattie Street",
+"suburb": "Balmain",
+"side": [
+"north"
+],
+"a": {
+"x": "High Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "High Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "01/04/2019",
+"ref": 229
+},
+{
+"street": "Beattie Street",
+"suburb": "Balmain",
+"side": [
+"north"
+],
+"a": {
+"x": "High Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "High Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "01/04/2019",
+"ref": 229
+},
+{
+"street": "Tilba Avenue",
+"suburb": "Balmain",
+"side": [
+"east"
+],
+"a": {
+"x": "Carieville Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Carieville Street",
+"m": 8,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "01/04/2019",
+"ref": 230
+},
+{
+"street": "Albion Street",
+"suburb": "Annandale",
+"side": [
+"north"
+],
+"a": {
+"x": "Susan Street",
+"m": 12,
+"dir": "west"
+},
+"b": {
+"x": "Susan Street",
+"m": 14.6,
+"dir": "west"
+},
+"sign": "Motor Bike Only",
+"date": "01/04/2019",
+"ref": 232
+},
+{
+"street": "Charles Street",
+"suburb": "Leichhardt",
+"side": [
+"both"
+],
+"a": {
+"x": "William Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "William Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "01/04/2019",
+"ref": 234
+},
+{
+"street": "Kingston Lane",
+"suburb": "Camperdown",
+"side": [
+"east"
+],
+"from": "Rowley Lane",
+"to": "Rowley Street",
+"sign": "No Parking",
+"date": "06/05/2019",
+"ref": 238
+},
+{
+"street": "Booth Street",
+"suburb": "Annandale",
+"side": [
+"south"
+],
+"a": {
+"x": "Collins Lane",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Collins Lane",
+"m": 15,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "06/05/2019",
+"ref": 239
+},
+{
+"street": "Derbyshire Road",
+"suburb": "Leichhardt",
+"side": [
+"west"
+],
+"from": "William Street",
+"to": "Moore Street West",
+"sign": "No Parking",
+"date": "06/05/2019",
+"ref": 241
+},
+{
+"street": "Derbyshire Road",
+"suburb": "Leichhardt",
+"side": [
+"east"
+],
+"a": {
+"x": "William Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "William Street",
+"m": 12.2,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "06/05/2019",
+"ref": 241
+},
+{
+"street": "Derbyshire Road",
+"suburb": "Leichhardt",
+"side": [
+"east"
+],
+"a": {
+"x": "William Street",
+"m": 12.2,
+"dir": "south"
+},
+"b": {
+"x": "William Street",
+"m": 19.7,
+"dir": "south"
+},
+"sign": "No Parking",
+"date": "06/05/2019",
+"ref": 241
+},
+{
+"street": "Ramsay Street",
+"suburb": "Haberfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Walker Avenue",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Walker Avenue",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "06/05/2019",
+"ref": 244
+},
+{
+"street": "New Street",
+"suburb": "Ashfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Queen Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Queen Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "06/05/2019",
+"ref": 245
+},
+{
+"street": "Stanmore Lane",
+"suburb": "Stanmore",
+"side": [
+"south"
+],
+"from": "Rosevear Street",
+"to": "Douglas Street",
+"sign": "No Parking",
+"date": "06/05/2019",
+"ref": 246
+},
+{
+"street": "Edith Street",
+"suburb": "Leichhardt",
+"side": [
+"west"
+],
+"a": {
+"x": "Regent Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Regent Street",
+"m": 11,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "06/05/2019",
+"ref": 247
+},
+{
+"street": "Edith Street",
+"suburb": "Leichhardt",
+"side": [
+"east"
+],
+"a": {
+"x": "Regent Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Regent Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "06/05/2019",
+"ref": 247
+},
+{
+"street": "Regent Street",
+"suburb": "Leichhardt",
+"side": [
+"south"
+],
+"a": {
+"x": "Edith Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Edith Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "06/05/2019",
+"ref": 247
+},
+{
+"street": "Regent Street",
+"suburb": "Leichhardt",
+"side": [
+"south"
+],
+"a": {
+"x": "Edith Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Edith Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "06/05/2019",
+"ref": 247
+},
+{
+"street": "Bruce Street",
+"suburb": "Stanmore",
+"side": [
+"west"
+],
+"from": "Douglas Street",
+"to": "Temple Street",
+"sign": "2P 8am-10pm Mon-Fri Permit Holders Excepted Area M17",
+"date": "03/06/2019",
+"ref": 250
+},
+{
+"street": "Bruce Street",
+"suburb": "Stanmore",
+"side": [
+"west"
+],
+"a": {
+"x": "Douglas Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Douglas Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "03/06/2019",
+"ref": 250
+},
+{
+"street": "Bruce Street",
+"suburb": "Stanmore",
+"side": [
+"west"
+],
+"a": {
+"x": "Temple Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Temple Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "03/06/2019",
+"ref": 250
+},
+{
+"street": "Piper Lane",
+"suburb": "Annandale",
+"side": [
+"east"
+],
+"a": {
+"x": "Rose Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Rose Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "03/06/2019",
+"ref": 251
+},
+{
+"street": "Piper Lane",
+"suburb": "Annandale",
+"side": [
+"east"
+],
+"a": {
+"x": "Rose Street",
+"m": 10,
+"dir": "north"
+},
+"b": {
+"x": "Rose Street",
+"m": 49.4,
+"dir": "north"
+},
+"sign": "No Parking",
+"date": "03/06/2019",
+"ref": 251
+},
+{
+"street": "Edgeware Road",
+"suburb": "Enmore",
+"side": [
+"both"
+],
+"from": "Darley Street",
+"to": "Lord Street",
+"sign": "2P 8am-10pm Permit Holders Excepted Area M14",
+"date": "03/06/2019",
+"ref": 254
+},
+{
+"street": "Queen Street",
+"suburb": "Ashfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Harland Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Harland Street",
+"m": 12.7,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "03/06/2019",
+"ref": 256
+},
+{
+"street": "Croydon Road",
+"suburb": "Croydon",
+"side": [
+"east"
+],
+"a": {
+"x": "Parramatta Road",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Parramatta Road",
+"m": 20,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "03/06/2019",
+"ref": 257
+},
+{
+"street": "Croydon Road",
+"suburb": "Croydon",
+"side": [
+"east"
+],
+"a": {
+"x": "Parramatta Road",
+"m": 20,
+"dir": "south"
+},
+"b": {
+"x": "Parramatta Road",
+"m": 40,
+"dir": "south"
+},
+"sign": "No Parking",
+"date": "03/06/2019",
+"ref": 257
+},
+{
+"street": "Perry Street",
+"suburb": "Lilyfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Mary Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Mary Street",
+"m": 5.5,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "01/07/2019",
+"ref": 262
+},
+{
+"street": "Smith Street",
+"suburb": "Annandale",
+"side": [
+"west"
+],
+"from": "Gillies Street",
+"to": "Piper Street",
+"sign": "No Parking 7am-7pm Motor Vehicles under 4.5t GVM Excepted",
+"date": "01/07/2019",
+"ref": 266
+},
+{
+"street": "Chester Street",
+"suburb": "Annandale",
+"side": [
+"east"
+],
+"a": {
+"x": "Guihen Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Guihen Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "05/08/2019",
+"ref": 269
+},
+{
+"street": "Chester Street",
+"suburb": "Annandale",
+"side": [
+"east"
+],
+"a": {
+"x": "Guihen Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Guihen Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "05/08/2019",
+"ref": 269
+},
+{
+"street": "Guihen Street",
+"suburb": "Annandale",
+"side": [
+"north"
+],
+"a": {
+"x": "Chester Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Chester Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "05/08/2019",
+"ref": 269
+},
+{
+"street": "Petersham Road",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Graham Avenue",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Graham Avenue",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "02/09/2019",
+"ref": 279
+},
+{
+"street": "Petersham Road",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Stanley Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Stanley Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "02/09/2019",
+"ref": 279
+},
+{
+"street": "Petersham Road",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"from": "Graham Avenue",
+"to": "Stanley Street",
+"sign": "No Parking",
+"date": "02/09/2019",
+"ref": 279
+},
+{
+"street": "Hawthorne Parade",
+"suburb": "Haberfield",
+"side": [
+"east"
+],
+"from": "Turner Avenue",
+"to": "Barton Avenue",
+"sign": "2P 8am-10pm",
+"date": "08/10/2019",
+"ref": 284
+},
+{
+"street": "Chester Street",
+"suburb": "Annandale",
+"side": [
+"east"
+],
+"a": {
+"x": "Pyrmont Bridge Road",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Pyrmont Bridge Road",
+"m": 11.7,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "08/10/2019",
+"ref": 290
+},
+{
+"street": "White Street",
+"suburb": "Lilyfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Moore Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Moore Street",
+"m": 12,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "08/10/2019",
+"ref": 291
+},
+{
+"street": "Silver Street",
+"suburb": "St Peters",
+"side": [
+"north"
+],
+"a": {
+"x": "Florence Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Florence Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "04/11/2019",
+"ref": 293
+},
+{
+"street": "Silver Street",
+"suburb": "St Peters",
+"side": [
+"north"
+],
+"a": {
+"x": "Florence Street",
+"m": 10,
+"dir": "east"
+},
+"b": {
+"x": "Florence Street",
+"m": 16,
+"dir": "east"
+},
+"sign": "Mobility Parking",
+"date": "04/11/2019",
+"ref": 293
+},
+{
+"street": "Lord Street",
+"suburb": "Haberfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Hawthorne Parade",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Hawthorne Parade",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "04/11/2019",
+"ref": 293
+},
+{
+"street": "Lord Street",
+"suburb": "Haberfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Hawthorne Parade",
+"m": 10,
+"dir": "west"
+},
+"b": {
+"x": "Hawthorne Parade",
+"m": 16,
+"dir": "west"
+},
+"sign": "Mobility Parking",
+"date": "04/11/2019",
+"ref": 293
+},
+{
+"street": "Chelmsford Street",
+"suburb": "Newtown",
+"side": [
+"east"
+],
+"a": {
+"x": "McIntosh Lane",
+"m": 6,
+"dir": "south"
+},
+"b": {
+"x": "McIntosh Lane",
+"m": 14,
+"dir": "south"
+},
+"sign": "Loading Zone 8.00am-5.00pm Mon-Fri",
+"date": "04/11/2019",
+"ref": 294
+},
+{
+"street": "Frazer Street",
+"suburb": "Dulwich Hill",
+"side": [
+"north"
+],
+"a": {
+"x": "Gould Street",
+"m": 10,
+"dir": "east"
+},
+"b": {
+"x": "Gould Street",
+"m": 15,
+"dir": "east"
+},
+"sign": "No Stopping Australia Post Vehicles Excepted",
+"date": "02/12/2019",
+"ref": 300
+},
+{
+"street": "Terrace Road",
+"suburb": "Dulwich Hill",
+"side": [
+"west"
+],
+"a": {
+"x": "New Canterbury Road",
+"m": 14,
+"dir": "south"
+},
+"b": {
+"x": "New Canterbury Road",
+"m": 19,
+"dir": "south"
+},
+"sign": "No Stopping Australia Post Vehicles Excepted",
+"date": "02/12/2019",
+"ref": 300
+},
+{
+"street": "Williams Parade",
+"suburb": "Dulwich Hill",
+"side": [
+"east"
+],
+"a": {
+"x": "Constitution Road",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Constitution Road",
+"m": 20,
+"dir": "south"
+},
+"sign": "2P 8am-2pm Sat & Sun",
+"date": "02/12/2019",
+"ref": 301
+},
+{
+"street": "Pigott Lane",
+"suburb": "Marrickville",
+"side": [
+"east"
+],
+"a": {
+"x": "Beauchamp Street",
+"m": 40,
+"dir": "south"
+},
+"b": {
+"x": "Beauchamp Street",
+"m": 49,
+"dir": "south"
+},
+"sign": "No Parking",
+"date": "03/02/2020",
+"ref": 309
+},
+{
+"street": "William Street",
+"suburb": "Leichhardt",
+"side": [
+"south"
+],
+"a": {
+"x": "Elswick Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Elswick Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "03/02/2020",
+"ref": 314
+},
+{
+"street": "Ravenue Lane",
+"suburb": "Stanmore",
+"side": [
+"both"
+],
+"from": "Lincoln Street",
+"to": "Stafford Street",
+"sign": "No Parking 5am-10am Mon",
+"date": "02/03/2020",
+"ref": 318
+},
+{
+"street": "Ravenue Lane",
+"suburb": "Stanmore",
+"side": [
+"both"
+],
+"a": {
+"x": "Stafford Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Stafford Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "02/03/2020",
+"ref": 318
+},
+{
+"street": "Ravenue Lane",
+"suburb": "Stanmore",
+"side": [
+"both"
+],
+"a": {
+"x": "Lincoln Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Lincoln Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "02/03/2020",
+"ref": 318
+},
+{
+"street": "Myra Lane",
+"suburb": "Dulwich Hill",
+"side": [
+"north"
+],
+"a": {
+"x": "Myra Road",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Myra Road",
+"m": 16,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "02/03/2020",
+"ref": 319
+},
+{
+"street": "Pigott Street",
+"suburb": "Dulwich Hill",
+"side": [
+"north"
+],
+"a": {
+"x": "The Boulevarde",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "The Boulevarde",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "02/03/2020",
+"ref": 320
+},
+{
+"street": "Pigott Street",
+"suburb": "Dulwich Hill",
+"side": [
+"north"
+],
+"a": {
+"x": "The Boulevarde",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "The Boulevarde",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "02/03/2020",
+"ref": 320
+},
+{
+"street": "Hartley Street",
+"suburb": "Rozelle",
+"side": [
+"east"
+],
+"a": {
+"x": "Victoria Road",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Victoria Road",
+"m": 25,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "02/03/2020",
+"ref": 325
+},
+{
+"street": "Cecil Street",
+"suburb": "Ashfield",
+"side": [
+"north"
+],
+"a": {
+"x": "Chandos Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Chandos Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "06/04/2020",
+"ref": 329
+},
+{
+"street": "Cecil Street",
+"suburb": "Ashfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Chandos Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Chandos Street",
+"m": 8.5,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "06/04/2020",
+"ref": 329
+},
+{
+"street": "Chandos Street",
+"suburb": "Ashfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Cecil Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Cecil Street",
+"m": 8,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "06/04/2020",
+"ref": 329
+},
+{
+"street": "Chandos Street",
+"suburb": "Ashfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Cecil Street",
+"m": 8,
+"dir": "north"
+},
+"b": {
+"x": "Cecil Street",
+"m": 17.8,
+"dir": "north"
+},
+"sign": "No Stopping Australia Post Vehicles Excepted",
+"date": "06/04/2020",
+"ref": 329
+},
+{
+"street": "Chandos Street",
+"suburb": "Ashfield",
+"side": [
+"east"
+],
+"a": {
+"x": "Cecil Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Cecil Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "06/04/2020",
+"ref": 329
+},
+{
+"street": "Darling Street",
+"suburb": "Balmain",
+"side": [
+"south"
+],
+"a": {
+"x": "Ann Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Ann Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "06/04/2020",
+"ref": 330
+},
+{
+"street": "Murray Street",
+"suburb": "Marrickville",
+"side": [
+"east"
+],
+"from": "Edinburgh Road",
+"to": "Smidmore Street",
+"sign": "No Stopping",
+"date": "04/05/2020",
+"ref": 333
+},
+{
+"street": "Edinburgh Road",
+"suburb": "Marrickville",
+"side": [
+"south"
+],
+"from": "Smidmore Street",
+"to": "Sydney Steel Road",
+"sign": "No Stopping",
+"date": "04/05/2020",
+"ref": 333
+},
+{
+"street": "Hartley Street",
+"suburb": "Rozelle",
+"side": [
+"both"
+],
+"from": "Brent Street",
+"to": "Victoria Road",
+"sign": "2P 8am-6pm Mon-Fri Permit Holders Excepted Area R1",
+"date": "01/06/2020",
+"ref": 336
+},
+{
+"street": "Terminus Street",
+"suburb": "Petersham",
+"side": [
+"south"
+],
+"from": "Crystal Street",
+"to": "Railway Street",
+"sign": "No Parking 7am-7pm Motor Vehicles under 4.5t GVM Excepted",
+"date": "07/09/2020",
+"ref": 341
+},
+{
+"street": "Terminus Street",
+"suburb": "Petersham",
+"side": [
+"south"
+],
+"from": "Railway Street",
+"to": "Palace Street",
+"sign": "No Parking 7am-7pm Motor Vehicles under 4.5t GVM Excepted",
+"date": "07/09/2020",
+"ref": 341
+},
+{
+"street": "Way Street",
+"suburb": "Tempe",
+"side": [
+"north"
+],
+"a": {
+"x": "Hillcrest Lane",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Hillcrest Lane",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "15/02/2021",
+"ref": 350
+},
+{
+"street": "Way Street",
+"suburb": "Tempe",
+"side": [
+"north"
+],
+"a": {
+"x": "Hillcrest Lane",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Hillcrest Lane",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "15/02/2021",
+"ref": 350
+},
+{
+"street": "Guihen Street",
+"suburb": "Annandale",
+"side": [
+"north"
+],
+"from": "Booth Street",
+"to": "Chester Street",
+"sign": "4P 8:00am-6:00pm Mon-Fri",
+"date": "15/03/2021",
+"ref": 353
+},
+{
+"street": "Booth Street",
+"suburb": "Annandale",
+"side": [
+"west"
+],
+"from": "Guihen Street",
+"to": "Wigram Road",
+"sign": "2P 8:00am-6:00pm Mon-Fri",
+"date": "15/03/2021",
+"ref": 353
+},
+{
+"street": "Booth Street",
+"suburb": "Annandale",
+"side": [
+"west"
+],
+"from": "Guihen Street",
+"to": "Pyrmont Bridge Road",
+"sign": "2P 8:00am-6:00pm Mon-Fri",
+"date": "15/03/2021",
+"ref": 353
+},
+{
+"street": "Way Street",
+"suburb": "St Peters",
+"side": [
+"west"
+],
+"a": {
+"x": "Toyer Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Toyer Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "15/03/2021",
+"ref": 356
+},
+{
+"street": "Toyer Street",
+"suburb": "St Peters",
+"side": [
+"south"
+],
+"a": {
+"x": "Collins Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Collins Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "15/03/2021",
+"ref": 356
+},
+{
+"street": "Toyer Street",
+"suburb": "St Peters",
+"side": [
+"north"
+],
+"a": {
+"x": "Collins Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Collins Street",
+"m": 14,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "15/03/2021",
+"ref": 356
+},
+{
+"street": "Collins Street",
+"suburb": "St Peters",
+"side": [
+"east"
+],
+"a": {
+"x": "Toyer Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Toyer Street",
+"m": 8,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "15/03/2021",
+"ref": 356
+},
+{
+"street": "Edgeware Road",
+"suburb": "Newtown",
+"side": [
+"east"
+],
+"from": "Wells Street",
+"to": "Darley Street",
+"sign": "2P 8am-10pm Permit Holders Excepted Area M14",
+"date": "19/04/2021",
+"ref": 363
+},
+{
+"street": "White Street",
+"suburb": "Lilyfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Piper Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Piper Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "19/04/2021",
+"ref": 364
+},
+{
+"street": "Piper Street",
+"suburb": "Lilyfield",
+"side": [
+"north"
+],
+"a": {
+"x": "White Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "White Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "19/04/2021",
+"ref": 364
+},
+{
+"street": "Piper Street",
+"suburb": "Lilyfield",
+"side": [
+"north"
+],
+"a": {
+"x": "White Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "White Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "19/04/2021",
+"ref": 364
+},
+{
+"street": "Dalhousie Street",
+"suburb": "Haberfield",
+"side": [
+"west"
+],
+"a": {
+"x": "Ramsay Street",
+"m": 30,
+"dir": "north"
+},
+"b": {
+"x": "Ramsay Street",
+"m": 66,
+"dir": "north"
+},
+"sign": "Bus Zone",
+"date": "21/06/2021",
+"ref": 370
+},
+{
+"street": "Fred Street",
+"suburb": "Dulwich Hill",
+"side": [
+"both"
+],
+"a": {
+"x": "Victoria Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Victoria Street",
+"m": 15,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "19/07/2021",
+"ref": 377
+},
+{
+"street": "Victoria Road",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Sydenham Road",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Sydenham Road",
+"m": 50,
+"dir": "north"
+},
+"sign": "1P 9am-5pm Mon-Sat",
+"date": "19/07/2021",
+"ref": 380
+},
+{
+"street": "Probert Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Lennox Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Lennox Street",
+"m": 5.5,
+"dir": "north"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "18/10/2021",
+"ref": 386
+},
+{
+"street": "Holt Street",
+"suburb": "Newtown",
+"side": [
+"south"
+],
+"a": {
+"x": "King Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "King Street",
+"m": 5.5,
+"dir": "west"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "18/10/2021",
+"ref": 386
+},
+{
+"street": "Nowranie Street",
+"suburb": "Summer Hill",
+"side": [
+"west"
+],
+"a": {
+"x": "Smith Lane",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Smith Lane",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "18/10/2021",
+"ref": 388
+},
+{
+"street": "Nowranie Street",
+"suburb": "Summer Hill",
+"side": [
+"west"
+],
+"a": {
+"x": "Smith Lane",
+"m": 10,
+"dir": "south"
+},
+"b": {
+"x": "Smith Lane",
+"m": 26,
+"dir": "south"
+},
+"sign": "No Parking",
+"date": "18/10/2021",
+"ref": 388
+},
+{
+"street": "Byrnes Street",
+"suburb": "Marrickville",
+"side": [
+"south"
+],
+"a": {
+"x": "Illawarra Road",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Illawarra Road",
+"m": 5,
+"dir": "east"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "21/03/2022",
+"ref": 391
+},
+{
+"street": "Park Lane",
+"suburb": "Sydenham",
+"side": [
+"west"
+],
+"from": "Henry Street",
+"to": "Rowe Lane",
+"sign": "No Parking",
+"date": "21/11/2022",
+"ref": 412
+},
+{
+"street": "Garnet Lane",
+"suburb": "Dulwich Hill",
+"side": [
+"north"
+],
+"from": "Myra Road",
+"to": "Terrace Lane",
+"sign": "No Parking 4pm-9pm Mon, 5am-11am Tue",
+"date": "05/12/2022",
+"ref": 414
+},
+{
+"street": "Terrace Lane",
+"suburb": "Dulwich Hill",
+"side": [
+"both"
+],
+"from": "Garnet Lane",
+"to": "Terrace Road",
+"sign": "No Parking 4pm-9pm Mon, 5am-11am Tue",
+"date": "05/12/2022",
+"ref": 414
+},
+{
+"street": "Stevens Lane",
+"suburb": "Marrickville",
+"side": [
+"both"
+],
+"from": "Philpott Street",
+"to": "Fotheringham Lane",
+"sign": "No Parking",
+"date": "20/03/2023",
+"ref": 422
+},
+{
+"street": "Henry Street",
+"suburb": "St Peters",
+"side": [
+"south"
+],
+"from": "Grove Street",
+"to": "Sutherland Street",
+"sign": "2P 8.30am-6pm Mon-Fri Permit Holders Excepted Area M4",
+"date": "20/03/2023",
+"ref": 424
+},
+{
+"street": "Chester Street",
+"suburb": "Annandale",
+"side": [
+"west"
+],
+"a": {
+"x": "Gehrig Lane",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Gehrig Lane",
+"m": 5,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "17/04/2023",
+"ref": 427
+},
+{
+"street": "Chester Street",
+"suburb": "Annandale",
+"side": [
+"west"
+],
+"a": {
+"x": "Gehrig Lane",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Gehrig Lane",
+"m": 5,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "17/04/2023",
+"ref": 427
+},
+{
+"street": "Croydon Road",
+"suburb": "Croydon",
+"side": [
+"east"
+],
+"a": {
+"x": "Sunbeam Avenue",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Sunbeam Avenue",
+"m": 16,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "19/06/2023",
+"ref": 436
+},
+{
+"street": "Philpott Street",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Pritchard Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Pritchard Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "17/07/2023",
+"ref": 437
+},
+{
+"street": "Philpott Street",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Pritchard Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Pritchard Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "17/07/2023",
+"ref": 437
+},
+{
+"street": "Philpott Street",
+"suburb": "Marrickville",
+"side": [
+"east"
+],
+"a": {
+"x": "Pritchard Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Pritchard Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "17/07/2023",
+"ref": 437
+},
+{
+"street": "Philpott Street",
+"suburb": "Marrickville",
+"side": [
+"east"
+],
+"a": {
+"x": "Pritchard Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Pritchard Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "17/07/2023",
+"ref": 437
+},
+{
+"street": "Pritchard Street",
+"suburb": "Marrickville",
+"side": [
+"north"
+],
+"a": {
+"x": "Philpott Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Philpott Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "17/07/2023",
+"ref": 437
+},
+{
+"street": "Pritchard Street",
+"suburb": "Marrickville",
+"side": [
+"south"
+],
+"a": {
+"x": "Philpott Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Philpott Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "17/07/2023",
+"ref": 437
+},
+{
+"street": "Lord Street",
+"suburb": "Newtown",
+"side": [
+"north"
+],
+"a": {
+"x": "John Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "John Street",
+"m": 7,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 455
+},
+{
+"street": "Albermarle Street",
+"suburb": "Newtown",
+"side": [
+"south"
+],
+"a": {
+"x": "Baltic Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Baltic Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Baltic Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Oxford Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Oxford Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Chelmsford Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Chelmsford Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Albermarle Street",
+"suburb": "Newtown",
+"side": [
+"south"
+],
+"a": {
+"x": "Denison Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Denison Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Denison Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 9.2,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Lennox Street",
+"suburb": "Newtown",
+"side": [
+"north"
+],
+"a": {
+"x": "Probert Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Probert Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Lennox Street",
+"suburb": "Newtown",
+"side": [
+"north"
+],
+"a": {
+"x": "Probert Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Probert Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Probert Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Lennox Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Lennox Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Chelmsford Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Lennox Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Lennox Street",
+"m": 9,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Lennox Street",
+"suburb": "Newtown",
+"side": [
+"north"
+],
+"a": {
+"x": "Chelmsford Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Chelmsford Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Lennox Street",
+"suburb": "Newtown",
+"side": [
+"south"
+],
+"a": {
+"x": "Denison Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Denison Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Denison Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Lennox Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Lennox Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Chelmsford Street",
+"suburb": "Newtown",
+"side": [
+"east"
+],
+"a": {
+"x": "Bishopgate Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Bishopgate Street",
+"m": 6,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Chelmsford Street",
+"suburb": "Newtown",
+"side": [
+"east"
+],
+"a": {
+"x": "Bishopgate Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Bishopgate Street",
+"m": 6,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Probert Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Bishopgate Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Bishopgate Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Probert Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Bishopgate Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Bishopgate Street",
+"m": 7.5,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Albermarle Street",
+"suburb": "Newtown",
+"side": [
+"north"
+],
+"a": {
+"x": "Probert Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Probert Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "20/11/2023",
+"ref": 460
+},
+{
+"street": "Audley Street",
+"suburb": "Petersham",
+"side": [
+"east"
+],
+"from": "Chester Street",
+"to": "Oxford Street",
+"sign": "2P 8am-10pm Mon-Fri Permit Holders Excepted Area M11",
+"date": "19/02/2024",
+"ref": 470
+},
+{
+"street": "Audley Street",
+"suburb": "Petersham",
+"side": [
+"east"
+],
+"a": {
+"x": "Chester Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Chester Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "19/02/2024",
+"ref": 470
+},
+{
+"street": "Audley Street",
+"suburb": "Petersham",
+"side": [
+"east"
+],
+"a": {
+"x": "Oxford Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Oxford Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "19/02/2024",
+"ref": 470
+},
+{
+"street": "Railway Street",
+"suburb": "Petersham",
+"side": [
+"west"
+],
+"from": "Parramatta Road",
+"to": "Queen Street",
+"sign": "1/2P 8.30am-6pm Mon-Fri, 8.30am-12.30pm Sat",
+"date": "19/02/2024",
+"ref": 471
+},
+{
+"street": "Bay Street",
+"suburb": "Croydon",
+"side": [
+"north"
+],
+"a": {
+"x": "Hammond Avenue",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Hammond Avenue",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 474
+},
+{
+"street": "Bay Street",
+"suburb": "Croydon",
+"side": [
+"north"
+],
+"a": {
+"x": "Hammond Avenue",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Hammond Avenue",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 474
+},
+{
+"street": "Hammond Avenue",
+"suburb": "Croydon",
+"side": [
+"west"
+],
+"a": {
+"x": "Bay Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Bay Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 474
+},
+{
+"street": "Hammond Avenue",
+"suburb": "Croydon",
+"side": [
+"east"
+],
+"a": {
+"x": "Bay Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Bay Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 474
+},
+{
+"street": "Dalmar Street",
+"suburb": "Croydon",
+"side": [
+"south"
+],
+"a": {
+"x": "Byron Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Byron Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 475
+},
+{
+"street": "Dalmar Street",
+"suburb": "Croydon",
+"side": [
+"south"
+],
+"a": {
+"x": "Byron Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Byron Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 475
+},
+{
+"street": "Gould Avenue",
+"suburb": "Lewisham",
+"side": [
+"north"
+],
+"a": {
+"x": "Gould Lane",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Gould Lane",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 476
+},
+{
+"street": "Gould Avenue",
+"suburb": "Lewisham",
+"side": [
+"north"
+],
+"a": {
+"x": "Gould Lane",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Gould Lane",
+"m": 6,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 476
+},
+{
+"street": "Gould Lane",
+"suburb": "Lewisham",
+"side": [
+"east"
+],
+"a": {
+"x": "Gould Avenue",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Gould Avenue",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 476
+},
+{
+"street": "Gould Lane",
+"suburb": "Lewisham",
+"side": [
+"west"
+],
+"a": {
+"x": "Gould Avenue",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Gould Avenue",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "18/03/2024",
+"ref": 476
+},
+{
+"street": "Albermarle Street",
+"suburb": "Newtown",
+"side": [
+"north"
+],
+"a": {
+"x": "Baltic Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Baltic Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "17/06/2024",
+"ref": 485
+},
+{
+"street": "Albermarle Street",
+"suburb": "Newtown",
+"side": [
+"north"
+],
+"a": {
+"x": "Baltic Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Baltic Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "17/06/2024",
+"ref": 485
+},
+{
+"street": "Albermarle Street",
+"suburb": "Newtown",
+"side": [
+"south"
+],
+"a": {
+"x": "Baltic Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Baltic Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "17/06/2024",
+"ref": 485
+},
+{
+"street": "Albermarle Street",
+"suburb": "Newtown",
+"side": [
+"south"
+],
+"a": {
+"x": "Baltic Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Baltic Street",
+"m": 8.5,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "17/06/2024",
+"ref": 485
+},
+{
+"street": "Baltic Street",
+"suburb": "Newtown",
+"side": [
+"east"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "17/06/2024",
+"ref": 485
+},
+{
+"street": "Baltic Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "17/06/2024",
+"ref": 485
+},
+{
+"street": "Baltic Street",
+"suburb": "Newtown",
+"side": [
+"east"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "17/06/2024",
+"ref": 485
+},
+{
+"street": "Baltic Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Albermarle Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Albermarle Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "17/06/2024",
+"ref": 485
+},
+{
+"street": "Hospital Lane",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Stanley Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Stanley Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "15/07/2024",
+"ref": 489
+},
+{
+"street": "Stanley Street",
+"suburb": "Marrickville",
+"side": [
+"south"
+],
+"a": {
+"x": "Hospital Lane",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Hospital Lane",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "15/07/2024",
+"ref": 489
+},
+{
+"street": "Phillip Street",
+"suburb": "Petersham",
+"side": [
+"east"
+],
+"a": {
+"x": "Margaret Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Margaret Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "19/08/2024",
+"ref": 494
+},
+{
+"street": "Meeks Lane",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Meeks Road",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Meeks Road",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "21/10/2024",
+"ref": 502
+},
+{
+"street": "Meeks Lane",
+"suburb": "Marrickville",
+"side": [
+"west"
+],
+"a": {
+"x": "Meeks Road",
+"m": 10,
+"dir": "north"
+},
+"b": {
+"x": "Meeks Road",
+"m": 55,
+"dir": "north"
+},
+"sign": "No Parking",
+"date": "21/10/2024",
+"ref": 502
+},
+{
+"street": "Abergeldie Street",
+"suburb": "Dulwich Hill",
+"side": [
+"north"
+],
+"a": {
+"x": "Arlington Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Arlington Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "18/11/2024",
+"ref": 503
+},
+{
+"street": "Abergeldie Street",
+"suburb": "Dulwich Hill",
+"side": [
+"north"
+],
+"a": {
+"x": "Arlington Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Arlington Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "18/11/2024",
+"ref": 503
+},
+{
+"street": "Abergeldie Street",
+"suburb": "Dulwich Hill",
+"side": [
+"south"
+],
+"a": {
+"x": "Arlington Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Arlington Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "18/11/2024",
+"ref": 503
+},
+{
+"street": "Abergeldie Street",
+"suburb": "Dulwich Hill",
+"side": [
+"south"
+],
+"a": {
+"x": "Arlington Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Arlington Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "18/11/2024",
+"ref": 503
+},
+{
+"street": "Arlington Street",
+"suburb": "Dulwich Hill",
+"side": [
+"west"
+],
+"a": {
+"x": "Abergeldie Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Abergeldie Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "18/11/2024",
+"ref": 503
+},
+{
+"street": "Arlington Street",
+"suburb": "Dulwich Hill",
+"side": [
+"east"
+],
+"a": {
+"x": "Abergeldie Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Abergeldie Street",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "18/11/2024",
+"ref": 503
+},
+{
+"street": "Arlington Street",
+"suburb": "Dulwich Hill",
+"side": [
+"west"
+],
+"a": {
+"x": "Abergeldie Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Abergeldie Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "18/11/2024",
+"ref": 503
+},
+{
+"street": "Arlington Street",
+"suburb": "Dulwich Hill",
+"side": [
+"east"
+],
+"a": {
+"x": "Abergeldie Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Abergeldie Street",
+"m": 10,
+"dir": "south"
+},
+"sign": "No Stopping",
+"date": "18/11/2024",
+"ref": 503
+},
+{
+"street": "Edwin Street",
+"suburb": "Croydon",
+"side": [
+"west"
+],
+"from": "Thomas Street",
+"to": "Paisley Road",
+"sign": "2P 8am-6pm Mon-Fri Permit Holders Excepted",
+"date": "09/12/2024",
+"ref": 512
+},
+{
+"street": "Etonville Parade",
+"suburb": "Croydon",
+"side": [
+"west"
+],
+"from": "Elizabeth Street",
+"to": "Anthony Street",
+"sign": "2P 8am-6pm Mon-Fri Permit Holders Excepted",
+"date": "09/12/2024",
+"ref": 512
+},
+{
+"street": "Croydon Road",
+"suburb": "Croydon",
+"side": [
+"west"
+],
+"from": "Elizabeth Street",
+"to": "Anthony Street",
+"sign": "2P 8am-6pm Mon-Fri Permit Holders Excepted",
+"date": "09/12/2024",
+"ref": 512
+},
+{
+"street": "Goodsell Street",
+"suburb": "St Peters",
+"side": [
+"south"
+],
+"from": "Council Street",
+"to": "May Lane",
+"sign": "2P 8am-10pm Mon-Fri Permit Holders Excepted Area M12",
+"date": "17/02/2025",
+"ref": 514
+},
+{
+"street": "Evans Street",
+"suburb": "Rozelle",
+"side": [
+"both"
+],
+"from": "Denison Street",
+"to": "Victoria Road",
+"sign": "2P 8am-10pm Permit Holders Excepted Area R1",
+"date": "17/02/2025",
+"ref": 515
+},
+{
+"street": "Gordon Street",
+"suburb": "Rozelle",
+"side": [
+"both"
+],
+"from": "Lilyfield Road",
+"to": "Victoria Road",
+"sign": "2P 8am-10pm Permit Holders Excepted Area R1",
+"date": "17/02/2025",
+"ref": 515
+},
+{
+"street": "Sarah Street",
+"suburb": "Enmore",
+"side": [
+"north"
+],
+"a": {
+"x": "Simmons Street",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Simmons Street",
+"m": 10,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "17/03/2025",
+"ref": 516
+},
+{
+"street": "Margaret Street",
+"suburb": "Enmore",
+"side": [
+"south"
+],
+"a": {
+"x": "Simmons Street",
+"m": 0,
+"dir": "east"
+},
+"b": {
+"x": "Simmons Street",
+"m": 10,
+"dir": "east"
+},
+"sign": "No Stopping",
+"date": "17/03/2025",
+"ref": 516
+},
+{
+"street": "Frazer Street",
+"suburb": "Marrickville",
+"side": [
+"north"
+],
+"a": {
+"x": "Miller Lane",
+"m": 0,
+"dir": "west"
+},
+"b": {
+"x": "Miller Lane",
+"m": 14,
+"dir": "west"
+},
+"sign": "No Stopping",
+"date": "17/03/2025",
+"ref": 517
+},
+{
+"street": "Albert Parade",
+"suburb": "Ashfield",
+"side": [
+"north"
+],
+"a": {
+"x": "Frederick Street",
+"m": 10,
+"dir": "east"
+},
+"b": {
+"x": "Frederick Street",
+"m": 15.5,
+"dir": "east"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "14/04/2025",
+"ref": 520
+},
+{
+"street": "Alt Street",
+"suburb": "Ashfield",
+"side": [
+"south"
+],
+"a": {
+"x": "Charlotte Street",
+"m": 10,
+"dir": "west"
+},
+"b": {
+"x": "Charlotte Street",
+"m": 15.5,
+"dir": "west"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "14/04/2025",
+"ref": 520
+},
+{
+"street": "Thomas Street",
+"suburb": "Ashfield",
+"side": [
+"north"
+],
+"a": {
+"x": "Edwin Street",
+"m": 10,
+"dir": "east"
+},
+"b": {
+"x": "Edwin Street",
+"m": 15.5,
+"dir": "east"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "14/04/2025",
+"ref": 520
+},
+{
+"street": "Burfitt Street",
+"suburb": "Leichhardt",
+"side": [
+"east"
+],
+"a": {
+"x": "Allen Street",
+"m": 10,
+"dir": "south"
+},
+"b": {
+"x": "Allen Street",
+"m": 15.5,
+"dir": "south"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "14/04/2025",
+"ref": 520
+},
+{
+"street": "George Street",
+"suburb": "Leichhardt",
+"side": [
+"west"
+],
+"a": {
+"x": "Treadgold Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "Treadgold Street",
+"m": 6.6,
+"dir": "south"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "14/04/2025",
+"ref": 520
+},
+{
+"street": "Justin Street",
+"suburb": "Lilyfield",
+"side": [
+"west"
+],
+"a": {
+"x": "O'Neill Street",
+"m": 0,
+"dir": "south"
+},
+"b": {
+"x": "O'Neill Street",
+"m": 5.5,
+"dir": "south"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "14/04/2025",
+"ref": 520
+},
+{
+"street": "Harrison Street",
+"suburb": "Marrickville",
+"side": [
+"east"
+],
+"a": {
+"x": "Marrickville Road",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Marrickville Road",
+"m": 10,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "14/04/2025",
+"ref": 520
+},
+{
+"street": "Harrison Street",
+"suburb": "Marrickville",
+"side": [
+"east"
+],
+"a": {
+"x": "Marrickville Road",
+"m": 10,
+"dir": "north"
+},
+"b": {
+"x": "Marrickville Road",
+"m": 15.5,
+"dir": "north"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "14/04/2025",
+"ref": 520
+},
+{
+"street": "Station Street",
+"suburb": "Newtown",
+"side": [
+"west"
+],
+"a": {
+"x": "Enmore Road",
+"m": 10,
+"dir": "north"
+},
+"b": {
+"x": "Enmore Road",
+"m": 15.5,
+"dir": "north"
+},
+"sign": "No Parking Authorised Car Share Vehicles Excepted",
+"date": "14/04/2025",
+"ref": 520
+},
+{
+"street": "Shepherd Street",
+"suburb": "Marrickville",
+"side": [
+"north"
+],
+"from": "Chapel Lane",
+"to": "Handley Street",
+"sign": "1P 6pm-10pm Permit Holders Excepted Area M9",
+"date": "14/04/2025",
+"ref": 524
+},
+{
+"street": "Douglas Street",
+"suburb": "Stanmore",
+"side": [
+"north"
+],
+"from": "Percival Lane West",
+"to": "Bruce Lane East",
+"sign": "2P 8am-10pm Mon-Fri Permit Holders Excepted Area M17",
+"date": "19/05/2025",
+"ref": 526
+},
+{
+"street": "Elliott Street",
+"suburb": "Balmain",
+"side": [
+"north"
+],
+"from": "Rosieville Lane",
+"to": "Glassop Street",
+"sign": "2P 8am-10pm Permit Holders Excepted Area B1",
+"date": "16/06/2025",
+"ref": 528
+},
+{
+"street": "Elliott Street",
+"suburb": "Balmain",
+"side": [
+"south"
+],
+"from": "Claremont Street",
+"to": "Terry Street",
+"sign": "2P 8am-10pm Permit Holders Excepted Area B1",
+"date": "16/06/2025",
+"ref": 528
+},
+{
+"street": "Gower Street",
+"suburb": "Ashfield",
+"side": [
+"west"
+],
+"from": "Liverpool Road",
+"to": "Ormond Street",
+"sign": "2P 8am-6pm Mon-Fri Permit Holders Excepted Area 10",
+"date": "16/06/2025",
+"ref": 530
+},
+{
+"street": "Baltic Street",
+"suburb": "Newtown",
+"side": [
+"both"
+],
+"a": {
+"x": "Bedford Street",
+"m": 0,
+"dir": "north"
+},
+"b": {
+"x": "Bedford Street",
+"m": 6,
+"dir": "north"
+},
+"sign": "No Stopping",
+"date": "21/07/2025",
+"ref": 534
+}
+]
