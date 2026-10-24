@@ -116,6 +116,7 @@ function restyleBase() {
   }
 }
 
+const under = () => ['dest-mask', 'opt-kerb', 'cp-cluster'].find((id) => map.getLayer(id));
 function kerbLayers() {
   const c = C();
   const col = ['match', ['get', 'c'], 'free', c.free, 'likely', c.free, 'paid', c.paid, 'short', c.short, 'restricted', c.restricted, 'permit', c.permit, c.unknown];
@@ -126,12 +127,12 @@ function kerbLayers() {
     map.addSource('meters', { type: 'geojson', data: { type: 'FeatureCollection', features: METERS.map(([x, y, k, n]) => ({ type: 'Feature', properties: { k, n }, geometry: { type: 'Point', coordinates: [x, y] } })) } });
   }
   for (const id of ['kerb-glow', 'kerb-faint', 'kerb-line', 'kerb-short', 'kerb-sel', 'meter-dot']) if (map.getLayer(id)) map.removeLayer(id);
-  map.addLayer({ id: 'kerb-glow', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(3.2), 'line-blur': w(2.4), 'line-opacity': S.sat ? 0.55 : dark() ? 0.35 : 0.18 } });
-  map.addLayer({ id: 'kerb-faint', type: 'line', source: 'kerbs', filter: ['all', ['in', ['get', 'c'], ['literal', ['unknown', 'permit', 'likely']]], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'round' }, paint: { 'line-color': col, 'line-width': w(0.55), 'line-opacity': ['case', ['==', ['get', 'c'], 'permit'], 0.4, ['==', ['get', 'c'], 'likely'], 0.85, 0.5], 'line-dasharray': [1.5, 1.5] } });
-  map.addLayer({ id: 'kerb-line', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(1) } });
-  map.addLayer({ id: 'kerb-short', type: 'line', source: 'kerbs', filter: ['all', ['==', ['get', 'c'], 'short'], ['!', ['in', 'short', ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'butt' }, paint: { 'line-color': col, 'line-width': w(0.9), 'line-dasharray': [1.2, 1] } });
-  map.addLayer({ id: 'kerb-sel', type: 'line', source: 'kerbs', filter: ['==', ['get', 'id'], S.sel && typeof S.sel === 'number' ? S.sel : -1], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.fg, 'line-width': ['interpolate', ['linear'], ['zoom'], 13, 1.5, 18, 3], 'line-gap-width': w(1.4), 'line-opacity': 0.95 } });
-  map.addLayer({ id: 'meter-dot', type: 'circle', source: 'meters', minzoom: 16.5, paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 16.5, 2, 19, 5], 'circle-color': c.bg, 'circle-stroke-color': c.fg, 'circle-stroke-width': 1.2 } });
+  map.addLayer({ id: 'kerb-glow', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(3.2), 'line-blur': w(2.4), 'line-opacity': S.sat ? 0.55 : dark() ? 0.35 : 0.18 } }, under());
+  map.addLayer({ id: 'kerb-faint', type: 'line', source: 'kerbs', filter: ['all', ['in', ['get', 'c'], ['literal', ['unknown', 'permit', 'likely']]], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'round' }, paint: { 'line-color': col, 'line-width': w(0.55), 'line-opacity': ['case', ['==', ['get', 'c'], 'permit'], 0.4, ['==', ['get', 'c'], 'likely'], 0.85, 0.5], 'line-dasharray': [1.5, 1.5] } }, under());
+  map.addLayer({ id: 'kerb-line', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(1) } }, under());
+  map.addLayer({ id: 'kerb-short', type: 'line', source: 'kerbs', filter: ['all', ['==', ['get', 'c'], 'short'], ['!', ['in', 'short', ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'butt' }, paint: { 'line-color': col, 'line-width': w(0.9), 'line-dasharray': [1.2, 1] } }, under());
+  map.addLayer({ id: 'kerb-sel', type: 'line', source: 'kerbs', filter: ['==', ['get', 'id'], S.sel && typeof S.sel === 'number' ? S.sel : -1], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.fg, 'line-width': ['interpolate', ['linear'], ['zoom'], 13, 1.5, 18, 3], 'line-gap-width': w(1.4), 'line-opacity': 0.95 } }, under());
+  map.addLayer({ id: 'meter-dot', type: 'circle', source: 'meters', minzoom: 16.5, paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 16.5, 2, 19, 5], 'circle-color': c.bg, 'circle-stroke-color': c.fg, 'circle-stroke-width': 1.2 } }, under());
 }
 
 function recolour() {
@@ -155,7 +156,7 @@ function setSat(on) {
   if (map.getLayer('sat')) map.setLayoutProperty('sat', 'visibility', on ? 'visible' : 'none');
   // Labels need a dark halo over photos.
   for (const l of map.getStyle().layers) {
-    if (l.type !== 'symbol' || l.id.startsWith('cp-') || !l.layout?.['text-field']) continue;
+    if (l.type !== 'symbol' || l.id.startsWith('cp-') || !l.layout?.['text-field'] || l.id.includes('shield')) continue; // road number shields keep their dark text
     try { if (on) { map.setPaintProperty(l.id, 'text-color', '#ffffff'); map.setPaintProperty(l.id, 'text-halo-color', 'rgba(0,0,0,.75)'); } } catch { /* skip */ }
   }
   if (!on) restyleBase();
@@ -179,7 +180,8 @@ function cpInfo(cp) {
 function cpData() {
   return { type: 'FeatureCollection', features: CARPARKS.map((cp) => {
     const i = cpInfo(cp);
-    return { type: 'Feature', properties: { id: cp.id, label: i.label, tone: i.tone, p: i.p, sel: S.sel === cp.id ? 1 : 0 }, geometry: { type: 'Point', coordinates: cp.at } };
+    const out = S.dest && distM(cp.at, S.dest.at) > destRadius() ? 1 : 0;
+    return { type: 'Feature', properties: { id: cp.id, label: i.label, tone: i.tone, p: i.p, out, sel: S.sel === cp.id ? 1 : 0 }, geometry: { type: 'Point', coordinates: cp.at } };
   }) };
 }
 // Rounded pill images the map can stretch around text (drawn once at 2x for sharp edges).
@@ -207,7 +209,7 @@ function cpLayers() {
     'icon-image': ['concat', 'pill-', ['get', 'tone']], 'text-size': 12.5,
     'text-field': ['case', ['==', ['get', 'label'], ''], 'P', ['format', 'P  ', { 'text-color': green }, ['get', 'label'], {}]],
     'symbol-sort-key': ['get', 'p'], 'icon-allow-overlap': false, 'text-allow-overlap': false },
-    paint: { 'text-color': ['match', ['get', 'tone'], 'est', '#1d3140', 'free', '#0f7a43', '#0f2230'] } });
+    paint: { 'text-color': ['match', ['get', 'tone'], 'est', '#1d3140', 'free', '#0f7a43', '#0f2230'], 'icon-opacity': ['case', ['==', ['get', 'out'], 1], 0.4, 1], 'text-opacity': ['case', ['==', ['get', 'out'], 1], 0.4, 1] } });
   map.addLayer({ id: 'cp-sel', type: 'symbol', source: 'cps', filter: ['==', ['get', 'sel'], 1], layout: { ...common, 'icon-image': 'pill-sel', 'text-size': 13,
     'text-field': ['case', ['==', ['get', 'label'], ''], 'P', ['concat', 'P  ', ['get', 'label']]], 'icon-allow-overlap': true, 'text-allow-overlap': true }, paint: { 'text-color': c.bg } });
 }
@@ -216,8 +218,46 @@ function drawCarParks() {
   for (const l of ['cp-cluster', 'cp-pill', 'cp-sel']) if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', S.hidden.has('carpark') ? 'none' : 'visible');
   const src = map.getSource('cps');
   if (!src) return;
-  const data = cpData(), key = JSON.stringify(data.features.map((f) => [f.properties.label, f.properties.sel]));
+  const data = cpData(), key = JSON.stringify(data.features.map((f) => [f.properties.label, f.properties.sel, f.properties.out]));
   if (key !== cpDataKey) { cpDataKey = key; src.setData(data); }
+}
+// Searching a place: shade everything beyond the walk, ring the walking distance, and label the best kerbs.
+const destRadius = () => Math.max(250, S.walk * WALK_M_PER_MIN);
+function circle(at, r, n = 72) {
+  const k = Math.cos((at[1] * Math.PI) / 180) * 111320;
+  return Array.from({ length: n + 1 }, (_, i) => { const a = (i / n) * 2 * Math.PI; return [at[0] + (r * Math.cos(a)) / k, at[1] + (r * Math.sin(a)) / 110540]; });
+}
+const EMPTY = { type: 'FeatureCollection', features: [] };
+function destLayers() {
+  if (!map.getSource('dest-area')) { map.addSource('dest-area', { type: 'geojson', data: EMPTY }); map.addSource('opts', { type: 'geojson', data: EMPTY }); }
+  for (const id of ['dest-mask', 'dest-ring', 'opt-kerb', 'opt-badge']) if (map.getLayer(id)) map.removeLayer(id);
+  const c = C(), before = map.getLayer('cp-cluster') ? 'cp-cluster' : undefined;
+  map.addLayer({ id: 'dest-mask', type: 'fill', source: 'dest-area', filter: ['==', ['get', 'k'], 'mask'], paint: { 'fill-color': dark() ? '#05090d' : '#ffffff', 'fill-opacity': dark() ? 0.6 : 0.62 } }, before);
+  map.addLayer({ id: 'dest-ring', type: 'line', source: 'dest-area', filter: ['==', ['get', 'k'], 'ring'], paint: { 'line-color': c.accent, 'line-width': 2, 'line-dasharray': [2, 2], 'line-opacity': 0.9 } }, before);
+  map.addLayer({ id: 'opt-kerb', type: 'line', source: 'kerbs', filter: ['in', ['get', 'id'], ['literal', []]], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.fg, 'line-width': ['interpolate', ['linear'], ['zoom'], 13, 1.2, 18, 2.5], 'line-gap-width': ['interpolate', ['linear'], ['zoom'], 13, 2.5, 16, 5, 18, 9], 'line-opacity': 0.85 } }, before);
+  map.addLayer({ id: 'opt-badge', type: 'symbol', source: 'opts', layout: { 'icon-image': ['concat', 'pill-', ['get', 'tone']], 'icon-text-fit': 'both', 'icon-text-fit-padding': [1, 6, 1, 6], 'text-field': ['get', 'label'], 'text-font': ['Noto Sans Bold'], 'text-size': 12, 'text-padding': 2, 'symbol-sort-key': ['get', 'r'], 'text-offset': [0, -1.3] }, paint: { 'text-color': ['match', ['get', 'tone'], 'free', '#0f7a43', '#0f2230'] } }, before);
+  drawDest(lastOpts);
+}
+let lastOpts = null;
+function drawDest(o) {
+  lastOpts = o;
+  const area = map.getSource('dest-area'), opts = map.getSource('opts');
+  if (!area || !map.getLayer('opt-kerb')) return;
+  if (!S.dest || !o) { area.setData(EMPTY); opts.setData(EMPTY); map.setFilter('opt-kerb', ['in', ['get', 'id'], ['literal', []]]); return; }
+  const ring = circle(S.dest.at, destRadius());
+  area.setData({ type: 'FeatureCollection', features: [
+    { type: 'Feature', properties: { k: 'mask' }, geometry: { type: 'Polygon', coordinates: [[[149.5, -35], [153, -35], [153, -32.5], [149.5, -32.5], [149.5, -35]], ring.slice().reverse()] } },
+    { type: 'Feature', properties: { k: 'ring' }, geometry: { type: 'LineString', coordinates: ring } }] });
+  const top = [...o.free.slice(0, 5), ...o.paid.filter((x) => !x.c.unknownRate).slice(0, 3), ...(o.free.length ? [] : o.likely.slice(0, 3))];
+  map.setFilter('opt-kerb', ['in', ['get', 'id'], ['literal', top.map((x) => x.p.id)]]);
+  opts.setData({ type: 'FeatureCollection', features: top.map((x, r) => ({ type: 'Feature', properties: { r, tone: x.c.cost > 0 ? 'price' : 'free', label: `${x.c.likely ? 'Probably free' : x.c.cost > 0 ? money(x.c.cost) : 'Free'} · ${Math.max(1, Math.round(x.d / WALK_M_PER_MIN))} min` }, geometry: { type: 'Point', coordinates: mids.get(x.p.id) } })) });
+}
+// Zoom out just enough to see the whole walk, clear of the search bar and the panel.
+function fitDest() {
+  if (!S.dest) return;
+  const ring = circle(S.dest.at, destRadius(), 24), xs = ring.map((p) => p[0]), ys = ring.map((p) => p[1]);
+  const desk = isDesk(), side = desk ? Math.round(panel.getBoundingClientRect().right) + 24 : 24;
+  map.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: { top: 90, bottom: desk ? 40 : px('--vis') + 24, left: side, right: 24 }, duration: 900, maxZoom: 17 });
 }
 // Park&Ride: free with a public transport trip. occ[day][hour] is how full it usually is (% from the past week).
 function occAt(cp, day, h) {
@@ -452,6 +492,7 @@ function renderList() {
   sessionCard();
   const inCoverage = KERBS.features.some((f) => { const m = mids.get(f.properties.id); return Math.abs(m[0] - centre[0]) < 0.015 && Math.abs(m[1] - centre[1]) < 0.012; });
   if (!inCoverage) {
+    drawDest(S.dest ? { free: [], paid: [], likely: [] } : null);
     body.insertAdjacentHTML('beforeend', `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington, Coogee, Randwick, Maroubra), Manly and Chatswood. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`);
     carParkRows();
     return;
@@ -486,6 +527,7 @@ function renderList() {
   else sum.innerHTML = S.dest ? `No kerb data within a ${S.walk}-minute walk of ${S.dest.name}. Try a longer walk.` : `No kerb data near the middle of the map. Move the map to a street with coloured kerbs.`;
   body.appendChild(sum);
   compareLine(free, paid, centre, nearM);
+  drawDest(S.dest ? { free, paid, likely } : null);
 
   const group = (title, list, limit = 12) => {
     if (!list.length) return;
@@ -586,7 +628,8 @@ function setDest(d) {
   if (d) {
     const el = document.createElement('div'); el.className = 'dest-pin'; el.innerHTML = '<i class="ph-fill ph-flag"></i>';
     destMarker = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(d.at).addTo(map);
-    map.flyTo({ center: d.at, zoom: S.walk > 10 ? 15.4 : 16.2, duration: 900 });
+    if (sheet === 'open') setSheet('peek');
+    requestAnimationFrame(fitDest);
   } else q.value = '';
   update();
 }
@@ -596,7 +639,7 @@ function destBar() {
   el.innerHTML = `<div class="dest-top"><i class="ph-fill ph-flag" aria-hidden="true"></i><span>Near ${S.dest.name}</span><button type="button" aria-label="Clear destination"><i class="ph ph-x"></i></button></div>
     <div class="walkseg" role="group" aria-label="Longest walk">Walk up to ${[2, 5, 10, 15, 20].map((w) => `<button type="button" data-w="${w}" aria-pressed="${w === S.walk}">${w} min</button>`).join('')}</div>`;
   el.querySelector('.dest-top button').onclick = () => setDest(null);
-  el.querySelectorAll('[data-w]').forEach((b) => (b.onclick = () => { S.walk = +b.dataset.w; try { localStorage.setItem('kerb-walk', String(S.walk)); } catch { /* ignore */ } renderList(); }));
+  el.querySelectorAll('[data-w]').forEach((b) => (b.onclick = () => { S.walk = +b.dataset.w; try { localStorage.setItem('kerb-walk', String(S.walk)); } catch { /* ignore */ } renderList(); drawCarParks(); fitDest(); }));
   body.appendChild(el);
 }
 // Street parking against the cheapest car park nearby, for the whole stay.
@@ -1054,7 +1097,7 @@ visualViewport?.addEventListener('resize', () => { clearTimeout(settle.t); settl
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { settle(); map.triggerRepaint(); } });
 addEventListener('pageshow', settle);
 map.on('webglcontextlost', () => toast('The map paused. It will come back in a moment.'));
-map.on('webglcontextrestored', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); recolour(); } if (S.sat) setSat(true); });
+map.on('webglcontextrestored', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); destLayers(); recolour(); } if (S.sat) setSat(true); });
 
 /* ---------- search ---------- */
 // Suggestions start at the second letter: streets and car parks Kerb knows appear instantly,
@@ -1189,7 +1232,7 @@ for (const l of ['kerb-line', 'kerb-short', 'kerb-faint']) {
 let moveTimer = null;
 map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
 
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); } if (S.sat) setSat(true); drawRibbon(); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); destLayers(); } if (S.sat) setSat(true); drawRibbon(); });
 addEventListener('resize', () => { setPeek(); drawRibbon(); });
 
 /* ---------- boot ---------- */
@@ -1215,6 +1258,7 @@ map.on('style.load', async () => {
   recolour();
   kerbLayers();
   cpLayers();
+  destLayers();
   if (S.sat) setSat(true);
   update();
 });
