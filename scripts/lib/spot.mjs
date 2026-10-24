@@ -26,7 +26,8 @@ async function get(url, as = 'json', tries = 4) {
 const DAY = { mon: 1, m: 1, tue: 2, tu: 2, wed: 3, w: 3, thu: 4, th: 4, fri: 5, f: 5, sat: 6, sa: 6, sun: 0, su: 0 };
 const ALL = [0, 1, 2, 3, 4, 5, 6];
 function parseDays(s) {
-  const t = s.toLowerCase().replace(/inc\.?\s*public holidays?/, '').replace(/school days only/, '').trim();
+  const t = s.toLowerCase().replace(/(inc|excl?)\.?\s*public holidays?/g, '').replace(/school days only/, '')
+    .replace(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s*-\s*([a-z]+)/g, '').trim(); // seasons: treated as all year
   if (!t) return null;
   const out = new Set();
   for (const part of t.split(/[,&\s]+(?=[a-z])/)) {
@@ -43,6 +44,7 @@ const TIME = /(\d{1,2}):(\d\d)\s*([ap])m?\s*-\s*(\d{1,2}):(\d\d)\s*([ap])m?/i;
 // One period like "Max Dur. 2 hours 8:30a - 6:00p M-F" -> { p, from, to, days, ph, school }
 function parsePeriod(s) {
   let p = null;
+  s = s.replace(/max(?:imum)?\.?\s*dur(?:ation)?\.?:?\s*undefined/i, '');
   const md = /max(?:imum)?\.?\s*dur(?:ation)?\.?:?\s*(\d+)\s*(hours?|minutes?|mins?)/i.exec(s);
   if (md) p = /^h/i.test(md[2]) ? +md[1] : +md[1] / 60;
   const tm = TIME.exec(s);
@@ -52,13 +54,13 @@ function parsePeriod(s) {
   const days = parseDays(rest);
   if (days === undefined) return null;
   const school = /school days/i.test(s);
-  return { p, from, to, days: days || (school ? [1, 2, 3, 4, 5] : ALL), ph: /public holiday/i.test(s) ? 1 : 0, school };
+  return { p, from, to, days: days || (school ? [1, 2, 3, 4, 5] : ALL), ph: /inc\.?\s*public holiday/i.test(s) ? 1 : 0, school };
 }
 
 const NO_PARK = {
   'no stopping': 'No stopping', 'no parking': 'No parking', clearway: 'Clearway', 'bus zone': 'Bus zone', 'bus lane': 'Bus lane',
   'loading zone': 'Loading zone', 'taxi zone': 'Taxi zone', 'mail zone': 'Mail zone', 'works zone': 'Works zone', towaway: 'Tow-away zone',
-  'disabled parking': 'Mobility permit holders only', 'motorbikes only': 'Motorbikes only',
+  'disabled parking': 'Mobility permit holders only', 'truck zone': 'Truck zone', 'motorbikes only': 'Motorbikes only',
 };
 
 // One arrow's worth of sign: kind like "Restricted Parking", desc like "Max Dur. 2 hours 8:00a - 10:00p, Area Permit: Ocean Beach".

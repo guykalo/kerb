@@ -177,19 +177,38 @@ export function buildWoollahra(raw) {
 // Every kerb in a resident parking scheme, drawn kerb by kerb, with its zone and number of spaces.
 // The council doesn't publish the sign times, so these show as permit areas: visitors are usually time-limited.
 const RANDWICK = 'https://mapservices.randwick.nsw.gov.au/arcgis/rest/services/extTransport/ResidentParkingZone/MapServer/0';
+// The council's server refuses connections from GitHub's build machines, so when the live fetch fails we use
+// data/snapshots/randwick.json, a copy saved from the same service (compact: coordinates as 1e-5 degree deltas).
 export async function fetchRandwick() {
-  const zones = (await arcgisAll(RANDWICK, { outFields: 'streetName,suburb,residentParkingSchemeZone,availableSpace,fromHouseNumber,toHouseNumber', orderByFields: 'OBJECTID', geometryPrecision: '6' }))
-    .filter((f) => f.geometry?.paths).map((f) => ({ ...f.attributes, paths: f.geometry.paths }));
-  log(`  randwick: ${zones.length} resident permit kerbs`);
-  return { zones };
+  try {
+    const zones = (await arcgisAll(RANDWICK, { outFields: 'streetName,suburb,residentParkingSchemeZone,availableSpace,fromHouseNumber,toHouseNumber', orderByFields: 'OBJECTID', geometryPrecision: '6' }))
+      .filter((f) => f.geometry?.paths).map((f) => ({ ...f.attributes, paths: f.geometry.paths }));
+    log(`  randwick: ${zones.length} resident permit kerbs (live)`);
+    return { zones, snapshot: false };
+  } catch (e) {
+    const { readFile } = await import('node:fs/promises');
+    const rows = JSON.parse(await readFile(new URL('../../data/snapshots/randwick.json', import.meta.url), 'utf8'));
+    const zones = rows.map(([streetName, suburb, residentParkingSchemeZone, availableSpace, fromHouseNumber, toHouseNumber, paths]) => ({
+      streetName, suburb, residentParkingSchemeZone, availableSpace, fromHouseNumber, toHouseNumber,
+      paths: paths.map((d) => { const out = []; let x = 0, y = 0; for (let i = 0; i < d.length; i += 2) { x += d[i]; y += d[i + 1]; out.push([x / 1e5, y / 1e5]); } return out; }),
+    }));
+    log(`  randwick: live fetch failed (${e.message.split('\n').pop().trim()}), using the saved copy: ${zones.length} kerbs`);
+    return { zones, snapshot: true };
+  }
 }
+const houses = (a = '', b = '') => {
+  [a, b] = [String(a).trim(), String(b).trim()];
+  if (!a && !b) return '';
+  const span = b && b !== a ? `${a || b} to ${b}` : a || b;
+  return /^\d/.test(a || b) ? `Outside ${span}` : span;
+};
 export function buildRandwick(raw) {
   const features = [];
   for (const z of raw.zones) for (const path of z.paths) {
     if (path.length < 2) continue;
     features.push({
       type: 'Feature',
-      properties: { s: titleCase(z.streetName), b: titleCase(z.suburb), sd: [z.fromHouseNumber, z.toHouseNumber].filter(Boolean).length ? `Outside ${[z.fromHouseNumber, z.toHouseNumber].filter(Boolean).join(' to ')}` : '', k: -1, z: 0, pa: z.residentParkingSchemeZone ? `Area ${z.residentParkingSchemeZone}` : 'Resident scheme', lk: 0, f15: 0, n: +z.availableSpace || 0, src: 'rw' },
+      properties: { s: titleCase(z.streetName), b: titleCase(z.suburb), sd: houses(z.fromHouseNumber, z.toHouseNumber), k: -1, z: 0, pa: z.residentParkingSchemeZone ? `Area ${z.residentParkingSchemeZone}` : 'Resident scheme', lk: 0, f15: 0, n: +z.availableSpace || 0, src: 'rw' },
       geometry: { type: 'LineString', coordinates: path.map((c) => round(c)) },
     });
   }
