@@ -230,7 +230,7 @@ export function buildData(raw) {
   const tally = {};
   for (const f of kerbGeo.features) {
     const rs = ruleSets[f.properties.k];
-    if (!rs || !/traffic committee decision/i.test(rs.src || '')) continue;
+    if (!rs || !/traffic committee/i.test(rs.src || '')) continue;
     for (const part of String(rs.text || '').split(';')) {
       const m = /permit holders excepted,?\s*area\s+([A-Z0-9]+)/i.exec(part);
       if (!m) continue;

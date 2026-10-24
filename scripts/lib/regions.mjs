@@ -35,13 +35,13 @@ async function arcgisAll(url, params) {
 
 /* ---------- NSW road centrelines (Spatial Services, statewide) ---------- */
 const NSW_ROADS = 'https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Transport_Theme/FeatureServer/5';
-export async function fetchRoads([x0, y0, x1, y1]) {
+export async function fetchRoads([x0, y0, x1, y1], { lanes = false } = {}) {
   // Ask for a grid of tiles so no single query hits the record limit.
   const feats = [];
   const step = 0.02;
   for (let x = x0; x < x1; x += step) for (let y = y0; y < y1; y += step) {
     const env = JSON.stringify({ xmin: x, ymin: y, xmax: Math.min(x + step, x1), ymax: Math.min(y + step, y1), spatialReference: { wkid: 4326 } });
-    const f = await arcgisAll(NSW_ROADS, { geometry: env, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: 'objectid,roadnamebase,roadnametype,roadnamesuffix,functionhierarchy,roadontype', where: 'roadontype=1 AND functionhierarchy>=2 AND functionhierarchy<=6', geometryPrecision: '6' });
+    const f = await arcgisAll(NSW_ROADS, { geometry: env, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects', outFields: 'objectid,roadnamebase,roadnametype,roadnamesuffix,functionhierarchy,roadontype', where: `roadontype=1 AND functionhierarchy>=2 AND functionhierarchy<=${lanes ? 7 : 6}`, geometryPrecision: '6' });
     feats.push(...f);
   }
   const seen = new Set();
@@ -275,10 +275,18 @@ export async function fetchManual() {
     spec.sources.cosdec = 'City of Sydney traffic committee decision: https://meetings.cityofsydney.nsw.gov.au/mgCommitteeDetails.aspx?ID=138';
     log(`  decisions: ${list.length} downloaded, ${d.decisions} placed as ${d.entries.length} kerb stretches, skipped ${JSON.stringify(d.skipped)}`);
   } catch (e) { log(`  decisions: none (${e.message.split('\n')[0]})`); }
+  try {
+    const { minutesToEntries } = await import('./decisions.mjs');
+    const list = JSON.parse(await readFile(new URL('../../data/decisions-iw.json', import.meta.url), 'utf8'));
+    const d = minutesToEntries(list);
+    spec.streets.push(...d.entries);
+    spec.sources.iwdec = 'Inner West Local Traffic Committee: https://innerwest.infocouncil.biz';
+    log(`  Inner West minutes: ${list.length} read, ${d.entries.length} placed, skipped ${JSON.stringify(d.skipped)}`);
+  } catch (e) { log(`  Inner West minutes: none (${e.message.split('\n')[0]})`); }
   const pts = spec.streets.map((e) => e.near || e.area);
   const pad = 0.006;
   const [x0, y0, x1, y1] = bbox(pts);
-  const roads = await fetchRoads([x0 - pad, y0 - pad, x1 + pad, y1 + pad]);
+  const roads = await fetchRoads([x0 - pad, y0 - pad, x1 + pad, y1 + pad], { lanes: true }); // council decisions are often about laneways
   log(`  manual rules: ${spec.streets.length} street stretches, ${roads.length} road segments`);
   return { spec, roads };
 }

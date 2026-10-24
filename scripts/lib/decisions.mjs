@@ -18,7 +18,30 @@ export const SUBURBS = {
   'elizabeth bay': [151.229, -33.872], 'rushcutters bay': [151.229, -33.875], paddington: [151.231, -33.884], 'moore park': [151.22, -33.895],
   'centennial park': [151.233, -33.898], 'millers point': [151.204, -33.859], 'dawes point': [151.207, -33.856], 'the rocks': [151.208, -33.859],
   barangaroo: [151.201, -33.862], 'st peters': [151.18, -33.913], 'woolloomooloo bay': [151.222, -33.869], 'strawberry hills': [151.21, -33.891],
+  // Inner West
+  balmain: [151.18, -33.857], 'balmain east': [151.191, -33.857], birchgrove: [151.182, -33.851], rozelle: [151.171, -33.862],
+  lilyfield: [151.162, -33.874], leichhardt: [151.156, -33.883], stanmore: [151.165, -33.894], enmore: [151.174, -33.9],
+  petersham: [151.155, -33.894], lewisham: [151.15, -33.896], marrickville: [151.155, -33.911], 'dulwich hill': [151.139, -33.905],
+  sydenham: [151.167, -33.916], tempe: [151.159, -33.924], 'summer hill': [151.138, -33.892], ashfield: [151.126, -33.889],
+  croydon: [151.115, -33.882], 'croydon park': [151.107, -33.897], haberfield: [151.139, -33.88], 'dobroyd point': [151.145, -33.873],
+  'hurlstone park': [151.132, -33.909], ashbury: [151.12, -33.898],
 };
+// Entries read from Inner West committee minutes (data/decisions-iw.json) into map entries.
+export function minutesToEntries(list) {
+  const out = [], skipped = { place: 0, sign: 0, suburb: 0 };
+  for (const e of list) {
+    const area = SUBURBS[String(e.suburb || '').toLowerCase()];
+    if (!area) { skipped.suburb++; continue; }
+    if (!(e.a && e.b) && !(e.from && e.to)) { skipped.place++; continue; }
+    const unrestricted = /^unrestricted$/i.test(e.sign || '');
+    const rules = unrestricted ? [] : readSign(e.sign || '').rules;
+    if (!unrestricted && !rules.length) { skipped.sign++; continue; }
+    if (/TICKET|METER/i.test(e.sign || '')) continue; // paid kerbs come from the meter list
+    const side = (e.side || []).map((x) => String(x).toLowerCase());
+    out.push({ street: e.street, suburb: e.suburb, area, side: side.length ? side : ['both'], ...(e.a && e.b ? { a: e.a, b: e.b } : { from: e.from, to: e.to }), rules, text: unrestricted ? 'Unrestricted' : e.sign, src: 'iwdec', date: e.date, ref: e.ref });
+  }
+  return { entries: out, skipped };
+}
 const ROAD = "(?:Street|St|Lane|Road|Rd|Avenue|Ave|Place|Parade|Way|Grove|Terrace|Crescent|Close|Drive|Walk|Square|Boulevard|Highway|Circuit|Row|Mall|Esplanade|Broadway)";
 const NAME = `((?:[A-Z][\\w'’.-]*\\s+){0,4}?${ROAD}\\b|Broadway)`;
 const SIDE = { northern: 'north', southern: 'south', eastern: 'east', western: 'west', north: 'north', south: 'south', east: 'east', west: 'west' };
