@@ -196,19 +196,38 @@ export async function fetchRandwick() {
     return { zones, snapshot: true };
   }
 }
+function ruleFor(z, reg) {
+  if (!reg) return -1;
+  const st = norm(z.streetName), zone = String(z.residentParkingSchemeZone || '').trim().toUpperCase();
+  const r = RANDWICK_RULES.find(([zn, streets]) => zn === zone && streets.includes(st));
+  if (!r) return -1;
+  const [zn, , hours, days, from, to, srcDoc] = r;
+  return reg.add({ rules: [[hours, days, from, to, 0, 0, 0, `Permit holders Area ${zn} excepted`]], q: 0, g: 'free', u: 0, src: `Randwick Council ${srcDoc}`, text: `${hours}P ${from === 8.5 ? '8:30am' : `${from}am`}-${to - 12}pm ${days.length === 7 ? 'every day' : 'Mon-Fri'}, permit holders excepted, Area ${zn}` });
+}
 const houses = (a = '', b = '') => {
   [a, b] = [String(a).trim(), String(b).trim()];
   if (!a && !b) return '';
   const span = b && b !== a ? `${a || b} to ${b}` : a || b;
   return /^\d/.test(a || b) ? `Outside ${span}` : span;
 };
-export function buildRandwick(raw) {
+// Sign wording from Randwick Traffic Committee resolutions, applied only to the named streets in the named zone.
+// [zone, streets, hours, days, from, to, source]
+const MF = [1, 2, 3, 4, 5], ALL7 = [0, 1, 2, 3, 4, 5, 6];
+const RANDWICK_RULES = [
+  ['RA6', ['avoca street', 'cowper street', 'fraser street', 'hodgson street', 'market street', 'mclennan avenue', 'monmouth street', 'randwick street', 'stanley street'], 2, MF, 8, 18, 'Traffic Committee TC168/20 (Nov 2020)'],
+  ['RA11', ['canberra street', 'dudley street', 'ethel street', 'henry street', 'frederick street'], 2, MF, 8, 20, 'Traffic Committee TC6/24 (Feb 2024)'],
+  ['KN1', ['roma avenue'], 1, ALL7, 8, 20, 'Traffic Committee TC2/24 (Feb 2024)'],
+  ['KN1', ['doncaster avenue'], 1, MF, 8, 18, 'Traffic Committee TC2/24 (Feb 2024)'],
+  ['CO1', ['bream street'], 2, ALL7, 8, 20, 'Traffic Committee TC80/22 (Jun 2022)'],
+  ['SP1', ['cuthill street'], 1, ALL7, 8.5, 22, 'Traffic Committee TC122/22 (Sep 2022)'],
+];
+export function buildRandwick(raw, reg) {
   const features = [];
   for (const z of raw.zones) for (const path of z.paths) {
     if (path.length < 2) continue;
     features.push({
       type: 'Feature',
-      properties: { s: titleCase(z.streetName), b: titleCase(z.suburb), sd: houses(z.fromHouseNumber, z.toHouseNumber), k: -1, z: 0, pa: z.residentParkingSchemeZone ? `Area ${z.residentParkingSchemeZone}` : 'Resident scheme', lk: 0, f15: 0, n: +z.availableSpace || 0, src: 'rw' },
+      properties: { s: titleCase(z.streetName), b: titleCase(z.suburb), sd: houses(z.fromHouseNumber, z.toHouseNumber), k: ruleFor(z, reg), z: 0, pa: z.residentParkingSchemeZone ? `Area ${z.residentParkingSchemeZone}` : 'Resident scheme', lk: 0, f15: 0, n: +z.availableSpace || 0, src: 'rw' },
       geometry: { type: 'LineString', coordinates: path.map((c) => round(c)) },
     });
   }

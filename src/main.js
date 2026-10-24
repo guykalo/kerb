@@ -765,7 +765,7 @@ function renderDetail() {
       <h3 class="h3">Across the week</h3>${weekHTML(p)}
       <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
-      <p class="note">Source: ${set.src ? `${set.src}${/survey/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
+      <p class="note">Source: ${set.src ? `${set.src}${/survey|committee/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
       ` : `<p class="note">${p.lk ? 'Based on Woollahra Council\'s resident permit areas: streets outside a permit scheme are usually unrestricted, but the council doesn\'t publish its signs.' : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>`}
       <div class="photos" id="signPhotos" hidden></div>
       ${actionsHTML(mids.get(p.id), p.id)}`;
