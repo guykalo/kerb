@@ -477,14 +477,17 @@ function drawRibbon() {
     }
     return;
   }
+  // Weighted by kerb length, so short no-stopping corners don't outweigh whole blocks of parking.
   const inView = visibleKerbs().filter((f) => f.properties.k >= 0);
   if (!inView.length) return;
+  const len = new Map(inView.map((f) => { const c = f.geometry.coordinates; let m = 0; for (let i = 1; i < c.length; i++) m += distM(c[i - 1], c[i]); return [f, Math.max(1, m)]; }));
+  const total = [...len.values()].reduce((a, b) => a + b, 0);
   for (let q = 0; q < 96; q++) {
     const n = { free: 0, meter: 0, restricted: 0 };
-    for (const f of inView) { const kd = stateAt(f.properties, RULES, S.day, q / 4).kind; n[kd === 'limit' ? 'free' : kd]++; }
+    for (const f of inView) { const kd = stateAt(f.properties, RULES, S.day, q / 4).kind; n[kd === 'limit' ? 'free' : kd] += len.get(f); }
     let y = r.height;
     for (const k of ['free', 'meter', 'restricted']) {
-      const h = (n[k] / inView.length) * r.height;
+      const h = (n[k] / total) * r.height;
       g.fillStyle = colFor[k];
       g.fillRect(q * W, y - h, W + 0.4, h);
       y -= h;
