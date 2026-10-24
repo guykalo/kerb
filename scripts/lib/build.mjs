@@ -162,13 +162,7 @@ export function buildData(raw) {
       at: centroid(f.geometry) && round(centroid(f.geometry)),
       source: 'City of Sydney',
     })),
-    ...extraCarParks,
   ].filter((c) => c.at);
-  // Merge prices kept by hand in data/carparks.json onto council car parks with the same name.
-  for (const c of cps) {
-    const extra = extraCarParks.find((e) => e.name === c.name && e.id !== c.id);
-    if (extra) Object.assign(c, { ...extra, id: c.id, at: c.at });
-  }
   const carParkList = cps.filter((c, i) => cps.findIndex((x) => x.name === c.name) === i);
 
   /* ---------- other councils ---------- */
@@ -188,6 +182,18 @@ export function buildData(raw) {
 
   if (raw.parkride) { const pr = buildParkRide(raw.parkride); carParkList.push(...pr); regions.parkride = { carParks: pr.length }; }
 
+  // Rates kept by hand in data/carparks.json (each checked on the owner's own website) merge onto car parks by id;
+  // records with a new id are car parks the open data doesn't have.
+  let priced = 0;
+  for (const e of extraCarParks) {
+    const { source, ...rest } = e;
+    const rec = { ...rest, rateSource: source };
+    if (rec.rates && rec.rates.length) priced++;
+    const cur = carParkList.find((c) => c.id === e.id);
+    if (cur) Object.assign(cur, { ...rec, at: rec.at ? round(rec.at) : cur.at, name: rec.name || cur.name });
+    else if (rec.at) carParkList.push({ ...rec, at: round(rec.at), source: rec.operator || 'Kerb' });
+  }
+
   const stats = {
     builtAt: new Date().toISOString(),
     fetchedAt: meta.fetchedAt,
@@ -196,6 +202,7 @@ export function buildData(raw) {
     kerbs: kerbGeo.features.length,
     metered: kerbGeo.features.filter((f) => f.properties.k >= 0).length,
     carParks: carParkList.length,
+    carParksPriced: priced,
     unparsed: [...unparsed.entries()],
     regions,
     sources: meta.sources,
