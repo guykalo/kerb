@@ -435,6 +435,7 @@ function renderDetail() {
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
       <p class="note">Source: ${set.src ? `${set.src} parking survey${set.text && set.src ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
       ` : `<p class="note">${p.lk ? 'Based on Woollahra Council\'s resident permit areas: streets outside a permit scheme are usually unrestricted, but the council doesn\'t publish its signs.' : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>`}
+      <div class="photos" id="signPhotos" hidden></div>
       <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${mids.get(p.id)[1]},${mids.get(p.id)[0]}" target="_blank" rel="noopener"><i class="ph ph-navigation-arrow"></i>Directions</a>`;
   } else {
     const price = carParkPrice(cp);
@@ -449,7 +450,48 @@ function renderDetail() {
   }
   body.appendChild(d);
   body.scrollTop = 0;
+  if (f) loadSignPhotos(f, d.querySelector('#signPhotos'));
   d.querySelector('.back').onclick = () => { S.sel = null; update(); };
+}
+
+/* ---------- street photos of nearby signs (Mapillary, CC BY-SA) ---------- */
+// The client token is injected at build time from the MAPILLARY_TOKEN repository secret.
+const MLY = import.meta.env.VITE_MAPILLARY_TOKEN || '';
+const photoCache = new Map();
+async function loadSignPhotos(f, el) {
+  if (!el || !MLY) return;
+  const id = f.properties.id;
+  try {
+    if (!photoCache.has(id)) photoCache.set(id, fetchSignPhotos(f));
+    const photos = await photoCache.get(id);
+    if (S.sel !== id || !photos.length) return;
+    el.hidden = false;
+    el.innerHTML = `<h3 class="h3">Street photos of the signs here</h3>
+      <div class="photo-row">${photos.map((ph) => `<a href="https://www.mapillary.com/app/?pKey=${ph.id}&focus=photo" target="_blank" rel="noopener" class="photo"><img src="${ph.url}" alt="Street photo of a parking sign on ${f.properties.s}" loading="lazy"><span>${ph.date}</span></a>`).join('')}</div>
+      <p class="note">Check what the sign actually says. Photos from Mapillary contributors, CC BY-SA.</p>`;
+  } catch { /* photos are a bonus; skip quietly */ }
+}
+async function fetchSignPhotos(f) {
+  const c = f.geometry.coordinates;
+  let x0 = 180, y0 = 90, x1 = -180, y1 = -90;
+  for (const [x, y] of c) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+  const pad = 0.00025;
+  const h = { headers: { Authorization: `OAuth ${MLY}` } };
+  const q = `https://graph.mapillary.com/map_features?fields=id,object_value,geometry,last_seen_at&bbox=${x0 - pad},${y0 - pad},${x1 + pad},${y1 + pad}&limit=200`;
+  const j = await fetch(q, h).then((r) => r.json());
+  const mid = mids.get(f.properties.id);
+  const signs = (j.data || []).filter((x) => /traffic-sign--front|information-parking|no-parking|no-stopping/.test(x.object_value))
+    .sort((a, b) => (b.last_seen_at || '').localeCompare(a.last_seen_at || '') || distM(a.geometry.coordinates, mid) - distM(b.geometry.coordinates, mid))
+    .slice(0, 3);
+  const out = [];
+  for (const sg of signs) {
+    const det = await fetch(`https://graph.mapillary.com/${sg.id}?fields=images`, h).then((r) => r.json());
+    const imgId = det.images?.data?.[0]?.id;
+    if (!imgId) continue;
+    const im = await fetch(`https://graph.mapillary.com/${imgId}?fields=id,thumb_1024_url,captured_at`, h).then((r) => r.json());
+    if (im.thumb_1024_url) out.push({ id: im.id, url: im.thumb_1024_url, date: new Date(im.captured_at).toLocaleDateString('en-AU', { month: 'short', year: 'numeric' }) });
+  }
+  return out;
 }
 
 function select(id, fly) {

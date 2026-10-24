@@ -28,10 +28,15 @@ jobs:
       - run: npm ci
       - name: Download open parking data
         run: npm run data:fetch
+        env:
+          MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
+          TFNSW_API_KEY: ${{ secrets.TFNSW_API_KEY }}
       - name: Build kerb data
         run: npm run data:build
       - name: Build app
         run: npm run build
+        env:
+          VITE_MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
