@@ -49,3 +49,5 @@ https://hdp-au-prod-app-innerwest-yoursay-files.s3.ap-southeast-2.amazonaws.com/
 # Woollahra
 https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf
 https://www.woollahra.nsw.gov.au/files/assets/public/v/1/services/documents/resident_parking_zones_list.pdf.pdf
+# Revenue NSW penalty notices (CC BY) — which streets get parking fines, and for what
+https://www.revenue.nsw.gov.au/help-centre/resources-library/statistics/penalty-notice-data-2023-2024-dfosf-001-2023.xlsx
