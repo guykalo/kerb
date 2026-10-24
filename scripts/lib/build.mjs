@@ -202,8 +202,29 @@ export function buildData(raw) {
 
   if (raw.offstreet) { const cbd = buildOffstreet(raw.offstreet, carParkList); carParkList.push(...cbd); regions.offstreet = { carParks: cbd.length }; }
 
+  // What permit-area signs usually say, from the council's own decisions: { '22': { sign: '2P 8am-10pm', n: 14, of: 17 } }.
+  // Streets in a permit area with no published signs show this as "usually", never as the rule.
+  const tally = {};
+  for (const f of kerbGeo.features) {
+    const rs = ruleSets[f.properties.k];
+    if (!rs || !/traffic committee decision/i.test(rs.src || '')) continue;
+    for (const part of String(rs.text || '').split(';')) {
+      const m = /permit holders excepted,?\s*area\s+([A-Z0-9]+)/i.exec(part);
+      if (!m) continue;
+      const sign = part.replace(/,?\s*permit holders excepted.*$/i, '').replace(/\s+/g, ' ').trim();
+      if (/ticket/i.test(sign) || !sign) continue;
+      const a = (tally[m[1].toUpperCase()] ||= {}); a[sign] = (a[sign] || 0) + 1;
+    }
+  }
+  const permitPatterns = {};
+  for (const [area, signs] of Object.entries(tally)) {
+    const all = Object.values(signs).reduce((x, y) => x + y, 0), [sign, n] = Object.entries(signs).sort((x, y) => y[1] - x[1])[0];
+    if (all >= 3 && n / all >= 0.5) permitPatterns[area] = { sign, n, of: all };
+  }
+
   const stats = {
     builtAt: new Date().toISOString(),
+    permitPatterns,
     fetchedAt: meta.fetchedAt,
     meters: pts.length,
     ruleSets: ruleSets.length,

@@ -32,6 +32,8 @@ jobs:
           path: data/raw
           key: raw-${{ github.run_id }}
           restore-keys: raw-
+      - name: Get council parking decisions
+        run: (git fetch -q origin council-decisions && git show origin/council-decisions:decisions-cos.json > data/decisions-cos.json) || echo "no decisions yet"
       - name: Download open parking data
         id: fetch
         continue-on-error: true
@@ -54,6 +56,8 @@ jobs:
         run: npm run build
         env:
           VITE_MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
+          VITE_SIGN_READ_URL: ${{ secrets.VITE_SIGN_READ_URL }}
+          VITE_SNAP_SHARE_URL: ${{ secrets.VITE_SNAP_SHARE_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

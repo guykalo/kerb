@@ -1,0 +1,8 @@
+name = "kerb"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+# npx wrangler kv namespace create SNAPS  -> paste the id below
+[[kv_namespaces]]
+binding = "SNAPS"
+id = "REPLACE_WITH_KV_ID"

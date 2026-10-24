@@ -19,15 +19,16 @@ export function initSnap(ctx) {
   C = ctx;
   const btn = document.getElementById('snapBtn'), input = document.getElementById('snapFile');
   if (!btn || !input) return;
-  let where = null;
+  let where = null, fromKerb = null;
   btn.addEventListener('click', () => {
     where = null;
+    fromKerb = C.selected?.() ?? null; // snapped from a kerb's page: that's the kerb
     // Ask for the position while the camera is open, so it's ready when the photo comes back.
     navigator.geolocation?.getCurrentPosition((p) => { where = { at: [p.coords.longitude, p.coords.latitude], acc: p.coords.accuracy }; }, () => {}, { enableHighAccuracy: true, timeout: 12000, maximumAge: 20000 });
     input.value = '';
     input.click();
   });
-  input.addEventListener('change', () => { const f = input.files?.[0]; if (f) openSnap(f, () => where); });
+  input.addEventListener('change', () => { const f = input.files?.[0]; if (f) openSnap(f, () => where, fromKerb); });
 }
 
 /* ---------- reading ---------- */
@@ -123,7 +124,7 @@ const hours = Array.from({ length: 49 }, (_, i) => i / 2);
 const hOpt = (sel) => hours.map((h) => `<option value="${h}"${h === sel ? ' selected' : ''}>${h === 24 ? 'midnight' : fmtTime(h)}</option>`).join('');
 function kindValue(p) { return p.kind === 'limit' ? String(p.hours) : p.kind === 'zone' ? `zone:${p.head.replace(/\b\w+/g, (w) => w[0] + w.slice(1).toLowerCase())}` : p.kind === 'works' ? 'nopark' : p.kind; }
 
-async function openSnap(file, getWhere) {
+async function openSnap(file, getWhere, fromKerb) {
   const el = document.createElement('div');
   el.className = 'snap';
   el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Read a parking sign');
@@ -208,6 +209,7 @@ async function openSnap(file, getWhere) {
     whereBox.querySelector('.snap-pick').onclick = pick;
   };
   const locate = async () => {
+    if (fromKerb != null && C.mids.get(fromKerb)) { place = nearestKerbs(C.mids.get(fromKerb)); if (place) { place.d = null; place.at = C.mids.get(fromKerb); } showWhere(); return; }
     for (let i = 0; i < 24 && !getWhere(); i++) await new Promise((r) => setTimeout(r, 250));
     const w = getWhere();
     if (!w) { showWhere(); return; }

@@ -558,12 +558,18 @@ function renderList() {
   body.appendChild(foot);
 }
 
+// What signs in this permit area usually say, from the council's decisions (never shown as the rule).
+const usual = (p) => (p.pa && META?.permitPatterns ? META.permitPatterns[String(p.pa).replace(/^(permit\s*)?area\s*/i, '').trim().toUpperCase()] : null);
+function usualHTML(p) {
+  const u = usual(p);
+  return u ? `<div class="verdict est"><div><small>Usually, in ${p.pa}</small>${u.sign}, permit holders excepted</div></div><p class="plain">${u.n} of the council's ${u.of} recent sign decisions in ${p.pa} say this, so it's the likely sign here. Kerb hasn't seen this kerb's own sign, so check before you leave the car.</p>` : '';
+}
 function optRow(o) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'opt' + (o.c.ok ? '' : ' no');
   const cat = category(o.p, RULES, S.day, S.hour, S.stay);
   const s = stateAt(o.p, RULES, S.day, S.hour);
   const sub = o.c.ok
-    ? (o.c.permitOnly ? `Resident permit ${o.p.pa}. Visitors usually time-limited` : o.c.likely ? 'No permit scheme, check the sign' : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}` : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
+    ? (o.c.permitOnly ? (usual(o.p) ? `Permit ${o.p.pa}: usually ${usual(o.p).sign} for visitors` : `Resident permit ${o.p.pa}. Visitors usually time-limited`) : o.c.likely ? 'No permit scheme, check the sign' : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}` : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
     : o.c.why;
   const lv = busyLevel(busy(o.p, RULES, S.day, S.hour));
   b.innerHTML = `<span class="bar" style="background:var(--${cat === 'short' ? 'paid' : cat})"></span>
@@ -860,7 +866,8 @@ function renderDetail() {
       <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
       <p class="note">Source: ${set.src ? `${set.src}${/survey|committee|map|photo|decision/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
-      ` : `<p class="note">${p.lk ? 'Based on Woollahra Council\'s resident permit areas: streets outside a permit scheme are usually unrestricted, but the council doesn\'t publish its signs.' : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>`}
+      ` : `${usualHTML(p)}<p class="note">${p.lk ? 'Based on Woollahra Council\'s resident permit areas: streets outside a permit scheme are usually unrestricted, but the council doesn\'t publish its signs.' : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>
+      <button type="button" class="snapcta" id="snapHere"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>Snap the sign here</b><small>Kerb reads it, tells you if you can park, and fills in this kerb.</small></span></button>`}
       <div class="photos" id="signPhotos" hidden></div>
       ${actionsHTML(mids.get(p.id), p.id)}`;
   } else {
@@ -1305,6 +1312,7 @@ function applySnaps() {
   recolour();
   update();
 }
+document.addEventListener('click', (e) => { if (e.target.closest('#snapHere')) $('#snapBtn').click(); });
 initSnap({
   map, S, mids, byId, distM, toast,
   kerbs: () => KERBS,
@@ -1312,6 +1320,7 @@ initSnap({
   stayWords: () => stayWords(true),
   when: () => `Checked for ${DAYS_LONG[S.day]} at ${fmtTime(S.hour)}`,
   pickKerb: (cb) => { pickMode = cb; },
+  selected: () => (typeof S.sel === 'number' ? S.sel : null),
   applySnaps,
   snapKerbId: (sid) => snapMade.get(sid),
 });

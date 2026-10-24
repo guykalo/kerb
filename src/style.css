@@ -315,3 +315,7 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
 .snap-actions { padding: 10px 16px 14px; }
 .snap-save { width: 100%; border: 0; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 700; background: var(--accent); color: var(--accent-ink); }
 .snap-save:disabled { opacity: .5; }
+.snapcta { display: flex; gap: 12px; align-items: center; width: 100%; text-align: left; margin: 10px 0 6px; padding: 12px 14px; border-radius: 14px; border: 1px dashed var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--fg); }
+.snapcta i { font-size: 26px; color: var(--accent); }
+.snapcta span { display: grid; gap: 2px; }
+.snapcta small { color: var(--muted); font-size: 13px; }

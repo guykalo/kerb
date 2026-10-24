@@ -51,13 +51,13 @@ function daysFrom(txt) {
   return [...out].sort();
 }
 
-const HEAD = /(\b\d{1,2}(?:\/\d)?\s?P\b|\bP\s?\d{1,2}\b(?!\s?(?:AM|PM))|NO STOPPING|NO PARKING|LOADING ZONE|BUS ZONE|TAXI ZONE|MAIL ZONE|CAR ?SHARE|MOBILITY PARKING|DISABLED|CLEARWAY|WORKS ZONE|PERMIT HOLDERS ONLY|AUTHORISED (?:COUNCIL )?VEHICLES)/g;
+const HEAD = /(\b\d{1,2}(?:\/\d)?\s?P\b|\bP\s?\d{1,2}\b(?!\s?(?:AM|PM))|NO STOPPING|NO PARKING|LOADING ZONE|BUS ZONE|BUS LANE|TRANSIT LANE|TAXI ZONE|MAIL ZONE|CAR ?SHARE|MOBILITY PARKING|DISABILITY PARKING|DISABLED|CLEARWAY|WORKS ZONE|PERMIT HOLDERS ONLY|AUTHORISED (?:COUNCIL )?VEHICLES)/g;
 const TIME = /\b(\d{1,2}(?::\d\d)?(?:AM|PM))-(\d{1,2}(?::\d\d)?(?:AM|PM))\b/g;
 const DAYS = /\b((?:MON|TUE|WED|THU|FRI|SAT|SUN)[A-Z]*(?:\s*(?:-|&|,|AND)\s*(?:MON|TUE|WED|THU|FRI|SAT|SUN)[A-Z]*)*)/g;
 
 // Returns { panels: [{ head, kind, hours, times: [[from, to, days]], permit, ticket, rate, ph, text }], rules: [...tuples] }
 export function readSign(raw) {
-  const txt = cleanSignText(raw);
+  const txt = cleanSignText(raw).replace(/\(?\s*1\/4\s?P\s+FREE\s*\)?/g, ' ').replace(/\b(?:NO PARKING|NO STOPPING|TAXI ZONE|LOADING ZONE|BUS ZONE)\s*;?\s*OTHER TIMES\b/g, ' ');
   const heads = [...txt.matchAll(HEAD)];
   const panels = [];
   heads.forEach((h, i) => {
@@ -66,7 +66,7 @@ export function readSign(raw) {
     const p = { head, text: body.trim(), times: [], ph: /PUBLIC HOLIDAY/.test(body) };
     const lim = /^(\d{1,2})(?:\/(\d))?\s?P$/.exec(head) || /^P\s?(\d{1,2})$/.exec(head);
     if (lim) { p.kind = 'limit'; p.hours = /^P/.test(head) ? +lim[1] / 60 : lim[2] ? +lim[1] / +lim[2] : +lim[1]; }
-    else if (/NO STOPPING|CLEARWAY/.test(head)) p.kind = 'nostop';
+    else if (/NO STOPPING|CLEARWAY|BUS LANE|TRANSIT LANE/.test(head)) p.kind = 'nostop';
     else if (/NO PARKING/.test(head)) p.kind = 'nopark';
     else if (/WORKS ZONE/.test(head)) p.kind = 'works';
     else p.kind = 'zone';

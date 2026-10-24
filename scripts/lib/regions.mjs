@@ -266,6 +266,15 @@ export function buildOffstreet(raw, existing) {
 export async function fetchManual() {
   const { readFile } = await import('node:fs/promises');
   const spec = JSON.parse(await readFile(new URL('../../data/manual-rules.json', import.meta.url), 'utf8'));
+  // City of Sydney traffic committee decisions (downloaded weekly to the council-decisions branch).
+  try {
+    const { decisionsToEntries } = await import('./decisions.mjs');
+    const list = JSON.parse(await readFile(new URL('../../data/decisions-cos.json', import.meta.url), 'utf8'));
+    const d = decisionsToEntries(list);
+    spec.streets.push(...d.entries);
+    spec.sources.cosdec = 'City of Sydney traffic committee decision: https://meetings.cityofsydney.nsw.gov.au/mgCommitteeDetails.aspx?ID=138';
+    log(`  decisions: ${list.length} downloaded, ${d.decisions} placed as ${d.entries.length} kerb stretches, skipped ${JSON.stringify(d.skipped)}`);
+  } catch (e) { log(`  decisions: none (${e.message.split('\n')[0]})`); }
   const pts = spec.streets.map((e) => e.near || e.area);
   const pad = 0.006;
   const [x0, y0, x1, y1] = bbox(pts);
@@ -318,7 +327,7 @@ export function buildManual(raw, reg) {
   };
   for (const e of raw.spec.streets) {
     const srcText = raw.spec.sources[e.src] ? raw.spec.sources[e.src].split(': http')[0] : e.src;
-    const k = reg.add({ rules: e.rules, q: 0, g: e.unrestrictedOutside === false ? 'free' : 'free', u: e.rules.length ? 0 : 1, src: srcText, text: e.text || '' });
+    const k = reg.add({ rules: e.rules, q: 0, g: e.unrestrictedOutside === false ? 'free' : 'free', u: e.rules.length ? 0 : 1, src: e.date ? `${srcText}, ${e.date}` : srcText, text: e.text || '' });
     const centre = e.near || e.area;
     const paths = pathsNear(e.street, centre, e.radius ? e.radius + 300 : e.a ? 2500 : 1500);
     let A = null, B = null;
