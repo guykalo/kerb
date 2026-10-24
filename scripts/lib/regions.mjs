@@ -261,3 +261,62 @@ export function buildOffstreet(raw, existing) {
   }
   return out;
 }
+
+/* ---------- rules read by hand from council PDFs (data/manual-rules.json) ---------- */
+export async function fetchManual() {
+  const { readFile } = await import('node:fs/promises');
+  const spec = JSON.parse(await readFile(new URL('../../data/manual-rules.json', import.meta.url), 'utf8'));
+  const pts = spec.streets.map((e) => e.near);
+  const pad = 0.006;
+  const [x0, y0, x1, y1] = bbox(pts);
+  const roads = await fetchRoads([x0 - pad, y0 - pad, x1 + pad, y1 + pad]);
+  log(`  manual rules: ${spec.streets.length} street stretches, ${roads.length} road segments`);
+  return { spec, roads };
+}
+const DIRS = { north: [0, 1], south: [0, -1], east: [1, 0], west: [-1, 0] };
+export function buildManual(raw, reg) {
+  const kx = (lat) => Math.cos((lat * Math.PI) / 180) * 111320, ky = 110540;
+  const features = [];
+  for (const e of raw.spec.streets) {
+    const set = { rules: e.rules, q: 0, g: 'free', u: 0, src: raw.spec.sources[e.src] ? raw.spec.sources[e.src].split(':')[0] : e.src };
+    const k = reg.add(set);
+    const sides = e.side.includes('both') ? [1, -1] : null;
+    for (const r of raw.roads) {
+      if (norm(roadName(r.attributes)) !== norm(e.street) || !r.geometry?.paths) continue;
+      for (const path of r.geometry.paths) {
+        const pts = densifyPath(path, 12);
+        const cur = { 1: null, '-1': null };
+        const flush = (sd) => { if (cur[sd] && cur[sd].coords.length > 1) features.push(cur[sd]); cur[sd] = null; };
+        for (let i = 1; i < pts.length; i++) {
+          const s0 = pts[i - 1], s1 = pts[i], mid = [(s0[0] + s1[0]) / 2, (s0[1] + s1[1]) / 2];
+          if (dist(mid, e.near) > e.radius) { flush(1); flush(-1); continue; }
+          const dx = (s1[0] - s0[0]) * kx(mid[1]), dy = (s1[1] - s0[1]) * ky, len = Math.hypot(dx, dy) || 1;
+          const nx = -dy / len, ny = dx / len;
+          for (const sd of [1, -1]) {
+            const ok = sides ? true : e.side.some((d) => DIRS[d] && (sd * nx * DIRS[d][0] + sd * ny * DIRS[d][1]) > 0.35);
+            if (!ok) { flush(sd); continue; }
+            const off = (q) => [q[0] + (sd * nx * 5.5) / kx(q[1]), q[1] + (sd * ny * 5.5) / ky];
+            if (!cur[sd]) {
+              const ang = (Math.atan2(sd * nx, sd * ny) * 180) / Math.PI;
+              const sdName = ['North', 'North-east', 'East', 'South-east', 'South', 'South-west', 'West', 'North-west'][Math.round(((ang + 360) % 360) / 45) % 8] + ' side';
+              cur[sd] = { type: 'Feature', properties: { s: e.street, b: e.suburb, sd: sdName, k, z: 3, pa: '', f15: 0, n: 0, src: 'man' }, geometry: { type: 'LineString', coordinates: [round(off(s0))] }, coords: null };
+              cur[sd].coords = cur[sd].geometry.coordinates;
+            }
+            cur[sd].coords.push(round(off(s1)));
+          }
+        }
+        flush(1); flush(-1);
+      }
+    }
+  }
+  for (const f of features) delete f.coords;
+  return { features, carparks: [] };
+}
+function densifyPath(path, maxLen) {
+  const out = [path[0]];
+  for (let i = 1; i < path.length; i++) {
+    const a = path[i - 1], b = path[i], n = Math.max(1, Math.ceil(dist(a, b) / maxLen));
+    for (let j = 1; j <= n; j++) out.push([a[0] + ((b[0] - a[0]) * j) / n, a[1] + ((b[1] - a[1]) * j) / n]);
+  }
+  return out;
+}

@@ -8,7 +8,7 @@ const OUT = process.argv[3] || 'public/data';
 const load = async (n) => JSON.parse(await readFile(`${RAW}/${n}.json`, 'utf8'));
 const names = ['meters', 'metersQuarterFree', 'tariffs', 'permits', 'free15', 'councilCarParks', 'streets', 'meta'];
 const raw = Object.fromEntries(await Promise.all(names.map(async (n) => [n, await load(n)])));
-for (const n of ['waverley', 'woollahra', 'parkride', 'manly', 'willoughby', 'randwick', 'offstreet']) { try { raw[n] = await load(n); } catch { /* not downloaded */ } }
+for (const n of ['waverley', 'woollahra', 'parkride', 'manly', 'willoughby', 'randwick', 'offstreet', 'manual']) { try { raw[n] = await load(n); } catch { /* not downloaded */ } }
 raw.extraCarParks = JSON.parse(await readFile('data/carparks.json', 'utf8').catch(() => '[]'));
 
 const out = buildData(raw);

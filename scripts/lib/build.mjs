@@ -1,7 +1,7 @@
 // Pure data build: raw open data in, app data out. Used by build-data.mjs (Node) and the browser check.
 import { parseSignText } from './parse-rules.mjs';
 import { densify, distToSeg, dist, inRings, bbox, round } from './geo.mjs';
-import { buildWaverley, buildWoollahra, buildRandwick, buildOffstreet } from './regions.mjs';
+import { buildWaverley, buildWoollahra, buildRandwick, buildOffstreet, buildManual } from './regions.mjs';
 import { buildParkRide } from './tfnsw.mjs';
 import { buildFromSigns } from './spot.mjs';
 
@@ -178,7 +178,7 @@ export function buildData(raw) {
   for (const [name, fn] of [['waverley', buildWaverley], ['woollahra', buildWoollahra],
     ['manly', fromSigns({ src: 'Transport for NSW sign survey (2020)', place: 'Manly', beach: MANLY_BEACH })],
     ['willoughby', fromSigns({ src: 'Willoughby Council sign survey', place: 'Chatswood' })],
-    ['randwick', buildRandwick]]) {
+    ['randwick', buildRandwick], ['manual', buildManual]]) {
     if (!raw[name]) continue;
     const out = fn(raw[name], reg, { month });
     for (const ft of out.features) { ft.properties.id = nextId++; kerbGeo.features.push(ft); }

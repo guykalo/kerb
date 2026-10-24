@@ -2288,5 +2288,266 @@
   "note": "Height limit 1.95m. Lift out of action 10 Aug-23 Oct 2026. First 2 hours free if you enter 6:30am-6:59pm. Coming back within 3 hours (here or another council car park in Manly) starts at the 2-2.5 hour rate. Evening entry from 7pm is $5.50, plus $5.50 overnight if you stay past midnight. Mobility permit holders pay standard fees.",
   "estBasis": true,
   "research": "Rates from the council's Manly parking stations page; coordinates from OpenStreetMap."
+ },
+ {
+  "id": "rw-dolphin",
+  "name": "Dolphin Street Car Park",
+  "address": "Dolphin Street, Coogee",
+  "at": [
+   151.25771,
+   -33.91923
+  ],
+  "operator": "Randwick Council",
+  "rates": [
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 22,
+    "perHour": 5.7,
+    "per": 1,
+    "maxStay": 4,
+    "months": [
+     10,
+     11,
+     12,
+     1,
+     2,
+     3,
+     4
+    ]
+   },
+   {
+    "kind": "hourly",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 22,
+    "perHour": 4.7,
+    "per": 1,
+    "maxStay": 4,
+    "months": [
+     5,
+     6,
+     7,
+     8,
+     9
+    ]
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 22,
+    "to": 24
+   }
+  ],
+  "source": "https://www.randwick.nsw.gov.au/__data/assets/pdf_file/0005/345470/Traffic-and-Parking.pdf",
+  "checked": "2026-10-24",
+  "note": "Paid 4-hour parking 8am-10pm: $5.70 an hour October to April, $4.70 May to September (Randwick Council fees 2026-27). Free after 10pm.",
+  "estBasis": true,
+  "research": "Rate from Randwick 2026-27 Traffic and Parking fees PDF ('Paid Parking - Coogee'); location/limit from the Coogee 4P map (Dolphin Street Car Park, 4P 8AM-10PM Paid); coordinates OSM parking area fee=yes."
+ },
+ {
+  "id": "rw-maroubra-marine",
+  "name": "Marine Parade Car Park",
+  "address": "Marine Parade, Maroubra",
+  "at": [
+   151.26221,
+   -33.94348
+  ],
+  "operator": "Randwick Council",
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 8,
+    "to": 22,
+    "maxStay": 4
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 22,
+    "to": 24
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 8,
+    "maxStay": 4
+   }
+  ],
+  "source": "https://www.randwick.nsw.gov.au/about-council/news/news-items/2021/january/4p-parking-introduced-in-beachside-areas",
+  "checked": "2026-10-24",
+  "note": "Free, 4-hour limit 8am-10pm (Randwick beach parking map).",
+  "research": "Maroubra 4P map; coordinates OSM parking way near the north end of Marine Pde (approximate)."
+ },
+ {
+  "id": "rw-malabar-boatramp",
+  "name": "Malabar Boat Ramp Car Park",
+  "address": "Fishermans Road, Malabar",
+  "at": [
+   151.25498,
+   -33.96428
+  ],
+  "operator": "Randwick Council",
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 8,
+    "to": 22,
+    "maxStay": 4
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 22,
+    "to": 24
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 8,
+    "maxStay": 4
+   }
+  ],
+  "source": "https://www.randwick.nsw.gov.au/about-council/news/news-items/2021/january/4p-parking-introduced-in-beachside-areas",
+  "checked": "2026-10-24",
+  "note": "Free, 4-hour limit 8am-10pm (Randwick beach parking map).",
+  "research": "Malabar 4P map text; coordinates OSM parking near the boat ramp (approximate)."
+ },
+ {
+  "id": "rw-malabar-pool",
+  "name": "Malabar Ocean Pool Car Park",
+  "address": "Bay Parade, Malabar",
+  "at": [
+   151.25389,
+   -33.96853
+  ],
+  "operator": "Randwick Council",
+  "rates": [
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 8,
+    "to": 22,
+    "maxStay": 4
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 22,
+    "to": 24
+   },
+   {
+    "kind": "free",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 8,
+    "maxStay": 4
+   }
+  ],
+  "source": "https://www.randwick.nsw.gov.au/about-council/news/news-items/2021/january/4p-parking-introduced-in-beachside-areas",
+  "checked": "2026-10-24",
+  "note": "Free, 4-hour limit 8am-10pm (Randwick beach parking map).",
+  "research": "Malabar 4P map text; coordinates OSM parking near Malabar ocean pool (approximate)."
  }
 ]

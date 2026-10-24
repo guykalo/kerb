@@ -1,0 +1,23 @@
+{
+  "about": "Kerb rules read by hand from council PDFs and maps. Each entry paints one side (or both) of a named street within `radius` metres of `near` [lon, lat]. Rules use Kerb's tuple: [hours, days(0=Sun), from, to, $/hr (-1 = meter, rate unknown), public holidays, 0 park / 1 no parking, note].",
+  "sources": {
+    "rw4p": "Randwick Council 4P beach parking maps (Jan 2021): https://www.randwick.nsw.gov.au/about-council/news/news-items/2021/january/4p-parking-introduced-in-beachside-areas"
+  },
+  "streets": [
+    { "street": "Arcadia Street", "suburb": "Coogee", "near": [151.2595, -33.9172], "radius": 90, "side": ["south", "east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Beach Street", "suburb": "Coogee", "near": [151.25722, -33.92545], "radius": 45, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Neptune Street", "suburb": "Coogee", "near": [151.25766, -33.9261], "radius": 170, "side": ["both"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Wolseley Road", "suburb": "Coogee", "near": [151.2593, -33.9278], "radius": 190, "side": ["both"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Marine Parade", "suburb": "Maroubra", "near": [151.2588, -33.9440], "radius": 560, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Bernie Kelly Drive", "suburb": "Maroubra", "near": [151.25472, -33.95047], "radius": 160, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 9, 18, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Donnellan Circuit", "suburb": "Clovelly", "near": [151.26475, -33.91337], "radius": 200, "side": ["north"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Fishermans Road", "suburb": "Malabar", "near": [151.2539, -33.9638], "radius": 200, "side": ["south"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Dacre Street", "suburb": "Malabar", "near": [151.2497, -33.9626], "radius": 170, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Bay Parade", "suburb": "Malabar", "near": [151.2527, -33.9666], "radius": 200, "side": ["east"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Murra Murra Place", "suburb": "Little Bay", "near": [151.24965, -33.97958], "radius": 150, "side": ["south"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Pine Avenue", "suburb": "Little Bay", "near": [151.2462, -33.9799], "radius": 220, "side": ["south"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Anzac Parade", "suburb": "La Perouse", "near": [151.2325, -33.9885], "radius": 180, "side": ["both"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Endeavour Avenue", "suburb": "La Perouse", "near": [151.2324, -33.9865], "radius": 150, "side": ["west"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" },
+    { "street": "Kooringai Avenue", "suburb": "Phillip Bay", "near": [151.2309, -33.9803], "radius": 160, "side": ["both"], "rules": [[4, [0,1,2,3,4,5,6], 8, 22, 0, 0, 0, ""]], "src": "rw4p" }
+  ]
+}
