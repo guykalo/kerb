@@ -357,7 +357,10 @@ export function buildManual(raw, reg) {
       for (let i = 1; i < pts.length; i++) {
         const s0 = pts[i - 1], s1 = pts[i], mid = [(s0[0] + s1[0]) / 2, (s0[1] + s1[1]) / 2];
         let inside;
-        if (A) {
+        if (A && e.a) {
+          // Council decisions name two points on the street: paint only the kerb between them.
+          inside = distToSeg(mid, A, B) <= 7;
+        } else if (A) {
           const ax = (B[0] - A[0]) * kx(A[1]), ay = (B[1] - A[1]) * ky, mx = (mid[0] - A[0]) * kx(A[1]), my = (mid[1] - A[1]) * ky;
           const L2 = ax * ax + ay * ay || 1, t = (mx * ax + my * ay) / L2;
           inside = t >= f0 - 1e-6 && t <= f1 + 1e-6 && Math.abs(mx * ay - my * ax) / Math.sqrt(L2) < 40;
@@ -378,6 +381,10 @@ export function buildManual(raw, reg) {
         }
       }
       flush(1); flush(-1);
+    }
+    if (e.a && painted) {
+      const want = Math.abs(e.b.m - e.a.m) + 14, got = features.slice(-painted).reduce((t, f) => { const c = f.geometry.coordinates; let m = 0; for (let i = 1; i < c.length; i++) m += dist(c[i - 1], c[i]); return Math.max(t, m); }, 0);
+      if (got > want * 1.6 + 10) { features.length -= painted; warnings.push(`${e.street} near ${e.a.x}: placed ${Math.round(got)} m for a ${Math.round(want - 14)} m decision, dropped`); continue; }
     }
     if (!painted) warnings.push(`${e.street}${e.from ? ` ${e.from}-${e.to}` : ''}: nothing painted`);
   }

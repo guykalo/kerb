@@ -323,3 +323,26 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
 .rchip { font-size: 13px; padding: 5px 9px; border-radius: 999px; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); }
 .rchip b { margin-right: 2px; }
 .rchip.paid b { color: var(--paid); }
+/* the sign, right under the answer */
+.signhero { margin: 12px 0 4px; padding: 14px 12px 12px; border-radius: 16px; background: linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 70%, transparent), transparent); border: 1px solid var(--line); }
+.sh-cap { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 10px; }
+.plates.big { justify-content: center; gap: 12px; }
+.plates.big .plate { width: 132px; padding: 9px 6px 10px; box-shadow: 0 6px 18px rgb(0 0 0 / .18); }
+.plates.big .plate .p { font-size: 52px; }
+.plates.big .plate .l { font-size: 16px; }
+.plates.big .plate .s { font-size: 12.5px; }
+/* map key popover */
+.legend button.keybtn i { width: auto; height: auto; font-size: 14px; background: none; }
+.legend button.keybtn[aria-pressed="false"] { opacity: 1; }
+.keypop { position: absolute; z-index: 30; left: max(12px, env(safe-area-inset-left, 0px)); bottom: calc(var(--vis, 250px) + 50px); width: min(320px, calc(100vw - 24px)); background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 10px 12px 8px; }
+@media (min-width: 900px) { .keypop { left: auto; right: 70px; bottom: 60px; } }
+.kp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.kp-top button { border: 0; background: transparent; color: var(--muted); font-size: 18px; }
+.kp-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; border-top: 1px solid var(--line); }
+.kp-row span { flex: 1; }
+.kp-row i { width: 22px; height: 5px; border-radius: 3px; flex: none; }
+.kp-row input { width: 18px; height: 18px; accent-color: var(--accent); }
+.kp-note { margin: 6px 0 2px; font-size: 12px; color: var(--muted); }
+.kp-row i.dash-free { background: repeating-linear-gradient(90deg, var(--free) 0 4px, transparent 4px 7px) !important; }
+.kp-row i.dash { background: repeating-linear-gradient(90deg, var(--paid) 0 4px, transparent 4px 7px) !important; }
+.kp-row i.dash-permit { background: repeating-linear-gradient(90deg, var(--permit) 0 4px, transparent 4px 7px) !important; }

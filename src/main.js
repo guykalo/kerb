@@ -9,7 +9,7 @@ import {
   busy, busyLevel, BUSY_WORD, BANDS, band,
 } from './rules.js';
 import { parsePart } from '../scripts/lib/parse-rules.mjs';
-import { initSnap, snapsToKerbs } from './snap.js';
+import { initSnap, snapsToKerbs, initBoard, loadBoards } from './snap.js';
 
 const $ = (s) => document.querySelector(s);
 const DATA = './data/';
@@ -893,10 +893,9 @@ function renderDetail() {
       <div><h2>${p.s}</h2><div class="where">${[p.sd, p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} ${p.k >= 0 ? 'paid ' : ''}spaces` : ''].filter(Boolean).join(', ')}</div></div>
       <div class="verdict"><div><small>${spanText(stayTxt)}</small>${v.head}</div>
         ${p.lk ? `<span class="big" style="color:var(--free)">$0?</span>` : c.ok ? `<span class="big" style="color:var(--${c.cost === 0 && !c.unknownRate ? 'free' : 'fg'})">${costText(c)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
-      ${set ? rateStrip(set) : ''}
+      ${set ? `<div class="signhero"><div class="sh-cap">The sign${set.src ? '' : 's'} here</div><div class="plates big">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div></div>` : ''}
       <p class="plain">${v.why || plainNow(p, RULES, S.day, S.hour)}${p.f15 ? ' This street is in a free 15-minute zone, so a ticket gets you the first quarter hour free.' : ''}</p>
-      ${set ? `<h3 class="h3">What the signs say</h3><div class="plates">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div>
-      <h3 class="h3">Across the week</h3>${weekHTML(p)}
+      ${set ? `<h3 class="h3">Across the week</h3>${weekHTML(p)}
       <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
       <p class="note">Source: ${set.src ? `${set.src}${/survey|committee|map|photo|decision/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
@@ -913,7 +912,8 @@ function renderDetail() {
         : price?.none ? maxStayHTML(cp, price, stayTxt)
         : estimateFor(cp) ? estHTML(cp, estimateFor(cp), stayTxt)
         : `<p class="plain">${cp.operator ? `Run by ${cp.operator}. ` : ''}The rates aren't published anywhere we can use yet, so check the board at the entrance before you go in.</p>`}
-      ${cp.rates?.length ? `<h3 class="h3">Rates</h3>${rateBoard(cp)}` : ''}
+      ${cp.rates?.length ? `<h3 class="h3">Rates${cp.fromPhoto ? ` <small class="muted">from your photo, ${cp.fromPhoto}</small>` : ''}</h3>${rateBoard(cp)}` : ''}
+      ${cp.kind === 'parkride' ? '' : `<button type="button" class="snapcta" data-snapboard="${cp.id}"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>${cp.rates?.length ? 'Prices changed? Snap the board' : 'Snap the price board'}</b><small>At the entrance? Photograph the prices and Kerb fills them in.</small></span></button>`}
       ${price?.none ? `<p class="plain">${price.why === 'long' ? 'Longer stays aren\'t allowed or aren\'t published, so check the board at the entrance.' : 'It may be closed then, or the rate isn\'t published. Check the board at the entrance.'}</p>` : ''}
       ${cp.hours ? `<p class="plain">Open ${cp.hours}.</p>` : ''}
       ${cp.note ? `<p class="plain">${cp.note}</p>` : ''}
@@ -1027,25 +1027,26 @@ function select(id, fly) {
 const LEGEND = [['free', 'Free'], ['likely', 'Probably free'], ['paid', 'Meter'], ['short', 'Too short'], ['restricted', 'No parking'], ['permit', 'Permit area'], ['carpark', 'Car parks']];
 function renderLegend() {
   const lg = $('#legend'); lg.replaceChildren();
-  for (const [k, n] of LEGEND) {
-    const b = document.createElement('button'); b.type = 'button';
-    b.setAttribute('aria-pressed', String(!S.hidden.has(k)));
-    b.innerHTML = (k === 'carpark' ? '<i style="background:var(--fg);height:10px;width:10px;border-radius:50%"></i>' : `<i class="${k === 'short' ? 'dash' : k === 'likely' ? 'dash-free' : ''}" style="background:var(--${k === 'short' ? 'paid' : k === 'likely' ? 'free' : k})"></i>`) + n;
-    b.title = k === 'short' ? 'Meter parking, but the time limit is shorter than your stay' : k === 'permit' ? "Resident permit areas where the council hasn't published the signs" : '';
-    b.onclick = () => { S.hidden.has(k) ? S.hidden.delete(k) : S.hidden.add(k); renderLegend(); if (map.isStyleLoaded()) kerbLayers(); drawCarParks(); renderBody(); };
-    lg.appendChild(b);
-  }
-  const mp = document.createElement('button'); mp.type = 'button'; mp.className = 'perm';
-  mp.setAttribute('aria-pressed', String(BEN.mps));
-  mp.title = 'I have a NSW mobility parking permit';
-  mp.innerHTML = `<i class="ph ph-wheelchair" aria-hidden="true"></i>${BEN.mps ? 'Mobility permit on' : 'Mobility permit'}`;
-  mp.onclick = () => {
+  const chip = (cls, pressed, html, title, onclick) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.setAttribute('aria-pressed', String(pressed)); b.innerHTML = html; b.title = title; b.onclick = onclick; lg.appendChild(b); return b; };
+  const cpOn = !S.hidden.has('carpark');
+  chip('perm', cpOn, `<i class="ph ph-local-parking" aria-hidden="true"></i>Car parks${cpOn ? '' : ' off'}`, 'Show or hide car parks', () => { cpOn ? S.hidden.add('carpark') : S.hidden.delete('carpark'); renderLegend(); drawCarParks(); renderBody(); });
+  chip('perm', BEN.mps, `<i class="ph ph-wheelchair" aria-hidden="true"></i>${BEN.mps ? 'Mobility permit on' : 'Mobility permit'}`, 'I have a NSW mobility parking permit', () => {
     BEN.mps = !BEN.mps;
     try { localStorage.setItem('kerb-mps', BEN.mps ? '1' : '0'); } catch { /* private mode */ }
     toast(BEN.mps ? 'Showing prices and time limits for mobility permit holders' : 'Mobility permit off');
     renderLegend(); update();
-  };
-  lg.appendChild(mp);
+  });
+  chip('keybtn', false, '<i class="ph ph-swatches" aria-hidden="true"></i>Key', 'What the colours mean', () => toggleKey());
+}
+// The colour key, out of the way until asked for. Each colour can still be hidden from here.
+function toggleKey(force) {
+  let pop = $('#keyPop');
+  if (pop && force !== true) { pop.remove(); return; }
+  if (!pop) { pop = document.createElement('div'); pop.id = 'keyPop'; pop.className = 'keypop'; $('#app').appendChild(pop); }
+  const WHAT = { free: 'Free for your whole stay', likely: 'Probably free (no published signs)', paid: 'Meter: you pay', short: 'Time limit shorter than your stay', restricted: 'No parking or no stopping', permit: 'Resident permit area: visitors time-limited' };
+  pop.innerHTML = `<div class="kp-top"><b>Map key</b><button type="button" aria-label="Close"><i class="ph ph-x"></i></button></div>${LEGEND.filter(([k]) => k !== 'carpark').map(([k]) => `<label class="kp-row"><i class="${k === 'short' ? 'dash' : k === 'likely' ? 'dash-free' : k === 'permit' ? 'dash-permit' : ''}" style="background:var(--${k === 'short' ? 'paid' : k === 'likely' ? 'free' : k})"></i><span>${WHAT[k]}</span><input type="checkbox" data-k="${k}"${S.hidden.has(k) ? '' : ' checked'} aria-label="Show ${WHAT[k]}"></label>`).join('')}<p class="kp-note">Untick a colour to hide it from the map.</p>`;
+  pop.querySelector('.kp-top button').onclick = () => pop.remove();
+  pop.querySelectorAll('input[data-k]').forEach((cb) => (cb.onchange = () => { const k = cb.dataset.k; cb.checked ? S.hidden.delete(k) : S.hidden.add(k); if (map.isStyleLoaded()) kerbLayers(); renderBody(); }));
 }
 
 /* ---------- sheet (phones): min (full map), peek, open ---------- */
@@ -1359,8 +1360,21 @@ initSnap({
   applySnaps,
   snapKerbId: (sid) => snapMade.get(sid),
 });
+// Price boards photographed on this phone become that car park's rates (marked as from your photo).
+function applyBoards() {
+  const boards = loadBoards();
+  for (const cp of CARPARKS) {
+    const b = boards[cp.id];
+    if (!b) continue;
+    if (!cp.ownRates) cp.ownRates = { rates: cp.rates, rateSource: cp.rateSource, checked: cp.checked };
+    Object.assign(cp, { rates: b.rates, fromPhoto: b.date, checked: b.date, rateSource: null });
+  }
+  drawCarParks(); update();
+}
+initBoard({ carPark: (id) => CARPARKS.find((c) => c.id === id), applyBoards, toast });
 dataReady.then(() => {
   applySnaps();
+  applyBoards();
   setSessionMarker();
   if (LINK && KERBS) {
     let best = null, bd = 30;

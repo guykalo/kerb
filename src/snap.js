@@ -273,3 +273,72 @@ export function snapsToKerbs(K, RULES, byId, mids) {
   }
   return made;
 }
+
+/* ---------- Snap the price board (car parks) ---------- */
+// Prices photographed at the entrance. Reads "0-1 HR $15 / 1-2 HRS $25 / ALL DAY $60" style boards into casual
+// bands the app already prices with; the driver checks every number before saving.
+const BOARD_KEY = 'kerb-boards';
+export const loadBoards = () => { try { return JSON.parse(localStorage.getItem(BOARD_KEY) || '{}'); } catch { return {}; } };
+export function readBoard(raw) {
+  const t = ` ${String(raw || '').toUpperCase().replace(/[‐-―−~]/g, '-').replace(/\bO(?=\d)/g, '0').replace(/(\d)\s*[.,]\s*(\d\d)\b/g, '$1.$2')} `;
+  const bands = [];
+  for (const m of t.matchAll(/(?:(\d+(?:\.\d+)?)\s*(?:-|TO)\s*)?(\d+(?:\.\d+)?)\s*(MINS?|MINUTES|HRS?|HOURS?)\b[^$\d]{0,14}\$\s?(\d+(?:\.\d\d)?)/g)) {
+    const upTo = +m[2] / (/^MIN/.test(m[3]) ? 60 : 1), price = +m[4];
+    if (upTo > 0 && upTo <= 24 && price < 400) bands.push([upTo, price]);
+  }
+  const day = /(?:ALL ?DAY|DAILY(?: MAX(?:IMUM)?)?|MAX(?:IMUM)? (?:DAILY|PER DAY)|24 ?HRS?)\D{0,14}\$\s?(\d+(?:\.\d\d)?)/.exec(t);
+  if (day) bands.push([24, +day[1]]);
+  const early = /EARLY ?BIRD\D{0,30}\$\s?(\d+(?:\.\d\d)?)/.exec(t);
+  const night = /(?:NIGHT|EVENING)\D{0,30}\$\s?(\d+(?:\.\d\d)?)/.exec(t);
+  const uniq = [...new Map(bands.sort((a, b) => a[0] - b[0]).map((b) => [b[0], b])).values()];
+  return { bands: uniq, early: early ? +early[1] : null, night: night ? +night[1] : null };
+}
+export function initBoard(ctx) {
+  const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; input.setAttribute('capture', 'environment'); input.hidden = true; document.body.appendChild(input);
+  let cp = null;
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-snapboard]'); if (!b) return; cp = ctx.carPark(b.dataset.snapboard); if (!cp) return; input.value = ''; input.click(); });
+  input.addEventListener('change', () => { const f = input.files?.[0]; if (f && cp) openBoard(f, cp, ctx); });
+}
+async function openBoard(file, cp, ctx) {
+  const el = document.createElement('div'); el.className = 'snap'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Read a price board');
+  el.innerHTML = `<div class="snap-card"><div class="snap-top"><b>Prices at ${cp.name}</b><button type="button" class="snap-x" aria-label="Close"><i class="ph ph-x"></i></button></div>
+    <div class="snap-body"><img class="snap-img" alt="Your photo of the price board"><p class="snap-status">Opening the photo…</p><div class="snap-panels"></div></div>
+    <div class="snap-actions"><button type="button" class="snap-save" disabled>Save these prices</button></div></div>`;
+  document.body.appendChild(el);
+  const $ = (s) => el.querySelector(s); const close = () => el.remove();
+  $('.snap-x').onclick = close; el.addEventListener('click', (e) => { if (e.target === el) close(); });
+  let img; try { img = await loadImage(file); } catch { $('.snap-status').textContent = "That photo couldn't be opened."; return; }
+  $('.snap-img').src = img.src;
+  let got = { bands: [], early: null, night: null }, text = '';
+  try { const r = await readPhoto(img, (m) => ($('.snap-status').textContent = m.replace('sign', 'price board'))); text = r.text; got = readBoard(text); } catch (e) { $('.snap-status').textContent = e.message; }
+  $('.snap-status').innerHTML = got.bands.length ? 'Here\'s what Kerb read. <b>Check each price against the board</b> and fix anything wrong.' : "Kerb couldn't read the prices. Type them in from the board below.";
+  const rows = got.bands.length ? got.bands : [[1, 0], [2, 0], [3, 0], [24, 0]];
+  const render = () => {
+    $('.snap-panels').innerHTML = `<div class="sp">${rows.map(([h, p], i) => `<div class="sp-row" data-i="${i}"><span>Up to</span><select class="b-h" aria-label="Hours">${[0.5, 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 24].map((x) => `<option value="${x}"${x === h ? ' selected' : ''}>${x === 24 ? 'all day' : x < 1 ? '30 min' : `${x} hr${x > 1 ? 's' : ''}`}</option>`).join('')}</select><span>$</span><input class="b-p" inputmode="decimal" value="${p || ''}" aria-label="Price" style="width:80px"><button type="button" class="sp-tdel" aria-label="Remove"><i class="ph ph-x"></i></button></div>`).join('')}
+      <button type="button" class="sp-addt">+ Another price</button>
+      <div class="sp-row"><label class="sp-chk">Early bird $<input class="b-e" inputmode="decimal" value="${got.early ?? ''}" style="width:70px"></label><label class="sp-chk">Night $<input class="b-n" inputmode="decimal" value="${got.night ?? ''}" style="width:70px"></label></div></div>`;
+    el.querySelectorAll('[data-i]').forEach((r) => {
+      const i = +r.dataset.i;
+      r.querySelector('.b-h').onchange = (e) => { rows[i][0] = +e.target.value; };
+      r.querySelector('.b-p').oninput = (e) => { rows[i][1] = +e.target.value || 0; };
+      r.querySelector('.sp-tdel').onclick = () => { rows.splice(i, 1); render(); };
+    });
+    $('.sp-addt').onclick = () => { rows.push([rows.length ? Math.min(24, rows[rows.length - 1][0] + 1) : 1, 0]); render(); };
+  };
+  render();
+  $('.snap-save').disabled = false;
+  $('.snap-save').onclick = () => {
+    const bands = rows.filter(([, p]) => p > 0).sort((a, b) => a[0] - b[0]);
+    if (!bands.length) { $('.snap-status').textContent = 'Add at least one price.'; return; }
+    const ALL = [0, 1, 2, 3, 4, 5, 6];
+    const rates = [{ kind: 'casual', days: ALL, bands }];
+    const e = +el.querySelector('.b-e').value, n = +el.querySelector('.b-n').value;
+    if (e > 0) rates.push({ kind: 'flat', label: 'Early bird', days: [1, 2, 3, 4, 5], enter: [6, 9.5], exitAfter: 15, price: e });
+    if (n > 0) rates.push({ kind: 'flat', label: 'Night', days: ALL, enter: [17, 23.99], exitBy: 6, price: n });
+    const boards = loadBoards();
+    boards[cp.id] = { rates, date: new Date().toISOString().slice(0, 10), read: text.slice(0, 400) };
+    try { localStorage.setItem(BOARD_KEY, JSON.stringify(boards)); } catch { /* storage full */ }
+    if (SHARE_URL) fetch(SHARE_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'board', carpark: cp.id, at: cp.at, rates, date: boards[cp.id].date }) }).catch(() => {});
+    close(); ctx.applyBoards(); ctx.toast('Saved. This car park now shows the prices from your photo.');
+  };
+}
