@@ -26,13 +26,30 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # Last night's downloads, so a council server that's down doesn't blank its area.
+      - uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: raw-${{ github.run_id }}
+          restore-keys: raw-
       - name: Download open parking data
+        id: fetch
+        continue-on-error: true
         run: npm run data:fetch
         env:
           MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
           TFNSW_API_KEY: ${{ secrets.TFNSW_API_KEY }}
       - name: Build kerb data
+        id: kerbdata
+        if: steps.fetch.outcome == 'success'
+        continue-on-error: true
         run: npm run data:build
+      # If today's download or build failed, keep the map that's live now and still ship app changes.
+      - name: Keep the published data
+        if: steps.fetch.outcome != 'success' || steps.kerbdata.outcome != 'success'
+        run: |
+          mkdir -p public/data
+          for f in meta kerbs rules meters carparks; do curl -fsSL "https://guykalo.github.io/kerb/data/$f.json" -o "public/data/$f.json"; done
       - name: Build app
         run: npm run build
         env:

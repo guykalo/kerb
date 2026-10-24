@@ -61,12 +61,23 @@ import { fetchWaverley, fetchWoollahra, fetchRandwick, fetchOffstreet, fetchManu
 import { fetchParkRide } from './tfnsw.mjs';
 import { fetchManly, fetchWilloughby } from './spot.mjs';
 
+async function lastGood(name) {
+  try { const { readFile } = await import('node:fs/promises'); const v = JSON.parse(await readFile(`data/raw/${name}.json`, 'utf8')); return Array.isArray(v) && v.length ? v : null; } catch { return null; }
+}
 export async function fetchAll() {
   const raw = { meta: { fetchedAt: new Date().toISOString(), sources: {} } };
   for (const [name, src] of Object.entries(SOURCES)) {
-    raw[name] = await fetchLayer(name, src);
-    if (!raw[name].length) throw new Error(`${name} came back empty`);
-    raw.meta.sources[name] = { url: src.url, count: raw[name].length };
+    try {
+      raw[name] = await fetchLayer(name, src);
+      if (!raw[name].length) throw new Error(`${name} came back empty`);
+      raw.meta.sources[name] = { url: src.url, count: raw[name].length };
+    } catch (e) {
+      // The council's server is down: keep the last good copy (restored from the Actions cache) if there is one.
+      const old = await lastGood(name);
+      if (!old) throw e;
+      (globalThis.__log || console.log)(`  ${name} failed (${e.message.split('\n')[0]}), using the last good copy`);
+      raw[name] = old; raw.meta.sources[name] = { url: src.url, count: old.length, stale: true };
+    }
   }
   // Other councils: a failure here shouldn't stop the City of Sydney data from updating.
   for (const [name, fn] of [['waverley', fetchWaverley], ['woollahra', fetchWoollahra], ['parkride', fetchParkRide], ['manly', fetchManly], ['willoughby', fetchWilloughby], ['randwick', fetchRandwick], ['offstreet', fetchOffstreet], ['manual', fetchManual]]) {

@@ -274,8 +274,10 @@ export async function fetchManual() {
   return { spec, roads };
 }
 const DIRS = { north: [0, 1], south: [0, -1], east: [1, 0], west: [-1, 0] };
-// Two ways to place an entry: `near` + `radius` (a whole stretch around a point), or `from` + `to` cross streets
-// (the block between two intersections), optionally only part of it with `f: [start, end]` as fractions.
+// Three ways to place an entry: `near` + `radius` (a whole stretch around a point); `from` + `to` cross streets
+// (the block between two intersections), optionally only part of it with `f: [start, end]` as fractions; or
+// `a` and `b` as distances from cross streets, the way council decisions put it ("between 5 metres and
+// 18 metres east of Georgina Street"): { x: 'Georgina Street', m: 5, dir: 'east' }.
 export function buildManual(raw, reg) {
   const kx = (lat) => Math.cos((lat * Math.PI) / 180) * 111320, ky = 110540;
   const features = [], warnings = [];
@@ -295,13 +297,37 @@ export function buildManual(raw, reg) {
     }
     return best?.at || null;
   };
+  // Walk m metres along the street from point `at`, heading the compass way `dir`.
+  const along = (paths, at, m, dir) => {
+    if (!m) return at;
+    let best = null;
+    for (const p of paths) for (let i = 1; i < p.length; i++) { const d = distToSeg(at, p[i - 1], p[i]); if (!best || d < best.d) best = { d, p, i }; }
+    if (!best) return null;
+    const D = DIRS[dir] || [0, 0], p = best.p;
+    const vx = (p[best.i][0] - p[best.i - 1][0]) * kx(at[1]), vy = (p[best.i][1] - p[best.i - 1][1]) * ky;
+    const fwd = vx * D[0] + vy * D[1] >= 0;
+    // walk from `at` to the segment end in that direction, then on along the path
+    let pos = at, left = m;
+    const seq = fwd ? p.slice(best.i) : p.slice(0, best.i).reverse();
+    for (const q of seq) {
+      const step = dist(pos, q);
+      if (step >= left) { const t = left / (step || 1); return [pos[0] + (q[0] - pos[0]) * t, pos[1] + (q[1] - pos[1]) * t]; }
+      left -= step; pos = q;
+    }
+    return pos;
+  };
   for (const e of raw.spec.streets) {
     const srcText = raw.spec.sources[e.src] ? raw.spec.sources[e.src].split(': http')[0] : e.src;
     const k = reg.add({ rules: e.rules, q: 0, g: e.unrestrictedOutside === false ? 'free' : 'free', u: e.rules.length ? 0 : 1, src: srcText, text: e.text || '' });
     const centre = e.near || e.area;
-    const paths = pathsNear(e.street, centre, e.radius ? e.radius + 300 : 1500);
+    const paths = pathsNear(e.street, centre, e.radius ? e.radius + 300 : e.a ? 2500 : 1500);
     let A = null, B = null;
-    if (e.from && e.to) {
+    if (e.a && e.b) {
+      const end = (r) => { const X = meet(paths, pathsNear(r.x, centre, 2500)); return X && along(paths, X, r.m || 0, r.dir); };
+      A = end(e.a); B = end(e.b);
+      if (!A || !B) { warnings.push(`${e.street} near ${!A ? e.a.x : e.b.x}: cross street not found`); continue; }
+      if (dist(A, B) < 4) { const mid = A; A = along(paths, mid, 3, e.a.dir || 'north') || A; } // a single spot: give it a car length
+    } else if (e.from && e.to) {
       A = meet(paths, pathsNear(e.from, centre, 1500)); B = meet(paths, pathsNear(e.to, centre, 1500));
       if (!A || !B) { warnings.push(`${e.street} ${e.from}-${e.to}: ${!A ? e.from : e.to} not found`); continue; }
     }
