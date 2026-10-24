@@ -201,7 +201,7 @@ function cpLayers() {
   const vis = S.hidden.has('carpark') ? 'none' : 'visible';
   const common = { 'text-font': ['Noto Sans Bold'], 'icon-text-fit': 'both', 'icon-text-fit-padding': [1, 6, 1, 6], 'text-padding': 2, visibility: vis };
   map.addLayer({ id: 'cp-cluster', type: 'symbol', source: 'cps', filter: ['has', 'point_count'], layout: { ...common, 'icon-image': 'pill-cluster', 'text-size': 12,
-    'text-field': ['case', ['<', ['get', 'minp'], 99999], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' · from $', ['to-string', ['round', ['get', 'minp']]]], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' car parks']],
+    'text-field': ['case', ['==', ['get', 'minp'], 0], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' · incl. free'], ['<', ['get', 'minp'], 99999], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' · from $', ['to-string', ['round', ['get', 'minp']]]], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' car parks']],
     'icon-allow-overlap': false, 'text-allow-overlap': false }, paint: { 'text-color': c.bg } });
   map.addLayer({ id: 'cp-pill', type: 'symbol', source: 'cps', filter: ['all', ['!', ['has', 'point_count']], ['!=', ['get', 'sel'], 1]], layout: { ...common,
     'icon-image': ['concat', 'pill-', ['get', 'tone']], 'text-size': ['case', ['==', ['get', 'tone'], 'est'], 11.5, 12.5],
