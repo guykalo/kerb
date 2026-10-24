@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   push:
     paths: ['data/doc-urls.txt', 'scripts/fetch-docs.mjs']
+permissions:
+  contents: write
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -11,5 +13,10 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: node scripts/fetch-docs.mjs
-      - uses: actions/upload-artifact@v4
-        with: { name: council-docs, path: docs/, retention-days: 30 }
+      # Keep the documents on their own branch (not the site), so they can be read and turned into rules.
+      - run: |
+          cd docs
+          git init -q -b council-docs
+          git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Council documents $(date -u +%F)"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" council-docs
