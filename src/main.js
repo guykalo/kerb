@@ -1027,13 +1027,14 @@ function buildIndex() {
   for (const f of KERBS?.features || []) {
     const p = f.properties;
     if (!p.s) continue;
-    const key = `${p.s}|${p.b || ''}`;
-    if (!seen.has(key)) seen.set(key, { title: p.s, sub: p.b || 'Street', at: mids.get(p.id), n: 0, kind: 'street' });
+    const area = p.b && !/side$/i.test(p.b) ? p.b : ({ w: 'Waverley', wo: 'Woollahra' })[p.src] || '';
+    const key = `${p.s}|${area}`;
+    if (!seen.has(key)) seen.set(key, { title: p.s, sub: area || 'Street', at: mids.get(p.id), n: 0, kind: 'street' });
     seen.get(key).n++;
   }
   const list = [...seen.values()];
   for (const cp of CARPARKS) list.push({ title: cp.name, sub: cp.address || 'Car park', at: cp.at, n: 50, kind: 'carpark', id: cp.id });
-  for (const x of list) x.key = fold(`${x.title} ${x.sub}`);
+  for (const x of list) { x.key = fold(`${x.title} ${x.sub}`); x.tkey = fold(x.title); }
   localIdx = list;
 }
 function localMatches(text) {
@@ -1041,9 +1042,9 @@ function localMatches(text) {
   const t = fold(text), words = t.split(' ');
   const hits = [];
   for (const x of localIdx) {
-    const starts = x.key.startsWith(t) || x.key.includes(` ${t}`);
-    if (!starts && !words.every((w) => x.key.includes(w))) continue;
-    hits.push({ x, score: (starts ? 0 : 50) - Math.min(40, x.n) + (x.kind === 'carpark' ? 5 : 0) });
+    const title = x.tkey.startsWith(t) ? 0 : x.tkey.includes(` ${t}`) ? 20 : x.key.includes(` ${t}`) || x.key.startsWith(t) ? 45 : words.every((w) => x.key.includes(w)) ? 60 : -1;
+    if (title < 0) continue;
+    hits.push({ x, score: title - Math.min(15, x.n / 4) + (x.kind === 'carpark' ? 8 : 0) });
   }
   return hits.sort((a, b) => a.score - b.score).slice(0, 5).map((h) => h.x);
 }
