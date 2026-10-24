@@ -9,6 +9,7 @@ import {
   busy, busyLevel, BUSY_WORD, BANDS, band,
 } from './rules.js';
 import { parsePart } from '../scripts/lib/parse-rules.mjs';
+import { initSnap, snapsToKerbs } from './snap.js';
 
 const $ = (s) => document.querySelector(s);
 const DATA = './data/';
@@ -858,7 +859,7 @@ function renderDetail() {
       <h3 class="h3">Across the week</h3>${weekHTML(p)}
       <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
-      <p class="note">Source: ${set.src ? `${set.src}${/survey|committee|map/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
+      <p class="note">Source: ${set.src ? `${set.src}${/survey|committee|map|photo|decision/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
       ` : `<p class="note">${p.lk ? 'Based on Woollahra Council\'s resident permit areas: streets outside a permit scheme are usually unrestricted, but the council doesn\'t publish its signs.' : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>`}
       <div class="photos" id="signPhotos" hidden></div>
       ${actionsHTML(mids.get(p.id), p.id)}`;
@@ -1265,7 +1266,15 @@ map.on('click', 'cp-cluster', (e) => {
 });
 for (const l of ['cp-pill', 'cp-sel']) map.on('click', l, (e) => select(e.features[0].properties.id, true));
 for (const l of ['cp-cluster', 'cp-pill', 'cp-sel']) { map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer')); map.on('mouseleave', l, () => (map.getCanvas().style.cursor = '')); }
+// Snap the sign can ask for the next tap on the map to say which kerb a sign is on.
+let pickMode = null;
 map.on('click', (e) => {
+  if (pickMode) {
+    const cb = pickMode; pickMode = null;
+    const hit = map.queryRenderedFeatures([[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]], { layers: ['kerb-line', 'kerb-short', 'kerb-faint'].filter((l) => map.getLayer(l)) })[0];
+    cb(e.lngLat.toArray(), hit ? hit.properties.id : null);
+    return;
+  }
   if (map.getLayer('cp-pill') && map.queryRenderedFeatures(e.point, { layers: ['cp-cluster', 'cp-pill', 'cp-sel'] }).length) return;
   const hits = map.queryRenderedFeatures([[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]], { layers: ['kerb-line', 'kerb-short', 'kerb-faint'].filter((l) => map.getLayer(l)) });
   if (hits.length) select(hits[0].properties.id, false);
@@ -1287,7 +1296,27 @@ syncControls();
 setPeek();
 renderList();
 const dataReady = loadData().catch((e) => { body.innerHTML = `<div class="empty"><strong>The parking data didn't load</strong>Check your connection and reload the page. (${e.message})</div>`; throw e; });
+// Sign photos saved on this phone become kerbs on its map.
+let snapMade = new Map();
+function applySnaps() {
+  if (!KERBS) return;
+  snapMade = snapsToKerbs(KERBS, RULES, byId, mids);
+  localIdx = null;
+  recolour();
+  update();
+}
+initSnap({
+  map, S, mids, byId, distM, toast,
+  kerbs: () => KERBS,
+  select: (id, fly) => select(id, fly),
+  stayWords: () => stayWords(true),
+  when: () => `Checked for ${DAYS_LONG[S.day]} at ${fmtTime(S.hour)}`,
+  pickKerb: (cb) => { pickMode = cb; },
+  applySnaps,
+  snapKerbId: (sid) => snapMade.get(sid),
+});
 dataReady.then(() => {
+  applySnaps();
   setSessionMarker();
   if (LINK && KERBS) {
     let best = null, bd = 30;

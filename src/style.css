@@ -276,3 +276,42 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
 .compare { margin: 6px 16px 0; font-size: 13.5px; color: var(--muted); }
 .compare strong { color: var(--fg); }
 .car-pin { width: 28px; height: 28px; border-radius: 50%; background: var(--fg); color: var(--surface); display: grid; place-items: center; border: 3px solid var(--accent); box-shadow: var(--shadow); font-size: 15px; }
+
+/* ---------- snap the sign ---------- */
+.snapbtn { position: absolute; z-index: 4; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(var(--vis, 250px) + 106px); width: 48px; height: 48px; font-size: 22px; background: var(--accent); color: var(--accent-ink); border-color: transparent; box-shadow: var(--shadow); }
+@media (prefers-reduced-motion: no-preference) { .snapbtn { transition: bottom .32s cubic-bezier(.2, .9, .25, 1); } }
+@media (min-width: 900px) { .snapbtn { bottom: 66px; right: 16px; } }
+.snap { position: fixed; inset: 0; z-index: 50; background: rgba(5, 9, 13, .55); display: flex; align-items: flex-end; justify-content: center; }
+.snap[hidden] { display: none; }
+.snap-card { width: min(560px, 100%); max-height: 92dvh; display: flex; flex-direction: column; background: var(--surface); color: var(--fg); border-radius: 22px 22px 0 0; box-shadow: var(--shadow); padding-bottom: env(safe-area-inset-bottom, 0px); }
+@media (min-width: 600px) { .snap { align-items: center; } .snap-card { border-radius: 22px; } }
+.snap-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 6px; font-size: 17px; }
+.snap-x { border: 0; background: transparent; color: var(--muted); font-size: 22px; padding: 4px; }
+.snap-body { overflow: auto; padding: 0 16px 8px; -webkit-overflow-scrolling: touch; }
+.snap-img { display: block; width: 100%; max-height: 34dvh; object-fit: contain; border-radius: 14px; background: #000; }
+.snap-status { font-size: 14px; color: var(--muted); margin: 10px 0; line-height: 1.4; }
+.snap-status b { color: var(--fg); }
+.sp { border: 1px solid var(--line); border-radius: 14px; padding: 10px; margin-bottom: 8px; display: grid; gap: 8px; }
+.sp-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.sp select, .sp input:not([type]) { font: inherit; font-size: 15px; padding: 7px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.sp-kind { font-weight: 700; }
+.sp-area { width: 90px; }
+.sp-chk { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; }
+.sp-time { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 14px; color: var(--muted); }
+.sp-days { display: flex; gap: 4px; flex-wrap: wrap; }
+.sp-days button { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 8px; padding: 5px 6px; font-size: 12.5px; min-width: 34px; }
+.sp-days button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.sp-del, .sp-tdel { border: 0; background: transparent; color: var(--muted); font-size: 17px; margin-left: auto; }
+.sp-addt, .sp-add { border: 0; background: transparent; color: var(--accent); font-weight: 600; font-size: 14px; padding: 4px 0; text-align: left; }
+.sp-say { margin: 0; font-size: 13px; color: var(--muted); }
+.snap-verdict { border-radius: 14px; padding: 12px; margin: 8px 0; display: grid; gap: 4px; font-size: 14px; line-height: 1.4; }
+.snap-verdict b { font-size: 16px; }
+.snap-verdict small { color: var(--muted); }
+.snap-verdict.yes { background: color-mix(in srgb, var(--free) 18%, transparent); }
+.snap-verdict.no { background: color-mix(in srgb, var(--restricted) 18%, transparent); }
+.snap-where { display: flex; align-items: center; gap: 8px; font-size: 14px; padding: 6px 0; }
+.snap-where span { flex: 1; }
+.snap-pick { border: 1px solid var(--line); background: transparent; color: var(--fg); border-radius: 10px; padding: 6px 10px; font-size: 13px; }
+.snap-actions { padding: 10px 16px 14px; }
+.snap-save { width: 100%; border: 0; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 700; background: var(--accent); color: var(--accent-ink); }
+.snap-save:disabled { opacity: .5; }
