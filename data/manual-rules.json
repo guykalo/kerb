@@ -6,7 +6,8 @@
   "rwrandwick": "Randwick Council current parking map, Randwick town centre (Sept 2025): https://www.yoursay.randwick.nsw.gov.au/download_file/3030/905",
   "rwbream": "Randwick Council current parking map, Coogee Bream St (Sept 2025): https://www.yoursay.randwick.nsw.gov.au/download_file/3032/905",
   "rwsouthcoogee": "Randwick Council current parking map, South Coogee (Sept 2025): https://www.yoursay.randwick.nsw.gov.au/download_file/3033/905",
-  "rwmalabar": "Randwick Council current parking map, Malabar town centre (Sept 2025): https://www.yoursay.randwick.nsw.gov.au/download_file/3034/905"
+  "rwmalabar": "Randwick Council current parking map, Malabar town centre (Sept 2025): https://www.yoursay.randwick.nsw.gov.au/download_file/3034/905",
+  "iwmeters": "Inner West Council pay-by-plate meter locations (council-published map, linked from innerwest.nsw.gov.au/vehicles-and-parking/parking-meters) and 2026-27 Fees and Charges p.73: https://www.innerwest.nsw.gov.au/sites/default/files/2026-10/Fees%20and%20Charges%20%202026-27%20v2_Final.pdf"
  },
  "streets": [
   {
@@ -5824,6 +5825,6681 @@
    ],
    "text": "1/2P 2:30pm-3:30pm School days",
    "src": "rwmalabar"
+  },
+  {
+   "street": "Arthur Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Short Street",
+   "to": "Allen Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Arthur Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Short Street",
+   "to": "Allen Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Beattie Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Harrs Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Beattie Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Harrs Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Beattie Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Montague Street",
+   "to": "Darling Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Beattie Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Montague Street",
+   "to": "Darling Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Belmore Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Evans Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Birchgrove Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Addison Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Birchgrove Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Addison Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Booth Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Darvall Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Booth Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Darvall Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Cambridge Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Moodie Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Cambridge Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Moodie Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Carlisle Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Elswick Street",
+   "to": "Norton Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Carlisle Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Elswick Street",
+   "to": "Norton Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Church Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Church Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "College Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "College Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Curtis Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Church Street",
+   "to": "College Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Curtis Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Church Street",
+   "to": "College Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Curtis Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Clayton Street",
+   "to": "Thames Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Curtis Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "College Street",
+   "to": "Mort Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Curtis Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "McDonald Street",
+   "to": "Darling Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Curtis Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Mort Street",
+   "to": "Clayton Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Curtis Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Mort Street",
+   "to": "Ford Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Curtis Road",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Thames Street",
+   "to": "Darling Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Beattie Street",
+   "to": "Booth Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Belmore Street",
+   "to": "Victoria Road",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Bruce Street",
+   "to": "Beattie Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Cambridge Street",
+   "to": "Waterloo Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Church Street",
+   "to": "Beattie Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Church Street",
+   "to": "College Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "College Street",
+   "to": "Mort Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Denison Street",
+   "to": "Red Lion Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Denison Street",
+   "to": "Red Lion Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Ford Street",
+   "to": "McDonald Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Jacques Street",
+   "to": "Montague Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "King Street",
+   "to": "North Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "McDonald Street",
+   "to": "Curtis Road",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Merton Street",
+   "to": "Nelson Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Merton Street",
+   "to": "Nelson Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Montague Street",
+   "to": "Church Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Mort Street",
+   "to": "Ford Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "National Street",
+   "to": "Merton Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Nelson Street",
+   "to": "Beattie Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Nelson Street",
+   "to": "Bruce Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Oxford Street",
+   "to": "Cambridge Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Phillip Street",
+   "to": "Church Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Red Lion Street",
+   "to": "Belmore Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Rowntree Street",
+   "to": "Short Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Short Street",
+   "to": "Phillip Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Victoria Road",
+   "to": "Merton Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darling Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Waterloo Street",
+   "to": "Victoria Road",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darvall Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Booth Street",
+   "to": "Eaton Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Darvall Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Booth Street",
+   "to": "Eaton Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Eaton Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darvall Street",
+   "to": "Darling Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Eaton Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darvall Street",
+   "to": "Darling Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Ford Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Ford Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Hancock Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Belmore Street",
+   "to": "Victoria Road",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Hancock Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Belmore Street",
+   "to": "Victoria Road",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Jacques Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Llewellyn Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Jacques Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Llewellyn Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "King Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Turner Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "King Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Turner Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Little Darling Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Montague Street",
+   "to": "Llewellyn Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Llewellyn Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Montague Street",
+   "to": "Little Darling Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Llewellyn Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Montague Street",
+   "to": "Little Darling Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Macauley Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Elswick Street",
+   "to": "Norton Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Macauley Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Elswick Street",
+   "to": "Norton Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Marion Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Elswick Street",
+   "to": "Renwick Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Marion Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Elswick Street",
+   "to": "Renwick Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Marion Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Norton Street",
+   "to": "Balmain Road",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Marion Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Norton Street",
+   "to": "Balmain Road",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Marion Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Renwick Street",
+   "to": "Norton Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Marlborough Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Elswick Street",
+   "to": "Norton Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Marlborough Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Elswick Street",
+   "to": "Norton Street",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "McDonald Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "McDonald Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Merton Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Cross Street",
+   "to": "Evans Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Merton Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Cross Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Merton Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Evans Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Merton Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Wellington Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Merton Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Wellington Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Montague Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Llewellyn Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Montague Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Llewellyn Street",
+   "to": "Beattie Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Montague Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Llewellyn Street",
+   "to": "Beattie Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Mort Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Mort Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "National Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Prosper Lane",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "National Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Prosper Lane",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "National Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Prosper Lane",
+   "to": "Napoleon Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "National Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Prosper Lane",
+   "to": "Napoleon Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Nelson Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Evans Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Nelson Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Evans Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Nelson Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Wellington Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Nelson Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Wellington Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "North Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Macquarie Terrace",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "North Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Macquarie Terrace",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Norton Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Carlisle Street",
+   "to": "Macauley Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Norton Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Macauley Street",
+   "to": "Allen Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Norton Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Marion Street",
+   "to": "Marlborough Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Norton Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Marion Street",
+   "to": "Wetherill Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Norton Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Marlborough Street",
+   "to": "Carlisle Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Norton Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Parramatta Road",
+   "to": "Marion Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Norton Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Parramatta Road",
+   "to": "Marion Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Norton Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Short Street",
+   "to": "Allen Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Norton Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Wetherill Street",
+   "to": "Short Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-10pm daily, $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Oxford Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Moodie Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Oxford Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Moodie Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Palmer Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Beattie Street",
+   "to": "Sorrie Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Palmer Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Beattie Street",
+   "to": "Sorrie Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Palmer Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Wortley Street",
+   "to": "Sorrie Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Palmer Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Wortley Street",
+   "to": "Sorrie Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Red Lion Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Evans Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Renwick Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Cary Street",
+   "to": "Day Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Renwick Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Day Street",
+   "to": "Marion Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Renwick Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Jarrett Street",
+   "to": "Cary Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Renwick Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Parramatta Road",
+   "to": "Marion Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Rowntree Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Rowntree Street",
+   "suburb": "Balmain",
+   "area": [
+    151.18,
+    -33.857
+   ],
+   "from": "Darling Street",
+   "to": "Curtis Road",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Short Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Arthur Street",
+   "to": "Balmain Road",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Short Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Norton Street",
+   "to": "Arthur Street",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Short Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Norton Street",
+   "to": "Balmain Road",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Waterloo Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Moodie Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Waterloo Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Moodie Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Wetherill Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Norton Street",
+   "to": "Balmain Road",
+   "side": [
+    "north"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Wetherill Street",
+   "suburb": "Leichhardt",
+   "area": [
+    151.1565,
+    -33.883
+   ],
+   "from": "Norton Street",
+   "to": "Balmain Road",
+   "side": [
+    "south"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Wise Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Terry Street",
+   "side": [
+    "east"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
+  },
+  {
+   "street": "Wise Street",
+   "suburb": "Rozelle",
+   "area": [
+    151.171,
+    -33.8615
+   ],
+   "from": "Darling Street",
+   "to": "Terry Street",
+   "side": [
+    "west"
+   ],
+   "rules": [
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     8,
+     18,
+     5.5,
+     1,
+     0,
+     "Pay by plate",
+     [
+      2,
+      2.7
+     ]
+    ],
+    [
+     -1,
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     18,
+     22,
+     5.5,
+     1,
+     0,
+     "Pay by plate"
+    ]
+   ],
+   "text": "Meter 8am-6pm daily, $5.50/hr for the first 2 hours then $2.70/hr; 6pm-10pm $5.50/hr (time limit on the sign)",
+   "src": "iwmeters"
   }
  ]
 }

@@ -493,7 +493,7 @@ function renderList() {
   const inCoverage = KERBS.features.some((f) => { const m = mids.get(f.properties.id); return Math.abs(m[0] - centre[0]) < 0.015 && Math.abs(m[1] - centre[1]) < 0.012; });
   if (!inCoverage) {
     drawDest(S.dest ? { free: [], paid: [], likely: [] } : null);
-    body.insertAdjacentHTML('beforeend', `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington, Coogee, Randwick, Maroubra), Manly and Chatswood. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`);
+    body.insertAdjacentHTML('beforeend', `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington, Coogee, Randwick, Maroubra), Manly, Chatswood, and the Inner West's meters in Balmain, Rozelle and Leichhardt. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`);
     carParkRows();
     return;
   }
@@ -543,7 +543,7 @@ function renderList() {
   carParkRows();
   const foot = document.createElement('div'); foot.className = 'foot';
   const upd = META ? new Date(META.fetchedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', timeZone: 'Australia/Sydney' }) : '';
-  foot.innerHTML = `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey, Woollahra's resident permit areas, Randwick's resident permit kerbs, and street sign surveys for Manly (2020) and Chatswood, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
+  foot.innerHTML = `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey, Woollahra's resident permit areas, Randwick's resident permit kerbs, Randwick's and Inner West's published parking maps and meter lists, and street sign surveys for Manly (2020) and Chatswood, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
   body.appendChild(foot);
 }
 

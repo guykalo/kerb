@@ -25,8 +25,9 @@ export function fmtDays(d) {
   if (s === '6') return 'Saturday';
   return d.map((x) => DAYS[x]).join(', ');
 }
-export const pLabel = (p) => (p === 0.25 ? '¼P' : p === 0.5 ? '½P' : `${p}P`);
-export const pWords = (p) => (p === 0.25 ? '15 minutes' : p === 0.5 ? '30 minutes' : p === 1 ? '1 hour' : `${p} hours`);
+// A limit of -1 means the council publishes the meter but not its time limit.
+export const pLabel = (p) => (p < 0 ? '?P' : p === 0.25 ? '¼P' : p === 0.5 ? '½P' : `${p}P`);
+export const pWords = (p) => (p < 0 ? 'the time on the sign' : p === 0.25 ? '15 minutes' : p === 0.5 ? '30 minutes' : p === 1 ? '1 hour' : `${p} hours`);
 export const money = (v) => (v === 0 ? 'Free' : `$${(Math.round(v * 100) / 100).toFixed(2).replace(/\.00$/, '')}`);
 
 const DAYTIME_FROM = 9; // a meter period starting at or before this is the "first thing in the morning" one
@@ -69,14 +70,14 @@ export function stateAt(props, rules, day, h) {
 // signed limits over 30 minutes don't apply (30 minutes becomes 2 hours, shorter limits become 30 minutes).
 // No-parking, no-stopping, loading and bus zones still apply. Private car parks don't give these concessions.
 export const BEN = { mps: false };
-const mpsLimit = (p) => (p > 0.5 ? Infinity : p === 0.5 ? 2 : 0.5);
+const mpsLimit = (p) => (p < 0 || p > 0.5 ? Infinity : p === 0.5 ? 2 : 0.5);
 
 // Can you park for `stay` hours from day/h, and what does it cost?
 export function costFor(props, rules, day, h, stay) {
   if (props.k < 0) return { ok: null, why: 'No published rules for this kerb yet' };
   const set = rules[props.k];
   const step = 0.25, n = Math.max(1, Math.round(stay / step));
-  let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0, waived = 0, unknownRate = false;
+  let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0, waived = 0, unknownRate = false, limitUnknown = false;
   for (let i = 0; i < n; i++) {
     const t = h + i * step, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
     const s = stateAt(props, rules, d, hh);
@@ -84,18 +85,20 @@ export function costFor(props, rules, day, h, stay) {
     if (s.kind !== 'meter' && s.kind !== 'limit') { run = 0; ref = null; continue; }
     if (s.rule !== ref) { run = 0; ref = s.rule; }
     run += step;
-    const limit = BEN.mps ? mpsLimit(s.rule[0]) : s.rule[0];
+    if (s.rule[0] < 0) limitUnknown = true;
+    const limit = s.rule[0] < 0 ? Infinity : BEN.mps ? mpsLimit(s.rule[0]) : s.rule[0];
     if (run > limit + 1e-9) return { ok: false, why: BEN.mps ? `${limit === 0.5 ? '30-minute' : `${limit}-hour`} limit with a permit until ${fmtTime(s.rule[3])}` : `${pLabel(s.rule[0])} limit until ${fmtTime(s.rule[3])}` };
     if (s.kind === 'limit') continue;
     if (BEN.mps) { waived += step; continue; }
-    if (s.rule[4] < 0) unknownRate = true; else cost += s.rule[4] * step;
+    const tier = s.rule[8] && run > s.rule[8][0] + 1e-9 ? s.rule[8][1] : s.rule[4];
+    if (s.rule[4] < 0) unknownRate = true; else cost += tier * step;
     paid += step;
     if (firstPaidAt == null) { firstPaidAt = t; rate = s.rule[4]; }
   }
   // Ticket machines in free 15-minute zones give the first quarter hour free.
   const quarterFree = set.q || props.f15;
   if (quarterFree && paid > 0) cost = Math.max(0, cost - Math.min(paid, 0.25) * (cost / paid));
-  return { ok: true, cost, quarterFree: !!quarterFree && stay <= 0.25 && !unknownRate, paidHours: paid, freeHours: stay - paid, firstPaidAt, rate, waived, unknownRate };
+  return { ok: true, cost, quarterFree: !!quarterFree && stay <= 0.25 && !unknownRate, paidHours: paid, freeHours: stay - paid, firstPaidAt, rate, waived, unknownRate, limitUnknown };
 }
 
 // Category used for colouring the kerb for the chosen stay.
@@ -114,7 +117,7 @@ export function plainNow(props, rules, day, h) {
     ? `Resident permit ${props.pa}. The council hasn't published the signs here, so check the sign: visitors are usually time-limited.`
     : `The council hasn't published the signs for this kerb yet. Check the sign before you park.`;
   const permit = s.rule && s.rule[7] ? ` ${s.rule[7]}.` : '';
-  if (s.kind === 'meter') return `${s.rule[4] < 0 ? 'Pay at the meter (the council doesn\'t publish the rate)' : `Pay ${money(s.rule[4])} an hour`}, up to ${pWords(s.rule[0])}, until ${fmtTime(s.rule[3])}.${permit}`;
+  if (s.kind === 'meter') return `${s.rule[4] < 0 ? 'Pay at the meter (the council doesn\'t publish the rate)' : `Pay ${money(s.rule[4])} an hour${s.rule[8] ? ` (${money(s.rule[8][1])} an hour after ${pWords(s.rule[8][0])})` : ''}`}, up to ${pWords(s.rule[0])}, until ${fmtTime(s.rule[3])}.${permit}`;
   if (s.kind === 'limit') return `Free for up to ${pWords(s.rule[0])}${s.rule[3] < 24 || s.rule[2] > 0 ? ` until ${fmtTime(s.rule[3])}` : ''}.${permit}`;
   if (s.kind === 'restricted' && s.note) return `${s.note}${s.until < 24 ? ` until ${fmtTime(s.until)}` : ''}. You can't park here.`;
   if (s.kind === 'restricted') return `No ticket parking until ${fmtTime(s.until)}. Usually a clearway, bus or loading zone at this time.`;
@@ -154,7 +157,7 @@ export function busy(props, rules, day, h) {
   let v = PROFILES[prof][day][band(h)];
   if (props.k >= 0) {
     const r = rulesFor(rules[props.k], day).find((x) => h >= x[2] && h < x[3]);
-    if (r && r[0] <= 1) v += 0.06; // short limits usually mean high turnover demand
+    if (r && r[0] > 0 && r[0] <= 1) v += 0.06; // short limits usually mean high turnover demand
   }
   return Math.max(0, Math.min(1, v));
 }
