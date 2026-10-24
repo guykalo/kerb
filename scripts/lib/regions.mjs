@@ -172,3 +172,26 @@ export function buildWoollahra(raw) {
   const carparks = raw.carparks.map((c, i) => ({ id: `wool-${i}`, name: c.NAME, address: c.INFO_1 || '', entry: '', operator: 'Woollahra Council', at: round(c.at), source: 'Woollahra Council' }));
   return { features: feats, carparks };
 }
+
+/* ---------- Randwick (Coogee, Randwick, Kensington, Kingsford, Maroubra) ---------- */
+// Every kerb in a resident parking scheme, drawn kerb by kerb, with its zone and number of spaces.
+// The council doesn't publish the sign times, so these show as permit areas: visitors are usually time-limited.
+const RANDWICK = 'https://mapservices.randwick.nsw.gov.au/arcgis/rest/services/extTransport/ResidentParkingZone/MapServer/0';
+export async function fetchRandwick() {
+  const zones = (await arcgisAll(RANDWICK, { outFields: 'streetName,suburb,residentParkingSchemeZone,availableSpace,fromHouseNumber,toHouseNumber', orderByFields: 'OBJECTID', geometryPrecision: '6' }))
+    .filter((f) => f.geometry?.paths).map((f) => ({ ...f.attributes, paths: f.geometry.paths }));
+  log(`  randwick: ${zones.length} resident permit kerbs`);
+  return { zones };
+}
+export function buildRandwick(raw) {
+  const features = [];
+  for (const z of raw.zones) for (const path of z.paths) {
+    if (path.length < 2) continue;
+    features.push({
+      type: 'Feature',
+      properties: { s: titleCase(z.streetName), b: titleCase(z.suburb), sd: [z.fromHouseNumber, z.toHouseNumber].filter(Boolean).length ? `Outside ${[z.fromHouseNumber, z.toHouseNumber].filter(Boolean).join(' to ')}` : '', k: -1, z: 0, pa: z.residentParkingSchemeZone ? `Area ${z.residentParkingSchemeZone}` : 'Resident scheme', lk: 0, f15: 0, n: +z.availableSpace || 0, src: 'rw' },
+      geometry: { type: 'LineString', coordinates: path.map((c) => round(c)) },
+    });
+  }
+  return { features, carparks: [] };
+}
