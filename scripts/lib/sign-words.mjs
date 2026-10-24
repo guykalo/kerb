@@ -63,13 +63,15 @@ export function readSign(raw) {
   heads.forEach((h, i) => {
     const body = txt.slice(h.index, i + 1 < heads.length ? heads[i + 1].index : undefined);
     const head = h[1].replace(/\s/g, ' ').trim();
+    // "No Parking, Authorised Car Share Vehicles Excepted" is one sign: a car share bay.
+    if (/CAR ?SHARE/.test(head) && i > 0 && /NO PARKING/.test(heads[i - 1][1]) && h.index - heads[i - 1].index < 50) return;
     // "4P Mobility Parking Only 8am-10pm": the 4P belongs to the zone that follows, not a sign of its own.
     if (i + 1 < heads.length && /^\d|^P/.test(head) && body.trim() === h[1].trim() && /MOBILITY|DISABILITY|DISABLED|LOADING|CAR ?SHARE|BUS|TAXI/.test(heads[i + 1][1])) return;
     const p = { head, text: body.trim(), times: [], ph: /PUBLIC HOLIDAY/.test(body) };
     const lim = /^(\d{1,2})(?:\/(\d))?\s?P$/.exec(head) || /^P\s?(\d{1,2})$/.exec(head);
     if (lim) { p.kind = 'limit'; p.hours = /^P/.test(head) ? +lim[1] / 60 : lim[2] ? +lim[1] / +lim[2] : +lim[1]; }
     else if (/NO STOPPING|CLEARWAY|BUS LANE|TRANSIT LANE/.test(head)) p.kind = 'nostop';
-    else if (/NO PARKING/.test(head)) p.kind = 'nopark';
+    else if (/NO PARKING/.test(head)) { p.kind = 'nopark'; if (/CAR ?SHARE/.test(txt.slice(h.index, h.index + 60))) { p.kind = 'zone'; p.head = 'CAR SHARE ONLY'; } }
     else if (/WORKS ZONE/.test(head)) p.kind = 'works';
     else p.kind = 'zone';
     // Bays for one kind of vehicle aren't parking for everyone else.
