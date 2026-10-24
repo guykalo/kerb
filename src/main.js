@@ -46,8 +46,10 @@ const mids = new Map(); // kerb id -> midpoint
 const byId = new Map();
 
 async function loadData() {
-  const get = (n) => fetch(DATA + n).then((r) => { if (!r.ok) throw new Error(`${n}: HTTP ${r.status}`); return r.json(); });
-  [KERBS, RULES, METERS, CARPARKS, META] = await Promise.all(['kerbs.json', 'rules.json', 'meters.json', 'carparks.json', 'meta.json'].map(get));
+  // meta.json is always fetched fresh; its build time versions the other files so phones never show stale kerbs.
+  const get = (n, v) => fetch(DATA + n + (v ? `?v=${encodeURIComponent(v)}` : ''), v ? {} : { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(`${n}: HTTP ${r.status}`); return r.json(); });
+  META = await get('meta.json');
+  [KERBS, RULES, METERS, CARPARKS] = await Promise.all(['kerbs.json', 'rules.json', 'meters.json', 'carparks.json'].map((n) => get(n, META.builtAt)));
   let x0 = 180, y0 = 90, x1 = -180, y1 = -90;
   for (const f of KERBS.features) {
     const c = f.geometry.coordinates;
