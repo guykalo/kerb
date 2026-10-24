@@ -262,8 +262,10 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
 .walkseg { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 600; flex-wrap: wrap; }
 .walkseg button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 9px; font-weight: 650; font-size: 12.5px; color: var(--fg); }
 .walkseg button[aria-pressed="true"] { background: var(--fg); color: var(--surface); border-color: transparent; }
-.dest-pin { width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--accent); border: 3px solid #fff; box-shadow: var(--shadow); display: grid; place-items: center; }
-.dest-pin i { transform: rotate(45deg); color: #fff; font-size: 14px; }
+.dest-pin { width: 28px; height: 40px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
+.dest-pin svg { display: block; }
+.results .rhead { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px 2px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.results .rhead button { width: auto; padding: 2px 4px; color: var(--accent); font-size: 12px; font-weight: 600; }
 .session { margin: 8px 16px 0; padding: 12px; border-radius: var(--r); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); display: flex; flex-direction: column; gap: 8px; }
 .session .st { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .session b { font-size: 17px; }

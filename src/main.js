@@ -626,7 +626,7 @@ function setDest(d) {
   S.dest = d;
   destMarker?.remove(); destMarker = null;
   if (d) {
-    const el = document.createElement('div'); el.className = 'dest-pin'; el.innerHTML = '<i class="ph-fill ph-flag"></i>';
+    const el = document.createElement('div'); el.className = 'dest-pin'; el.innerHTML = '<svg viewBox="0 0 28 40" width="28" height="40" aria-hidden="true"><path d="M14 0C6.3 0 0 6.1 0 13.7 0 23.9 14 40 14 40s14-16.1 14-26.3C28 6.1 21.7 0 14 0z" fill="#ea4335" stroke="#b31412" stroke-width="1"/><circle cx="14" cy="13.5" r="5.2" fill="#7a0d0b"/></svg>';
     destMarker = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(d.at).addTo(map);
     if (sheet === 'open') setSheet('peek');
     requestAnimationFrame(fitDest);
@@ -636,7 +636,7 @@ function setDest(d) {
 function destBar() {
   if (!S.dest) return;
   const el = document.createElement('div'); el.className = 'dest';
-  el.innerHTML = `<div class="dest-top"><i class="ph-fill ph-flag" aria-hidden="true"></i><span>Near ${S.dest.name}</span><button type="button" aria-label="Clear destination"><i class="ph ph-x"></i></button></div>
+  el.innerHTML = `<div class="dest-top"><i class="ph-fill ph-map-pin" aria-hidden="true" style="color:#ea4335"></i><span>Near ${S.dest.name}</span><button type="button" aria-label="Clear destination"><i class="ph ph-x"></i></button></div>
     <div class="walkseg" role="group" aria-label="Longest walk">Walk up to ${[2, 5, 10, 15, 20].map((w) => `<button type="button" data-w="${w}" aria-pressed="${w === S.walk}">${w} min</button>`).join('')}</div>`;
   el.querySelector('.dest-top button').onclick = () => setDest(null);
   el.querySelectorAll('[data-w]').forEach((b) => (b.onclick = () => { S.walk = +b.dataset.w; try { localStorage.setItem('kerb-walk', String(S.walk)); } catch { /* ignore */ } renderList(); drawCarParks(); fitDest(); }));
@@ -1094,7 +1094,16 @@ function settle() {
   if (innerWidth !== lastW || Math.abs(Math.min(innerHeight * 0.8, 740) - lastH) > 40) { map.resize(); setPeek(); }
 }
 visualViewport?.addEventListener('resize', () => { clearTimeout(settle.t); settle.t = setTimeout(settle, 250); });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { settle(); map.triggerRepaint(); } });
+// iOS can launch a home-screen app with a smaller viewport for a moment; if the map keeps that size, part of the
+// screen stays blank and untouchable. Watch the map box itself and resize whenever the canvas doesn't match it.
+const fitCanvas = () => {
+  const box = $('#map').getBoundingClientRect(), cv = map.getCanvas().getBoundingClientRect();
+  if (Math.abs(box.height - cv.height) > 2 || Math.abs(box.width - cv.width) > 2) map.resize();
+};
+try { new ResizeObserver(() => requestAnimationFrame(fitCanvas)).observe($('#map')); } catch { /* old browsers */ }
+[300, 1000, 2500].forEach((t) => setTimeout(fitCanvas, t));
+addEventListener('focus', fitCanvas);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { settle(); fitCanvas(); map.triggerRepaint(); } });
 addEventListener('pageshow', settle);
 map.on('webglcontextlost', () => toast('The map paused. It will come back in a moment.'));
 map.on('webglcontextrestored', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); destLayers(); recolour(); } if (S.sat) setSat(true); });
@@ -1131,7 +1140,33 @@ function localMatches(text) {
   }
   return hits.sort((a, b) => a.score - b.score).slice(0, 5).map((h) => h.x);
 }
+// Recent searches (this phone only), shown when the search bar is tapped while empty.
+const RECENT_KEY = 'kerb-recent';
+const recent = () => { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { return []; } };
+function remember(item) {
+  const r = recent().filter((x) => !(x.title === item.title && x.sub === item.sub));
+  r.unshift({ title: item.title, sub: item.sub || '', at: item.at, kind: item.kind, id: item.id });
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(r.slice(0, 8))); } catch { /* ignore */ }
+}
+function showRecent() {
+  const r = recent();
+  if (!r.length) { results.hidden = true; return; }
+  results.replaceChildren();
+  const h = document.createElement('li'); h.className = 'rhead'; h.innerHTML = '<span>Recent</span><button type="button">Clear</button>';
+  h.querySelector('button').onclick = (e) => { e.stopPropagation(); try { localStorage.removeItem(RECENT_KEY); } catch { /* ignore */ } results.hidden = true; q.focus(); };
+  results.appendChild(h);
+  for (const item of r) {
+    const li = document.createElement('li'), b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = `<i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i><span class="rt"><span>${item.title}</span><small>${item.sub || ''}</small></span>`;
+    b.onclick = () => pick(item);
+    li.appendChild(b); results.appendChild(li);
+  }
+  results.hidden = false;
+}
 function pick(item) {
+  // Stop any search still on its way back, or it would reopen the list over the map.
+  clearTimeout(searchTimer); searchCtl?.abort(); searchCtl = null;
+  remember(item);
   results.hidden = true; q.value = item.title; q.blur(); S.sel = null;
   if (item.kind === 'carpark') { setDest(null); q.value = item.title; select(item.id, true); return; }
   q.blur(); setSheet('peek'); // keep the map in view so the options can be seen; the list is one swipe up
@@ -1157,11 +1192,11 @@ let lastPlaces = [];
 q.addEventListener('input', () => {
   const text = q.value.trim();
   clearTimeout(searchTimer);
-  if (text.length < 2) { results.hidden = true; return; }
+  if (text.length < 2) { if (!text) showRecent(); else results.hidden = true; return; }
   showResults(localMatches(text), lastPlaces.filter((p) => fold(p.title).includes(fold(text).split(' ')[0])), true);
   searchTimer = setTimeout(runSearch, 160);
 });
-q.addEventListener('focus', () => { if (q.value.trim().length >= 2) q.dispatchEvent(new Event('input')); });
+q.addEventListener('focus', () => { if (q.value.trim().length >= 2) q.dispatchEvent(new Event('input')); else if (!q.value.trim()) showRecent(); });
 q.addEventListener('keydown', (e) => { if (e.key === 'Escape') { results.hidden = true; q.blur(); } });
 q.addEventListener('blur', () => setTimeout(settle, 120));
 $('#searchForm').addEventListener('submit', (e) => { e.preventDefault(); const first = results.querySelector('button:not([disabled])'); if (first) first.click(); else runSearch(); });
@@ -1179,8 +1214,8 @@ async function runSearch() {
       const p = f.properties;
       return { title: p.name || [p.housenumber, p.street].filter(Boolean).join(' '), sub: [p.street && p.name ? p.street : '', p.district || p.locality, p.city].filter(Boolean).join(', '), at: f.geometry.coordinates, kind: 'place' };
     }).filter((x) => x.title);
-    showResults(localMatches(text), lastPlaces, false);
-  } catch (e) { if (e.name !== 'AbortError') showResults(localMatches(text), [], false); }
+    if (document.activeElement === q) showResults(localMatches(text), lastPlaces, false);
+  } catch (e) { if (e.name !== 'AbortError' && document.activeElement === q) showResults(localMatches(text), [], false); }
 }
 
 /* ---------- locate ---------- */
