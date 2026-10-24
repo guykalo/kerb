@@ -11,7 +11,8 @@ export function buildData(raw) {
   // When the City of Sydney's meter server is down, reuse the City of Sydney kerbs that are live now (raw.published)
   // and still rebuild everything else.
   const carry = !raw.meters && raw.published ? raw.published : null;
-  const { meters = [], metersQuarterFree: quarter = [], tariffs = [], permits = [], free15 = [], councilCarParks: carparks = [], streets = [], meta = {} } = raw;
+  const { meters = [], metersQuarterFree: quarter = [], tariffs = [], permits = [], free15 = [], councilCarParks: carparks = [], meta = {} } = raw;
+  const streets = carry ? [] : raw.streets || []; // carried kerbs already cover every City of Sydney street
   /* ---------- areas (polygons) ---------- */
   const polyOf = (f) => (f.geometry && f.geometry.rings) || [];
   const withBox = (rings) => ({ rings, box: bbox(rings.flat()) });
