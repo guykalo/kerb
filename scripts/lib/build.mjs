@@ -190,7 +190,7 @@ export function buildData(raw) {
   if (carry) carParkList.push(...carry.carparks.filter((c) => String(c.id).startsWith('cos-')));
 
   /* ---------- other councils ---------- */
-  const setKey = (set) => JSON.stringify([set.rules, set.q || 0, set.g || '', set.u || 0]);
+  const setKey = (set) => JSON.stringify([set.rules, set.q || 0, set.g || '', set.u || 0, set.src || '', set.text || '']); // same rules from different sources keep their own source
   const keyIdx = new Map(ruleSets.map((x, i) => [setKey(x), i]));
   const reg = { add(set) { const key = setKey(set); if (!keyIdx.has(key)) { keyIdx.set(key, ruleSets.length); ruleSets.push(set); } return keyIdx.get(key); } };
   const month = +new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Sydney', month: 'numeric' }).format(new Date());
