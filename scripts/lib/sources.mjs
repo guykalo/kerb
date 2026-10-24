@@ -57,12 +57,19 @@ export async function fetchLayer(name, { url, fields, geometry = true, offset })
 }
 
 
+import { fetchWaverley, fetchWoollahra } from './regions.mjs';
+
 export async function fetchAll() {
   const raw = { meta: { fetchedAt: new Date().toISOString(), sources: {} } };
   for (const [name, src] of Object.entries(SOURCES)) {
     raw[name] = await fetchLayer(name, src);
     if (!raw[name].length) throw new Error(`${name} came back empty`);
     raw.meta.sources[name] = { url: src.url, count: raw[name].length };
+  }
+  // Other councils: a failure here shouldn't stop the City of Sydney data from updating.
+  for (const [name, fn] of [['waverley', fetchWaverley], ['woollahra', fetchWoollahra]]) {
+    try { raw[name] = await fn(); raw.meta.sources[name] = { ok: true }; }
+    catch (e) { (globalThis.__log || console.log)(`  ${name} failed: ${e.message}`); raw.meta.sources[name] = { ok: false, error: e.message }; }
   }
   return raw;
 }

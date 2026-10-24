@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import '@phosphor-icons/web/regular';
 import './style.css';
 import {
-  DAYS, DAYS_LONG, fmtTime, fmtClock, pLabel, money,
+  DAYS, DAYS_LONG, fmtTime, fmtClock, fmtDays, pLabel, money,
   stateAt, costFor, category, plainNow, dayTimeline,
   busy, busyLevel, BUSY_WORD, BANDS, band,
 } from './rules.js';
@@ -103,16 +103,16 @@ function restyleBase() {
 
 function kerbLayers() {
   const c = C();
-  const col = ['match', ['get', 'c'], 'free', c.free, 'paid', c.paid, 'short', c.short, 'restricted', c.restricted, 'permit', c.permit, c.unknown];
+  const col = ['match', ['get', 'c'], 'free', c.free, 'likely', c.free, 'paid', c.paid, 'short', c.short, 'restricted', c.restricted, 'permit', c.permit, c.unknown];
   const w = (m) => ['interpolate', ['linear'], ['zoom'], 12, 1 * m, 14, 2.2 * m, 16, 4.5 * m, 18, 8 * m];
-  const known = ['all', ['!=', ['get', 'c'], 'unknown'], ['!=', ['get', 'c'], 'permit'], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]];
+  const known = ['all', ['!=', ['get', 'c'], 'unknown'], ['!=', ['get', 'c'], 'permit'], ['!=', ['get', 'c'], 'likely'], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]];
   if (!map.getSource('kerbs')) {
     map.addSource('kerbs', { type: 'geojson', data: KERBS, promoteId: 'id', tolerance: 0.2 });
     map.addSource('meters', { type: 'geojson', data: { type: 'FeatureCollection', features: METERS.map(([x, y, k, n]) => ({ type: 'Feature', properties: { k, n }, geometry: { type: 'Point', coordinates: [x, y] } })) } });
   }
   for (const id of ['kerb-glow', 'kerb-faint', 'kerb-line', 'kerb-short', 'kerb-sel', 'meter-dot']) if (map.getLayer(id)) map.removeLayer(id);
   map.addLayer({ id: 'kerb-glow', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(3.2), 'line-blur': w(2.4), 'line-opacity': dark() ? 0.35 : 0.18 } });
-  map.addLayer({ id: 'kerb-faint', type: 'line', source: 'kerbs', filter: ['all', ['in', ['get', 'c'], ['literal', ['unknown', 'permit']]], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'round' }, paint: { 'line-color': col, 'line-width': w(0.55), 'line-opacity': ['case', ['==', ['get', 'c'], 'permit'], 0.4, 0.5], 'line-dasharray': [1.5, 1.5] } });
+  map.addLayer({ id: 'kerb-faint', type: 'line', source: 'kerbs', filter: ['all', ['in', ['get', 'c'], ['literal', ['unknown', 'permit', 'likely']]], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'round' }, paint: { 'line-color': col, 'line-width': w(0.55), 'line-opacity': ['case', ['==', ['get', 'c'], 'permit'], 0.4, ['==', ['get', 'c'], 'likely'], 0.85, 0.5], 'line-dasharray': [1.5, 1.5] } });
   map.addLayer({ id: 'kerb-line', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(1) } });
   map.addLayer({ id: 'kerb-short', type: 'line', source: 'kerbs', filter: ['all', ['==', ['get', 'c'], 'short'], ['!', ['in', 'short', ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'butt' }, paint: { 'line-color': col, 'line-width': w(0.9), 'line-dasharray': [1.2, 1] } });
   map.addLayer({ id: 'kerb-sel', type: 'line', source: 'kerbs', filter: ['==', ['get', 'id'], S.sel && typeof S.sel === 'number' ? S.sel : -1], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.fg, 'line-width': ['interpolate', ['linear'], ['zoom'], 13, 1.5, 18, 3], 'line-gap-width': w(1.4), 'line-opacity': 0.95 } });
@@ -195,7 +195,7 @@ function drawRibbon() {
   const c = C();
   g.fillStyle = css('--surface-2'); g.fillRect(0, 0, r.width, r.height);
   if (!KERBS) return;
-  const colFor = { free: c.free, meter: c.paid, restricted: c.restricted };
+  const colFor = { free: c.free, limit: c.free, meter: c.paid, restricted: c.restricted };
   const W = r.width / 96;
   const selKerb = typeof S.sel === 'number' ? byId.get(S.sel) : null;
   $('#ribbonTitle').textContent = selKerb ? `${selKerb.properties.s}, ${DAYS_LONG[S.day]}` : `Streets on screen, ${DAYS_LONG[S.day]}`;
@@ -211,7 +211,7 @@ function drawRibbon() {
   if (!inView.length) return;
   for (let q = 0; q < 96; q++) {
     const n = { free: 0, meter: 0, restricted: 0 };
-    for (const f of inView) n[stateAt(f.properties, RULES, S.day, q / 4).kind]++;
+    for (const f of inView) { const kd = stateAt(f.properties, RULES, S.day, q / 4).kind; n[kd === 'limit' ? 'free' : kd]++; }
     let y = r.height;
     for (const k of ['free', 'meter', 'restricted']) {
       const h = (n[k] / inView.length) * r.height;
@@ -237,24 +237,25 @@ function renderList() {
   const centre = map.getCenter().toArray();
   const inCoverage = centre[0] > BOUNDS[0] - 0.01 && centre[0] < BOUNDS[2] + 0.01 && centre[1] > BOUNDS[1] - 0.01 && centre[1] < BOUNDS[3] + 0.01;
   if (!inCoverage) {
-    body.innerHTML = `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney council area for now, from the CBD out to Newtown, Glebe, Surry Hills and Potts Point. Bondi and the Eastern Suburbs are next.</div>`;
+    body.innerHTML = `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), Waverley (Bondi, Bronte, Bondi Junction) and Woollahra (Rose Bay, Double Bay, Paddington). More councils are on the way.</div>`;
     return;
   }
   // Best kerb per street near the centre of the map.
   const best = new Map();
   for (const f of KERBS.features) {
     const p = f.properties;
-    if (p.k < 0) continue;
+    if (p.k < 0 && !p.lk) continue;
     const d = distM(mids.get(p.id), centre);
     if (d > NEAR_M) continue;
-    const c = costFor(p, RULES, S.day, S.hour, S.stay);
-    const key = `${p.s}|${p.b}`;
-    const score = (c.ok ? 0 : 1e6) + (c.ok ? c.cost * 40 : 0) + d;
+    const c = p.k < 0 ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
+    const key = `${p.s}|${p.b}|${p.sd || ''}`;
+    const score = (c.ok ? 0 : 1e6) + (c.ok ? c.cost * 40 : 0) + (c.likely ? 250 : 0) + d;
     const cur = best.get(key);
     if (!cur || score < cur.score) best.set(key, { f, p, c, d, score });
   }
   const opts = [...best.values()].sort((a, b) => a.score - b.score);
-  const free = opts.filter((o) => o.c.ok && o.c.cost === 0);
+  const free = opts.filter((o) => o.c.ok && o.c.cost === 0 && !o.c.likely);
+  const likely = opts.filter((o) => o.c.likely);
   const paid = opts.filter((o) => o.c.ok && o.c.cost > 0);
   const no = opts.filter((o) => !o.c.ok);
 
@@ -263,7 +264,8 @@ function renderList() {
   const stayTxt = S.stay === 0.25 ? '15 minutes' : S.stay === 1 ? 'an hour' : `${S.stay} hours`;
   if (free[0]) sum.innerHTML = `Free for ${stayTxt}: <strong>${free[0].p.s}</strong>, ${walkText(free[0].d)} from the middle of the map.${paid[0] ? ` Cheapest meter: <strong>${paid[0].p.s}</strong> at ${money(paid[0].c.cost)}.` : ''}`;
   else if (paid[0]) sum.innerHTML = `No free kerbs nearby for ${stayTxt}. Cheapest meter: <strong>${paid[0].p.s}</strong> at ${money(paid[0].c.cost)}.`;
-  else sum.innerHTML = `No metered kerbs near the middle of the map. Move the map to a street with coloured kerbs.`;
+  else if (likely[0]) sum.innerHTML = `Probably free: <strong>${likely[0].p.s}</strong>, ${walkText(likely[0].d)} away. The council doesn't publish its signs here, so check before you park.`;
+  else sum.innerHTML = `No kerb data near the middle of the map. Move the map to a street with coloured kerbs.`;
   body.appendChild(sum);
 
   const group = (title, list, limit = 12) => {
@@ -273,11 +275,12 @@ function renderList() {
   };
   group('Free for your stay', free);
   group('Meters', paid);
+  group('Probably free', likely, 8);
   group(`Can't stay ${stayTxt}`, no, 6);
   carParkRows();
   const foot = document.createElement('div'); foot.className = 'foot';
   const upd = META ? new Date(META.fetchedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', timeZone: 'Australia/Sydney' }) : '';
-  foot.innerHTML = `Rules come from the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, refreshed nightly${upd ? `, last on ${upd}` : ''}. Busyness is an estimate until driver reports start. Always read the sign before you park.`;
+  foot.innerHTML = `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey and Woollahra's resident permit areas, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
   body.appendChild(foot);
 }
 
@@ -286,11 +289,11 @@ function optRow(o) {
   const cat = category(o.p, RULES, S.day, S.hour, S.stay);
   const s = stateAt(o.p, RULES, S.day, S.hour);
   const sub = o.c.ok
-    ? (s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free tonight')
+    ? (o.c.likely ? 'No permit scheme, check the sign' : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}` : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
     : o.c.why;
   const lv = busyLevel(busy(o.p, RULES, S.day, S.hour));
   b.innerHTML = `<span class="bar" style="background:var(--${cat === 'short' ? 'paid' : cat})"></span>
-    <span style="min-width:0"><div class="name">${o.p.s}</div><div class="sub">${o.p.b ? o.p.b + '. ' : ''}${sub}</div></span>
+    <span style="min-width:0"><div class="name">${o.p.s}</div><div class="sub">${[o.p.sd, o.p.b].filter(Boolean).join(', ')}${o.p.sd || o.p.b ? '. ' : ''}${sub}</div></span>
     <span class="right">${o.c.ok ? `<span class="price ${o.c.cost === 0 ? 'free' : ''}">${money(o.c.cost)}</span>` : ''}<span class="walk">${walkText(o.d)}${o.c.ok ? `, ${BUSY_WORD[lv].toLowerCase()}` : ''}</span></span>`;
   b.onclick = () => select(o.p.id, true);
   return b;
@@ -331,14 +334,48 @@ function plateHTML(part) {
     <figcaption>${on ? `In force at ${fmtTime(S.hour)}` : `Not in force at ${fmtTime(S.hour)}`}</figcaption></figure>`;
 }
 
+// Joins rules the parser split at midnight back into one sign, e.g. 6pm-8am.
+function mergeOvernight(rules) {
+  const out = [];
+  for (const r of rules) {
+    if (r[2] === 0 && r[3] < 24 && rules.some((x) => x !== r && x[3] === 24 && x[2] > 0 && x[0] === r[0] && x[4] === r[4] && x[6] === r[6])) continue;
+    if (r[3] === 24 && r[2] > 0) {
+      const tail = rules.find((x) => x !== r && x[2] === 0 && x[3] < 24 && x[0] === r[0] && x[4] === r[4] && x[6] === r[6]);
+      if (tail) { out.push([r[0], r[1], r[2], tail[3], ...r.slice(4)]); continue; }
+    }
+    out.push(r);
+  }
+  return out;
+}
+const hhmm = (h) => fmtTime(h).replace('midnight', '12am').replace('noon', '12pm');
+function ruleOn(r) {
+  const h = S.hour;
+  if (r[3] > r[2] || (r[2] === 0 && r[3] === 24)) return r[1].includes(S.day) && h >= r[2] && h < r[3];
+  return (r[1].includes(S.day) && h >= r[2]) || (r[1].includes((S.day + 6) % 7) && h < r[3]);
+}
+// Draws a sign plate from a parsed rule (used for councils that publish rules rather than meter text).
+function rulePlate(r) {
+  const on = ruleOn(r);
+  const time = r[2] === 0 && r[3] === 24 ? 'All times' : `${hhmm(r[2])}-${hhmm(r[3])}`;
+  const days = fmtDays(r[1]).replace('Every day', '');
+  const inner = r[6] === 1
+    ? `<div class="plate red"><div class="l big2">${(r[7] || 'No parking').toUpperCase()}</div><div class="l">${time}</div>${days ? `<div class="l">${days}</div>` : ''}</div>`
+    : `<div class="plate"><div class="p">${pLabel(r[0])}</div>${r[4] > 0 ? '<div class="l">Ticket</div>' : ''}<div class="l">${time}</div>${days ? `<div class="l">${days}</div>` : ''}${r[7] ? `<div class="s">${r[7]}</div>` : ''}${r[4] > 0 ? `<div class="s">$${r[4]}/hr</div>` : ''}</div>`;
+  return `<figure class="plate-wrap${on ? '' : ' off'}">${inner}<figcaption>${on ? `In force at ${fmtTime(S.hour)}` : `Not in force at ${fmtTime(S.hour)}`}</figcaption></figure>`;
+}
+
 // Says in plain words why the stay costs what it does.
 function verdictText(p, c) {
+  if (p.lk) return { head: 'Probably free', why: '' };
   if (c.ok === null) return { head: 'No published rules', why: '' };
   if (!c.ok) return { head: "You can't stay that long", why: '' };
   if (c.quarterFree) return { head: 'Free with a ticket', why: 'The first 15 minutes are free. Grab a ticket from the meter.' };
   const end = S.hour + S.stay;
   if (c.paidHours === 0) {
     const s = stateAt(p, RULES, S.day, S.hour);
+    if (s.kind === 'limit') return { head: 'Free, within the time limit', why: `It's a free ${pLabel(s.rule[0])} zone ${s.rule[2] === 0 && s.rule[3] === 24 ? 'at all times' : `from ${fmtTime(s.rule[2])} to ${fmtTime(s.rule[3])}`}, so your ${S.stay === 0.25 ? '15 minutes fit' : `${S.stay} hour${S.stay > 1 ? 's fit' : ' fits'}`}.${s.rule[7] ? ` ${s.rule[7]}.` : ''}` };
+    if (s.why === 'unrestricted') return { head: 'Free, no time limit', why: 'Unrestricted parking. No sign limits this kerb.' };
+    if (s.why === 'outside-sign') return { head: 'Free the whole time', why: plainNow(p, RULES, S.day, S.hour) };
     const why = s.why === 'before-hours' || s.why === 'night'
       ? `The meters don't start until ${fmtTime(s.until)}, and you're gone by ${fmtTime(end)}.`
       : s.why === 'after-hours' ? `The meters have finished for ${DAYS_LONG[S.day]}.`
@@ -351,14 +388,14 @@ function verdictText(p, c) {
 }
 
 function weekHTML(p) {
-  const colFor = { free: 'var(--free)', meter: 'var(--paid)', restricted: 'var(--restricted)', unknown: 'var(--unknown)' };
+  const colFor = { free: 'var(--free)', limit: 'var(--limit)', meter: 'var(--paid)', restricted: 'var(--restricted)', unknown: 'var(--unknown)' };
   const rows = [1, 2, 3, 4, 5, 6, 0].map((d) => {
-    const segs = dayTimeline(p, RULES, d).map((s) => `<i style="width:${((s.to - s.from) / 24) * 100}%;background:${colFor[s.kind]}" title="${DAYS[d]} ${fmtTime(s.from)}-${fmtTime(s.to)}: ${s.kind === 'meter' ? `${pLabel(s.rule[0])} meter` : s.kind === 'free' ? 'free' : 'no parking'}"></i>`).join('');
+    const segs = dayTimeline(p, RULES, d).map((s) => `<i style="width:${((s.to - s.from) / 24) * 100}%;background:${colFor[s.kind]}" title="${DAYS[d]} ${fmtTime(s.from)}-${fmtTime(s.to)}: ${s.kind === 'meter' ? `${pLabel(s.rule[0])} meter` : s.kind === 'limit' ? `free ${pLabel(s.rule[0])}` : s.kind === 'free' ? 'free' : 'no parking'}"></i>`).join('');
     const now = d === S.day ? `<span class="now" style="left:calc(${(S.hour / 24) * 100}% - 1px)"></span>` : '';
     return `<span class="d ${d === S.day ? 'cur' : ''}">${DAYS[d]}</span><div class="track">${segs}${now}</div>`;
   }).join('');
   return `<div class="week">${rows}<div class="scale"><span>12am</span><span>6am</span><span>noon</span><span>6pm</span><span>12am</span></div></div>
-    <div class="keyrow"><span><i style="background:var(--free)"></i>Free</span><span><i style="background:var(--paid)"></i>Meter</span><span><i style="background:var(--restricted)"></i>No ticket parking</span></div>`;
+    <div class="keyrow"><span><i style="background:var(--free)"></i>Free</span><span><i style="background:var(--limit)"></i>Free, time limit</span><span><i style="background:var(--paid)"></i>Meter</span><span><i style="background:var(--restricted)"></i>No parking</span></div>`;
 }
 
 function busyHTML(p) {
@@ -380,21 +417,22 @@ function renderDetail() {
   const stayTxt = S.stay === 0.25 ? '15 min' : `${S.stay} hr${S.stay > 1 ? 's' : ''}`;
   if (f) {
     const p = f.properties;
-    const c = costFor(p, RULES, S.day, S.hour, S.stay);
+    const c = p.lk ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
     const set = p.k >= 0 ? RULES[p.k] : null;
     const lv = busyLevel(busy(p, RULES, S.day, S.hour));
     const v = verdictText(p, c);
     d.innerHTML = `
       <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
-      <div><h2>${p.s}</h2><div class="where">${[p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} paid spaces` : ''].filter(Boolean).join(', ')}</div></div>
+      <div><h2>${p.s}</h2><div class="where">${[p.sd, p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} paid spaces` : ''].filter(Boolean).join(', ')}</div></div>
       <div class="verdict"><div><small>${stayTxt}, ${DAYS[S.day]} ${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}</small>${v.head}</div>
-        ${c.ok ? `<span class="big" style="color:var(--${c.cost === 0 ? 'free' : 'fg'})">${money(c.cost)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
+        ${p.lk ? `<span class="big" style="color:var(--free)">$0?</span>` : c.ok ? `<span class="big" style="color:var(--${c.cost === 0 ? 'free' : 'fg'})">${money(c.cost)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
       <p class="plain">${v.why || plainNow(p, RULES, S.day, S.hour)}${p.f15 ? ' This street is in a free 15-minute zone, so a ticket gets you the first quarter hour free.' : ''}</p>
-      ${set ? `<h3 class="h3">What the signs say</h3><div class="plates">${set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div>
+      ${set ? `<h3 class="h3">What the signs say</h3><div class="plates">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div>
       <h3 class="h3">Across the week</h3>${weekHTML(p)}
       <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
-      ` : `<p class="note">Kerb only shows rules the council publishes. Unmetered streets are the next data job.</p>`}
+      <p class="note">Source: ${set.src ? `${set.src} parking survey${set.text && set.src ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
+      ` : `<p class="note">${p.lk ? 'Based on Woollahra Council\'s resident permit areas: streets outside a permit scheme are usually unrestricted, but the council doesn\'t publish its signs.' : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>`}
       <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${mids.get(p.id)[1]},${mids.get(p.id)[0]}" target="_blank" rel="noopener"><i class="ph ph-navigation-arrow"></i>Directions</a>`;
   } else {
     const price = carParkPrice(cp);
@@ -426,13 +464,13 @@ function select(id, fly) {
 }
 
 /* ---------- legend ---------- */
-const LEGEND = [['free', 'Free'], ['paid', 'Meter'], ['short', 'Too short'], ['restricted', 'No parking'], ['permit', 'Permit area'], ['carpark', 'Car parks']];
+const LEGEND = [['free', 'Free'], ['likely', 'Probably free'], ['paid', 'Meter'], ['short', 'Too short'], ['restricted', 'No parking'], ['permit', 'Permit area'], ['carpark', 'Car parks']];
 function renderLegend() {
   const lg = $('#legend'); lg.replaceChildren();
   for (const [k, n] of LEGEND) {
     const b = document.createElement('button'); b.type = 'button';
     b.setAttribute('aria-pressed', String(!S.hidden.has(k)));
-    b.innerHTML = (k === 'carpark' ? '<i style="background:var(--fg);height:10px;width:10px;border-radius:50%"></i>' : `<i class="${k === 'short' ? 'dash' : ''}" style="background:var(--${k === 'short' ? 'paid' : k})"></i>`) + n;
+    b.innerHTML = (k === 'carpark' ? '<i style="background:var(--fg);height:10px;width:10px;border-radius:50%"></i>' : `<i class="${k === 'short' ? 'dash' : k === 'likely' ? 'dash-free' : ''}" style="background:var(--${k === 'short' ? 'paid' : k === 'likely' ? 'free' : k})"></i>`) + n;
     b.title = k === 'short' ? 'Meter parking, but the time limit is shorter than your stay' : k === 'permit' ? "Resident permit areas where the council hasn't published the signs" : '';
     b.onclick = () => { S.hidden.has(k) ? S.hidden.delete(k) : S.hidden.add(k); renderLegend(); if (map.isStyleLoaded()) kerbLayers(); drawCarParks(); renderBody(); };
     lg.appendChild(b);

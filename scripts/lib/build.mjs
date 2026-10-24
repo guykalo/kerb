@@ -1,6 +1,7 @@
 // Pure data build: raw open data in, app data out. Used by build-data.mjs (Node) and the browser check.
 import { parseSignText } from './parse-rules.mjs';
 import { densify, distToSeg, dist, inRings, bbox, round } from './geo.mjs';
+import { buildWaverley, buildWoollahra } from './regions.mjs';
 
 const norm = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
 
@@ -51,11 +52,16 @@ export function buildData(raw) {
     return out;
   }
 
-  /* ---------- streets → kerb segments ---------- */
-  const PIECE = 20; // metres
-  const REACH = 40; // a meter governs kerb within this distance
+  /* ---------- streets → kerb segments, one line per side of the street ---------- */
+  // A meter only governs its own side of the street, and only along the bays it serves
+  // (about 6 m per space, split either side of the machine).
+  const PIECE = 12; // metres
+  const OFFSET = 5.5; // how far each side's line sits from the centreline, in metres
+  const reachOf = (m) => Math.max(15, Math.min(45, 8 + m.n * 3.2));
   const kerbs = [];
   let seq = 0;
+  const kx = (lat) => Math.cos((lat * Math.PI) / 180) * 111320, ky = 110540;
+  const compass = (nx, ny) => { const ang = (Math.atan2(nx, ny) * 180) / Math.PI; const dirs = ['North', 'North-east', 'East', 'South-east', 'South', 'South-west', 'West', 'North-west']; return dirs[Math.round(((ang + 360) % 360) / 45) % 8]; };
   for (const f of streets) {
     const a = f.attributes;
     if (!f.geometry || !f.geometry.paths) continue;
@@ -64,34 +70,46 @@ export function buildData(raw) {
     for (const path of f.geometry.paths) {
       if (path.length < 2) continue;
       const dense = densify(path, PIECE);
-      let cur = null;
-      const flush = () => { if (cur && cur.coords.length > 1) kerbs.push(cur); cur = null; };
+      const cur = { L: null, R: null, C: null };
+      const flush = (key) => { const c = cur[key]; if (c && c.coords.length > 1) kerbs.push(c); cur[key] = null; };
       for (let i = 1; i < dense.length; i++) {
         const s0 = dense[i - 1], s1 = dense[i];
         const mid = [(s0[0] + s1[0]) / 2, (s0[1] + s1[1]) / 2];
-        let best = null, bd = REACH;
+        // Unit normal to the left of the direction of travel, in metres.
+        const dx = (s1[0] - s0[0]) * kx(mid[1]), dy = (s1[1] - s0[1]) * ky;
+        const len = Math.hypot(dx, dy) || 1;
+        const nx = -dy / len, ny = dx / len;
+        const best = { L: null, R: null }, bd = { L: Infinity, R: Infinity };
         for (const m of near(mid)) {
           if (m.street !== street) continue;
           const d = distToSeg(m.p, s0, s1);
-          if (d < bd) { bd = d; best = m; }
+          if (d > reachOf(m)) continue;
+          const side = ((m.p[0] - mid[0]) * kx(mid[1]) * nx + (m.p[1] - mid[1]) * ky * ny) >= 0 ? 'L' : 'R';
+          if (d < bd[side]) { bd[side] = d; best[side] = m; }
         }
         const pa = permitAt(mid);
         const fq = free15At(mid, street);
-        const props = {
-          k: best ? best.k : -1,
-          z: zoneAt(mid),
-          pa: pa ? pa.label : '',
-          f15: fq ? 1 : 0,
+        const base = { z: zoneAt(mid), pa: pa ? pa.label : '', f15: fq ? 1 : 0 };
+        const offsetPt = (p, sgn) => [p[0] + (sgn * nx * OFFSET) / kx(p[1]), p[1] + (sgn * ny * OFFSET) / ky];
+        const emit = (key, k, m, sgn) => {
+          const sig = `${k}|${base.z}|${base.pa}|${base.f15}`;
+          const p0 = sgn ? offsetPt(s0, sgn) : s0, p1 = sgn ? offsetPt(s1, sgn) : s1;
+          if (!cur[key] || cur[key].sig !== sig) {
+            flush(key);
+            const sideName = sgn ? `${compass(sgn * nx, sgn * ny)} side` : '';
+            cur[key] = { sig, coords: [p0], props: { id: ++seq, s: a.STREET.trim(), b: m ? m.suburb : (pa ? pa.name : ''), sd: sideName, k, ...base, n: 0, m: new Set() } };
+          }
+          cur[key].coords.push(p1);
+          if (m) cur[key].props.m.add(m);
         };
-        const sig = `${props.k}|${props.z}|${props.pa}|${props.f15}`;
-        if (!cur || cur.sig !== sig) {
-          flush();
-          cur = { sig, coords: [s0], props: { id: ++seq, s: a.STREET.trim(), b: best ? best.suburb : (pa ? pa.name : ''), ...props, n: 0, m: new Set() } };
+        if (!best.L && !best.R) { flush('L'); flush('R'); emit('C', -1, null, 0); }
+        else {
+          flush('C');
+          emit('L', best.L ? best.L.k : -1, best.L, 1);
+          emit('R', best.R ? best.R.k : -1, best.R, -1);
         }
-        cur.coords.push(s1);
-        if (best) cur.props.m.add(best);
       }
-      flush();
+      flush('L'); flush('R'); flush('C');
     }
   }
 
@@ -152,6 +170,21 @@ export function buildData(raw) {
   }
   const carParkList = cps.filter((c, i) => cps.findIndex((x) => x.name === c.name) === i);
 
+  /* ---------- other councils ---------- */
+  const setKey = (set) => JSON.stringify([set.rules, set.q || 0, set.g || '', set.u || 0]);
+  const keyIdx = new Map(ruleSets.map((x, i) => [setKey(x), i]));
+  const reg = { add(set) { const key = setKey(set); if (!keyIdx.has(key)) { keyIdx.set(key, ruleSets.length); ruleSets.push(set); } return keyIdx.get(key); } };
+  const month = +new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Sydney', month: 'numeric' }).format(new Date());
+  let nextId = Math.max(0, ...kerbGeo.features.map((x) => x.properties.id)) + 1;
+  const regions = {};
+  for (const [name, fn] of [['waverley', buildWaverley], ['woollahra', buildWoollahra]]) {
+    if (!raw[name]) continue;
+    const out = fn(raw[name], reg, { month });
+    for (const ft of out.features) { ft.properties.id = nextId++; kerbGeo.features.push(ft); }
+    carParkList.push(...out.carparks);
+    regions[name] = { kerbs: out.features.length, carParks: out.carparks.length };
+  }
+
   const stats = {
     builtAt: new Date().toISOString(),
     fetchedAt: meta.fetchedAt,
@@ -161,6 +194,7 @@ export function buildData(raw) {
     metered: kerbGeo.features.filter((f) => f.properties.k >= 0).length,
     carParks: carParkList.length,
     unparsed: [...unparsed.entries()],
+    regions,
     sources: meta.sources,
   };
   return { kerbs: kerbGeo, rules: ruleSets, meters: meterPts, carparks: carParkList, meta: stats };

@@ -43,8 +43,18 @@ export function stateAt(props, rules, day, h) {
   if (props.k < 0) return { kind: 'unknown' };
   const set = rules[props.k];
   const today = rulesFor(set, day);
-  const on = today.find((r) => h >= r[2] && h < r[3]);
-  if (on) return { kind: 'meter', rule: on, until: on[3], set };
+  // When periods overlap, a no-parking period wins over parking.
+  const on = today.find((r) => r[6] === 1 && h >= r[2] && h < r[3]) || today.find((r) => h >= r[2] && h < r[3]);
+  if (on) {
+    if (on[6] === 1) return { kind: 'restricted', rule: on, until: on[3], note: on[7], set };
+    return { kind: on[4] > 0 ? 'meter' : 'limit', rule: on, until: on[3], set };
+  }
+  if (set.u) return { kind: 'free', until: 24, why: 'unrestricted', set };
+  if (set.g === 'free') {
+    // Signed rules: outside the times on the sign there's no limit.
+    const next = today.filter((r) => r[2] > h).map((r) => r[2]);
+    return { kind: 'free', until: next.length ? Math.min(...next) : 24, why: 'outside-sign', set };
+  }
   if (!today.length) return { kind: 'free', until: 24, why: 'no-meter-day', set };
   const first = Math.min(...today.map((r) => r[2]));
   const last = Math.max(...today.map((r) => r[3]));
@@ -64,11 +74,12 @@ export function costFor(props, rules, day, h, stay) {
   for (let i = 0; i < n; i++) {
     const t = h + i * step, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
     const s = stateAt(props, rules, d, hh);
-    if (s.kind === 'restricted') return { ok: false, why: `No parking ${fmtTime(hh)}-${fmtTime(s.until)}` };
-    if (s.kind !== 'meter') { run = 0; ref = null; continue; }
+    if (s.kind === 'restricted') return { ok: false, why: `${s.note || 'No parking'} ${s.until < 24 || hh > 0 ? `${fmtTime(hh)}-${fmtTime(s.until)}` : ''}`.trim() };
+    if (s.kind !== 'meter' && s.kind !== 'limit') { run = 0; ref = null; continue; }
     if (s.rule !== ref) { run = 0; ref = s.rule; }
     run += step;
     if (run > s.rule[0] + 1e-9) return { ok: false, why: `${pLabel(s.rule[0])} limit until ${fmtTime(s.rule[3])}` };
+    if (s.kind === 'limit') continue;
     cost += s.rule[4] * step; paid += step;
     if (firstPaidAt == null) { firstPaidAt = t; rate = s.rule[4]; }
   }
@@ -80,20 +91,26 @@ export function costFor(props, rules, day, h, stay) {
 
 // Category used for colouring the kerb for the chosen stay.
 export function category(props, rules, day, h, stay) {
-  if (props.k < 0) return props.pa ? 'permit' : 'unknown';
+  if (props.k < 0) return props.lk ? 'likely' : props.pa ? 'permit' : 'unknown';
   const c = costFor(props, rules, day, h, stay);
-  if (!c.ok) return stateAt(props, rules, day, h).kind === 'meter' ? 'short' : 'restricted';
+  if (!c.ok) { const k = stateAt(props, rules, day, h).kind; return k === 'meter' || k === 'limit' ? 'short' : 'restricted'; }
   return c.cost === 0 ? 'free' : 'paid';
 }
 
 // One line in plain English about right now.
 export function plainNow(props, rules, day, h) {
   const s = stateAt(props, rules, day, h);
+  if (s.kind === 'unknown' && props.lk) return `No resident permit scheme on this street, so it's usually unrestricted parking. The council doesn't publish its signs, so check for any time limits.`;
   if (s.kind === 'unknown') return props.pa
     ? `Resident permit ${props.pa}. The council hasn't published the signs here, so check the sign: visitors are usually time-limited.`
     : `The council hasn't published the signs for this kerb yet. Check the sign before you park.`;
-  if (s.kind === 'meter') return `Pay ${money(s.rule[4])} an hour, up to ${pWords(s.rule[0])}, until ${fmtTime(s.rule[3])}.`;
+  const permit = s.rule && s.rule[7] ? ` ${s.rule[7]}.` : '';
+  if (s.kind === 'meter') return `Pay ${money(s.rule[4])} an hour, up to ${pWords(s.rule[0])}, until ${fmtTime(s.rule[3])}.${permit}`;
+  if (s.kind === 'limit') return `Free for up to ${pWords(s.rule[0])}${s.rule[3] < 24 || s.rule[2] > 0 ? ` until ${fmtTime(s.rule[3])}` : ''}.${permit}`;
+  if (s.kind === 'restricted' && s.note) return `${s.note}${s.until < 24 ? ` until ${fmtTime(s.until)}` : ''}. You can't park here.`;
   if (s.kind === 'restricted') return `No ticket parking until ${fmtTime(s.until)}. Usually a clearway, bus or loading zone at this time.`;
+  if (s.why === 'unrestricted') return 'Unrestricted parking: free with no time limit.';
+  if (s.why === 'outside-sign') return s.until < 24 ? `Free with no limit until ${fmtTime(s.until)}, when the sign's times start.` : `The sign's times have finished for ${DAYS_LONG[day]}, so it's free with no limit.`;
   if (s.why === 'before-hours') return `Free until the meters start at ${fmtTime(s.until)}.`;
   if (s.why === 'night') return `Free overnight until ${fmtTime(s.until)}. Check the sign for early clearways.`;
   if (s.why === 'after-hours') return `Free for the rest of the night. The meters have finished for ${DAYS_LONG[day]}.`;
@@ -118,12 +135,13 @@ export function dayTimeline(props, rules, day) {
 const PROFILES = {
   cbd: [[.15, .25, .55, .5, .4], [.15, .8, .9, .85, .5], [.15, .85, .95, .9, .55], [.15, .85, .95, .9, .6], [.15, .85, .95, .9, .7], [.2, .8, .9, .85, .8], [.3, .45, .8, .8, .8]],
   village: [[.3, .5, .8, .75, .6], [.3, .55, .65, .65, .6], [.3, .55, .65, .65, .65], [.3, .55, .7, .7, .7], [.3, .6, .7, .7, .8], [.35, .6, .75, .8, .9], [.4, .7, .9, .9, .9]],
+  beach: [[.4, .9, .98, .95, .7], [.3, .45, .6, .55, .45], [.3, .45, .6, .55, .45], [.3, .45, .6, .55, .45], [.3, .5, .65, .6, .55], [.35, .55, .7, .7, .75], [.45, .9, .98, .95, .85]],
   resi: [[.8, .65, .7, .7, .75], [.8, .45, .4, .5, .8], [.8, .45, .4, .5, .8], [.8, .45, .4, .5, .8], [.8, .45, .45, .55, .8], [.8, .5, .5, .6, .8], [.8, .6, .7, .7, .8]],
 };
 export const BANDS = [['Morning', 1], ['Midday', 2], ['Arvo', 3], ['Evening', 4], ['Late', 0]];
 export const band = (h) => (h < 6 ? 0 : h < 11 ? 1 : h < 15 ? 2 : h < 19 ? 3 : 4);
 export function busy(props, rules, day, h) {
-  const prof = props.z === 1 ? 'cbd' : props.k >= 0 ? 'village' : 'resi';
+  const prof = props.z === 1 ? 'cbd' : props.z === 3 ? 'beach' : props.k >= 0 && rules[props.k] && !rules[props.k].u ? 'village' : 'resi';
   let v = PROFILES[prof][day][band(h)];
   if (props.k >= 0) {
     const r = rulesFor(rules[props.k], day).find((x) => h >= x[2] && h < x[3]);
