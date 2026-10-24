@@ -47,6 +47,8 @@ export function stateAt(props, rules, day, h) {
   // When periods overlap, a no-parking period wins over parking.
   const on = today.find((r) => r[6] === 1 && h >= r[2] && h < r[3]) || today.find((r) => h >= r[2] && h < r[3]);
   if (on) {
+    // A mobility parking space is a free space for mobility permit holders (BEN is set before any call).
+    if (on[6] === 1 && /mobility|disab/i.test(on[7] || '') && globalThis.__kerbMps) return { kind: 'limit', rule: [24, on[1], on[2], on[3], 0, on[5], 0, 'Mobility parking space'], until: on[3], set };
     if (on[6] === 1) return { kind: 'restricted', rule: on, until: on[3], note: on[7], set };
     return { kind: on[4] !== 0 ? 'meter' : 'limit', rule: on, until: on[3], set }; // rate -1 = meter, rate not published
   }
@@ -69,7 +71,11 @@ export function stateAt(props, rules, day, h) {
 // Concessions the driver has. mps = NSW mobility parking permit: free at council and street meters, and
 // signed limits over 30 minutes don't apply (30 minutes becomes 2 hours, shorter limits become 30 minutes).
 // No-parking, no-stopping, loading and bus zones still apply. Private car parks don't give these concessions.
-export const BEN = { mps: false };
+export const BEN = {
+  _mps: false,
+  get mps() { return this._mps; },
+  set mps(v) { this._mps = !!v; globalThis.__kerbMps = !!v; },
+};
 const mpsLimit = (p) => (p < 0 || p > 0.5 ? Infinity : p === 0.5 ? 2 : 0.5);
 
 // Can you park for `stay` hours from day/h, and what does it cost?
