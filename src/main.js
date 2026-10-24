@@ -174,14 +174,19 @@ function cpInfo(cp) {
   if (cp.kind === 'parkride') return { label: prPin(cp), tone: 'pr', p: 0 };
   if (price && !price.none) return { label: cp.maxRates && price.p > 0 ? `≤${money(price.p)}` : money(price.p), tone: price.p === 0 ? 'free' : 'price', p: price.p };
   const est = !price ? estimateFor(cp) : null;
-  if (est) return { label: `~${money(est.mid)} est.`, tone: 'est', p: 99999 };
+  if (est) return { label: `~${money(est.mid)} est.`, tone: 'est', p: 99999, e: est.mid };
+  // Open now, but you can't stay as long as you picked: say how long you can stay instead of a blank pin.
+  if (price?.none && price.why === 'long') {
+    const lim = Math.max(0, ...cp.rates.filter((r) => r.days?.includes(S.day) && r.maxStay).map((r) => r.maxStay));
+    if (lim) return { label: `${lim} hr max`, tone: 'none', p: 99999 };
+  }
   return { label: '', tone: 'none', p: 99999 };
 }
 function cpData() {
   return { type: 'FeatureCollection', features: CARPARKS.map((cp) => {
     const i = cpInfo(cp);
     const out = S.dest && distM(cp.at, S.dest.at) > destRadius() ? 1 : 0;
-    return { type: 'Feature', properties: { id: cp.id, label: i.label, tone: i.tone, p: i.p, out, sel: S.sel === cp.id ? 1 : 0 }, geometry: { type: 'Point', coordinates: cp.at } };
+    return { type: 'Feature', properties: { id: cp.id, label: i.label, tone: i.tone, p: i.p, e: i.e ?? 99999, out, sel: S.sel === cp.id ? 1 : 0 }, geometry: { type: 'Point', coordinates: cp.at } };
   }) };
 }
 // Rounded pill images the map can stretch around text (drawn once at 2x for sharp edges).
@@ -198,12 +203,17 @@ function cpLayers() {
   const c = C(), green = '#00704a';
   const pills = { 'pill-price': ['#fbfcfb', green], 'pill-free': ['#fbfcfb', css('--free')], 'pill-est': [dark() ? '#b4c3cd' : '#e2e9ee', dark() ? '#f4f8fa' : '#5f7684', true], 'pill-none': ['#fbfcfb', green], 'pill-pr': ['#fbfcfb', green], 'pill-sel': [c.accent, c.accent], 'pill-cluster': [c.fg, c.accent] };
   for (const [id, [f, st, d]] of Object.entries(pills)) { const { image, opts } = pillImage(f, st, d); if (map.hasImage(id)) map.removeImage(id); map.addImage(id, image, opts); }
-  if (!map.getSource('cps')) map.addSource('cps', { type: 'geojson', data: cpData(), cluster: true, clusterRadius: 34, clusterMaxZoom: 15, clusterProperties: { minp: ['min', ['get', 'p']] } });
+  if (!map.getSource('cps')) map.addSource('cps', { type: 'geojson', data: cpData(), cluster: true, clusterRadius: 34, clusterMaxZoom: 15, clusterProperties: { minp: ['min', ['get', 'p']], mine: ['min', ['get', 'e']] } });
   for (const id of ['cp-cluster', 'cp-pill', 'cp-sel']) if (map.getLayer(id)) map.removeLayer(id);
   const vis = S.hidden.has('carpark') ? 'none' : 'visible';
   const common = { 'text-font': ['Noto Sans Bold'], 'icon-text-fit': 'both', 'icon-text-fit-padding': [1, 6, 1, 6], 'text-padding': 2, visibility: vis };
   map.addLayer({ id: 'cp-cluster', type: 'symbol', source: 'cps', filter: ['has', 'point_count'], layout: { ...common, 'icon-image': 'pill-cluster', 'text-size': 12,
-    'text-field': ['case', ['==', ['get', 'minp'], 0], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' · incl. free'], ['<', ['get', 'minp'], 99999], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' · from $', ['to-string', ['round', ['get', 'minp']]]], ['concat', 'P ', ['to-string', ['get', 'point_count']], ' car parks']],
+    // "4 car parks · from $18" (never "P 4", which reads like a 4-hour parking sign).
+    'text-field': ['let', 'n', ['concat', ['to-string', ['get', 'point_count']], ' car parks'], ['case',
+      ['==', ['get', 'minp'], 0], ['concat', ['var', 'n'], ' · incl. free'],
+      ['<', ['get', 'minp'], 99999], ['concat', ['var', 'n'], ' · from $', ['to-string', ['round', ['get', 'minp']]]],
+      ['<', ['get', 'mine'], 99999], ['concat', ['var', 'n'], ' · ~$', ['to-string', ['round', ['get', 'mine']]], ' est.'],
+      ['var', 'n']]],
     'icon-allow-overlap': false, 'text-allow-overlap': false }, paint: { 'text-color': c.bg } });
   map.addLayer({ id: 'cp-pill', type: 'symbol', source: 'cps', filter: ['all', ['!', ['has', 'point_count']], ['!=', ['get', 'sel'], 1]], layout: { ...common,
     'icon-image': ['concat', 'pill-', ['get', 'tone']], 'text-size': 12.5,
