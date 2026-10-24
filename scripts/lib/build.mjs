@@ -1,7 +1,7 @@
 // Pure data build: raw open data in, app data out. Used by build-data.mjs (Node) and the browser check.
 import { parseSignText } from './parse-rules.mjs';
 import { densify, distToSeg, dist, inRings, bbox, round } from './geo.mjs';
-import { buildWaverley, buildWoollahra, buildRandwick } from './regions.mjs';
+import { buildWaverley, buildWoollahra, buildRandwick, buildOffstreet } from './regions.mjs';
 import { buildParkRide } from './tfnsw.mjs';
 import { buildFromSigns } from './spot.mjs';
 
@@ -199,6 +199,8 @@ export function buildData(raw) {
     if (cur) Object.assign(cur, { ...rec, at: rec.at ? round(rec.at) : cur.at, name: rec.name || cur.name });
     else if (rec.at) carParkList.push({ ...rec, at: round(rec.at), source: rec.operator || 'Kerb' });
   }
+
+  if (raw.offstreet) { const cbd = buildOffstreet(raw.offstreet, carParkList); carParkList.push(...cbd); regions.offstreet = { carParks: cbd.length }; }
 
   const stats = {
     builtAt: new Date().toISOString(),

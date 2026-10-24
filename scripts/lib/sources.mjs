@@ -57,7 +57,7 @@ export async function fetchLayer(name, { url, fields, geometry = true, offset })
 }
 
 
-import { fetchWaverley, fetchWoollahra, fetchRandwick } from './regions.mjs';
+import { fetchWaverley, fetchWoollahra, fetchRandwick, fetchOffstreet } from './regions.mjs';
 import { fetchParkRide } from './tfnsw.mjs';
 import { fetchManly, fetchWilloughby } from './spot.mjs';
 
@@ -69,7 +69,7 @@ export async function fetchAll() {
     raw.meta.sources[name] = { url: src.url, count: raw[name].length };
   }
   // Other councils: a failure here shouldn't stop the City of Sydney data from updating.
-  for (const [name, fn] of [['waverley', fetchWaverley], ['woollahra', fetchWoollahra], ['parkride', fetchParkRide], ['manly', fetchManly], ['willoughby', fetchWilloughby], ['randwick', fetchRandwick]]) {
+  for (const [name, fn] of [['waverley', fetchWaverley], ['woollahra', fetchWoollahra], ['parkride', fetchParkRide], ['manly', fetchManly], ['willoughby', fetchWilloughby], ['randwick', fetchRandwick], ['offstreet', fetchOffstreet]]) {
     try { raw[name] = await fn(); raw.meta.sources[name] = { ok: true }; }
     catch (e) { (globalThis.__log || console.log)(`  ${name} failed: ${e.message}`); raw.meta.sources[name] = { ok: false, error: e.message }; }
   }
