@@ -1,10 +1,11 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '@phosphor-icons/web/regular';
+import '@phosphor-icons/web/fill';
 import './style.css';
 import {
   DAYS, DAYS_LONG, fmtTime, fmtClock, fmtDays, pLabel, money,
-  stateAt, costFor, category, plainNow, dayTimeline,
+  stateAt, costFor, category, plainNow, dayTimeline, BEN,
   busy, busyLevel, BUSY_WORD, BANDS, band,
 } from './rules.js';
 import { parsePart } from '../scripts/lib/parse-rules.mjs';
@@ -27,6 +28,14 @@ function sydneyNow() {
 const today = sydneyNow();
 Object.assign(S, today);
 try { const st = +localStorage.getItem('kerb-stay'); if ([0.25, 1, 2, 3, 4].includes(st)) S.stay = st; } catch { /* storage unavailable */ }
+try { BEN.mps = localStorage.getItem('kerb-mps') === '1'; } catch { /* storage unavailable */ }
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } },
+};
+// A shared link looks like #at=-33.89123,151.27456 and opens the kerb or car park at that spot.
+const LINK = (() => { const m = /at=(-?\d+\.\d+),(-?\d+\.\d+)/.exec(location.hash); return m ? [+m[2], +m[1]] : null; })();
+if (LINK) { START.center = LINK; START.zoom = 17; }
 
 /* ---------- theme colours (read from CSS so the map follows light/dark) ---------- */
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -264,7 +273,7 @@ function visibleKerbs() {
 
 /* ---------- options list ---------- */
 const body = $('#body');
-function walkText(m) { const min = Math.max(1, Math.round(m / WALK_M_PER_MIN)); return `${min} min walk`; }
+function walkText(m) { if (m > 2500) return `${(m / 1000).toFixed(m > 20000 ? 0 : 1)} km away`; const min = Math.max(1, Math.round(m / WALK_M_PER_MIN)); return `${min} min walk`; }
 
 function renderList() {
   body.replaceChildren();
@@ -309,6 +318,7 @@ function renderList() {
     const h = document.createElement('div'); h.className = 'group'; h.innerHTML = `<span>${title}</span><span class="num">${list.length}</span>`; body.appendChild(h);
     list.slice(0, limit).forEach((o) => body.appendChild(optRow(o)));
   };
+  savedRows(centre);
   group('Free for your stay', free);
   group('Meters', paid);
   group('Probably free', likely, 8);
@@ -341,14 +351,53 @@ function carParkRows() {
   const near = CARPARKS.map((cp) => ({ cp, d: distM(cp.at, centre) })).filter((x) => x.d < 1500).sort((a, b) => a.d - b.d);
   if (!near.length) return;
   const h = document.createElement('div'); h.className = 'group'; h.innerHTML = `<span>Car parks</span><span class="num">${near.length}</span>`; body.appendChild(h);
-  for (const { cp, d } of near) {
-    const price = carParkPrice(cp);
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
-    const pr = cp.kind === 'parkride', v = pr ? occAt(cp, S.day, S.hour) : null;
-    const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price ? price.k : `Run by ${cp.operator}`;
-    b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price">Free</span>` : price ? `<span class="price">${money(price.p)}</span>` : ''}<span class="walk">${walkText(d)}</span></span>`;
-    b.onclick = () => select(cp.id, true);
-    body.appendChild(b);
+  for (const { cp, d } of near) body.appendChild(cpRow(cp, d));
+}
+function cpRow(cp, d) {
+  const price = carParkPrice(cp);
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
+  const pr = cp.kind === 'parkride', v = pr ? occAt(cp, S.day, S.hour) : null;
+  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price ? price.k : `Run by ${cp.operator}`;
+  b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price">Free</span>` : price ? `<span class="price">${money(price.p)}</span>` : ''}<span class="walk">${walkText(d)}</span></span>`;
+  b.onclick = () => select(cp.id, true);
+  return b;
+}
+
+/* ---------- saved places (kept on this phone only) ---------- */
+// Kerb ids change when the data is rebuilt, so a saved kerb is found again by street, side and position.
+const savedKey = (id) => (typeof id === 'number' ? (() => { const p = byId.get(id).properties, m = mids.get(id); return `k|${p.s}|${p.sd || ''}|${m[0].toFixed(4)},${m[1].toFixed(4)}`; })() : `c|${id}`);
+function resolveSaved(it) {
+  if (it.key.startsWith('c|')) { const cp = CARPARKS.find((c) => c.id === it.key.slice(2)); return cp ? { cp } : null; }
+  const [, st, sd] = it.key.split('|');
+  let best = null, bd = 40;
+  for (const f of KERBS.features) {
+    if (f.properties.s !== st || (f.properties.sd || '') !== sd) continue;
+    const d = distM(mids.get(f.properties.id), it.at);
+    if (d < bd) { bd = d; best = f; }
+  }
+  return best ? { f: best } : null;
+}
+const getSaved = () => store.get('kerb-saved', []);
+const isSaved = (id) => getSaved().some((x) => x.key === savedKey(id));
+function toggleSaved(id) {
+  const key = savedKey(id);
+  let list = getSaved();
+  if (list.some((x) => x.key === key)) { list = list.filter((x) => x.key !== key); toast('Removed from saved'); }
+  else {
+    const at = typeof id === 'number' ? mids.get(id) : CARPARKS.find((c) => c.id === id).at;
+    list.unshift({ key, at }); list = list.slice(0, 30); toast('Saved. It shows at the top of the list.');
+  }
+  store.set('kerb-saved', list);
+}
+function savedRows(centre) {
+  const list = getSaved().map((it) => ({ it, r: resolveSaved(it) })).filter((x) => x.r);
+  if (!list.length) return;
+  const h = document.createElement('div'); h.className = 'group'; h.innerHTML = `<span><i class="ph-fill ph-star" aria-hidden="true"></i> Saved</span><span class="num">${list.length}</span>`; body.appendChild(h);
+  for (const { r } of list) {
+    if (r.cp) { body.appendChild(cpRow(r.cp, distM(r.cp.at, centre))); continue; }
+    const p = r.f.properties;
+    const c = p.k < 0 ? (p.lk ? { ok: true, cost: 0, likely: true } : { ok: null }) : costFor(p, RULES, S.day, S.hour, S.stay);
+    body.appendChild(optRow({ f: r.f, p, c: c.ok === null ? { ok: false, why: 'No published rules' } : c, d: distM(mids.get(p.id), centre) }));
   }
 }
 
@@ -409,6 +458,7 @@ function verdictText(p, c) {
   if (!c.ok) return { head: "You can't stay that long", why: '' };
   if (c.quarterFree) return { head: 'Free with a ticket', why: 'The first 15 minutes are free. Grab a ticket from the meter.' };
   const end = S.hour + S.stay;
+  if (c.waived > 0 && c.paidHours === 0) return { head: 'Free with your mobility permit', why: `The meter normally charges ${money(stateAt(p, RULES, S.day, S.hour).rule?.[4] || c.rate || 0)} an hour here. Mobility parking permit holders park free at council and street meters in NSW, and time limits over 30 minutes don't apply. Display the permit.` };
   if (c.paidHours === 0) {
     const s = stateAt(p, RULES, S.day, S.hour);
     if (s.kind === 'limit') return { head: 'Free, within the time limit', why: `It's a free ${pLabel(s.rule[0])} zone ${s.rule[2] === 0 && s.rule[3] === 24 ? 'at all times' : `from ${fmtTime(s.rule[2])} to ${fmtTime(s.rule[3])}`}, so your ${S.stay === 0.25 ? '15 minutes fit' : `${S.stay} hour${S.stay > 1 ? 's fit' : ' fits'}`}.${s.rule[7] ? ` ${s.rule[7]}.` : ''}` };
@@ -484,7 +534,7 @@ function renderDetail() {
       <p class="note">Source: ${set.src ? `${set.src} parking survey${set.text && set.src ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
       ` : `<p class="note">${p.lk ? 'Based on Woollahra Council\'s resident permit areas: streets outside a permit scheme are usually unrestricted, but the council doesn\'t publish its signs.' : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>`}
       <div class="photos" id="signPhotos" hidden></div>
-      <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${mids.get(p.id)[1]},${mids.get(p.id)[0]}" target="_blank" rel="noopener"><i class="ph ph-navigation-arrow"></i>Directions</a>`;
+      ${actionsHTML(mids.get(p.id), p.id)}`;
   } else {
     const price = carParkPrice(cp);
     d.innerHTML = `
@@ -494,12 +544,49 @@ function renderDetail() {
         : `<p class="plain">A ${cp.source || 'council'} car park${cp.operator && cp.operator !== cp.source ? ` run by ${cp.operator}` : ''}. Rates aren't published as open data, so check the signs or the operator's website before you go.</p>`}
       ${cp.phone ? `<p class="plain">Phone <span class="num">${cp.phone}</span></p>` : ''}
       ${cp.checked ? `<p class="note">Prices checked ${cp.checked} on the operator's website.</p>` : ''}
-      <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${cp.at[1]},${cp.at[0]}" target="_blank" rel="noopener"><i class="ph ph-navigation-arrow"></i>Directions</a>`;
+      ${actionsHTML(cp.at, cp.id)}`;
   }
   body.appendChild(d);
   body.scrollTop = 0;
   if (f) loadSignPhotos(f, d.querySelector('#signPhotos'));
   d.querySelector('.back').onclick = () => { S.sel = null; update(); };
+  const id = S.sel;
+  d.querySelector('[data-act=save]').onclick = (e) => { toggleSaved(id); const on = isSaved(id); e.currentTarget.setAttribute('aria-pressed', String(on)); e.currentTarget.innerHTML = starInner(on); };
+  d.querySelector('[data-act=share]').onclick = () => shareSel(f, cp);
+}
+
+const starInner = (on) => `<i class="ph${on ? '-fill' : ''} ph-star"></i>${on ? 'Saved' : 'Save'}`;
+function actionsHTML(at, id) {
+  const [lon, lat] = at, on = isSaved(id);
+  return `<div class="actions">
+      <button class="cta" type="button" data-act="save" aria-pressed="${on}">${starInner(on)}</button>
+      <button class="cta" type="button" data-act="share"><i class="ph ph-share-network"></i>Share</button>
+    </div>
+    <div class="actions"><span class="nav-label">Drive there with</span>
+      <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank" rel="noopener"><i class="ph ph-navigation-arrow"></i>Google Maps</a>
+      <a class="cta" href="https://maps.apple.com/?daddr=${lat},${lon}&dirflg=d" target="_blank" rel="noopener"><i class="ph ph-map-trifold"></i>Apple Maps</a>
+      <a class="cta" href="https://waze.com/ul?ll=${lat},${lon}&navigate=yes" target="_blank" rel="noopener"><i class="ph ph-car"></i>Waze</a>
+    </div>`;
+}
+async function shareSel(f, cp) {
+  const stayTxt = S.stay === 0.25 ? '15 min' : `${S.stay} hr${S.stay > 1 ? 's' : ''}`;
+  const when = `${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}`;
+  let at, text;
+  if (f) {
+    const p = f.properties; at = mids.get(p.id);
+    const c = p.lk ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
+    const v = verdictText(p, c);
+    text = `${p.s}${p.sd ? ` (${p.sd.toLowerCase()})` : ''}: ${v.head}${c.ok && !c.likely ? `, ${money(c.cost)}` : ''} for ${when}.`;
+  } else {
+    at = cp.at;
+    const occ = cp.kind === 'parkride' ? occAt(cp, S.day, S.hour) : null;
+    text = `${cp.name}${cp.kind === 'parkride' ? `: free with an Opal trip${occ == null ? '' : occ >= 95 ? ', usually full by now' : `, usually ~${spacesLeft(cp, occ)} spaces left`}` : ''} (${when}).`;
+  }
+  const url = `${location.origin}${location.pathname}#at=${at[1].toFixed(5)},${at[0].toFixed(5)}`;
+  try {
+    if (navigator.share) await navigator.share({ title: 'Kerb', text, url });
+    else { await navigator.clipboard.writeText(`${text} ${url}`); toast('Link copied'); }
+  } catch (e) { if (e.name !== 'AbortError') toast("Couldn't share. Try again."); }
 }
 
 /* ---------- street photos of nearby signs (Mapillary, CC BY-SA) ---------- */
@@ -567,6 +654,17 @@ function renderLegend() {
     b.onclick = () => { S.hidden.has(k) ? S.hidden.delete(k) : S.hidden.add(k); renderLegend(); if (map.isStyleLoaded()) kerbLayers(); drawCarParks(); renderBody(); };
     lg.appendChild(b);
   }
+  const mp = document.createElement('button'); mp.type = 'button'; mp.className = 'perm';
+  mp.setAttribute('aria-pressed', String(BEN.mps));
+  mp.title = 'I have a NSW mobility parking permit';
+  mp.innerHTML = `<i class="ph ph-wheelchair" aria-hidden="true"></i>${BEN.mps ? 'Mobility permit on' : 'Mobility permit'}`;
+  mp.onclick = () => {
+    BEN.mps = !BEN.mps;
+    try { localStorage.setItem('kerb-mps', BEN.mps ? '1' : '0'); } catch { /* private mode */ }
+    toast(BEN.mps ? 'Showing prices and time limits for mobility permit holders' : 'Mobility permit off');
+    renderLegend(); update();
+  };
+  lg.appendChild(mp);
 }
 
 /* ---------- sheet (phones): min (full map), peek, open ---------- */
@@ -710,7 +808,15 @@ syncControls();
 setPeek();
 renderList();
 const dataReady = loadData().catch((e) => { body.innerHTML = `<div class="empty"><strong>The parking data didn't load</strong>Check your connection and reload the page. (${e.message})</div>`; throw e; });
-dataReady.then(() => update(), () => {});
+dataReady.then(() => {
+  if (LINK && KERBS) {
+    let best = null, bd = 30;
+    for (const f of KERBS.features) { const d = distM(mids.get(f.properties.id), LINK); if (d < bd) { bd = d; best = f.properties.id; } }
+    for (const cp of CARPARKS) { const d = distM(cp.at, LINK); if (d < bd) { bd = d; best = cp.id; } }
+    if (best != null) { S.sel = best; setOpen(true); }
+  }
+  update();
+}, () => {});
 map.on('style.load', async () => {
   restyleBase();
   document.querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');

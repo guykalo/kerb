@@ -65,12 +65,18 @@ export function stateAt(props, rules, day, h) {
   return { kind: 'restricted', until: next.length ? Math.min(...next) : 24, set };
 }
 
+// Concessions the driver has. mps = NSW mobility parking permit: free at council and street meters, and
+// signed limits over 30 minutes don't apply (30 minutes becomes 2 hours, shorter limits become 30 minutes).
+// No-parking, no-stopping, loading and bus zones still apply. Private car parks don't give these concessions.
+export const BEN = { mps: false };
+const mpsLimit = (p) => (p > 0.5 ? Infinity : p === 0.5 ? 2 : 0.5);
+
 // Can you park for `stay` hours from day/h, and what does it cost?
 export function costFor(props, rules, day, h, stay) {
   if (props.k < 0) return { ok: null, why: 'No published rules for this kerb yet' };
   const set = rules[props.k];
   const step = 0.25, n = Math.max(1, Math.round(stay / step));
-  let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0;
+  let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0, waived = 0;
   for (let i = 0; i < n; i++) {
     const t = h + i * step, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
     const s = stateAt(props, rules, d, hh);
@@ -78,15 +84,17 @@ export function costFor(props, rules, day, h, stay) {
     if (s.kind !== 'meter' && s.kind !== 'limit') { run = 0; ref = null; continue; }
     if (s.rule !== ref) { run = 0; ref = s.rule; }
     run += step;
-    if (run > s.rule[0] + 1e-9) return { ok: false, why: `${pLabel(s.rule[0])} limit until ${fmtTime(s.rule[3])}` };
+    const limit = BEN.mps ? mpsLimit(s.rule[0]) : s.rule[0];
+    if (run > limit + 1e-9) return { ok: false, why: BEN.mps ? `${limit === 0.5 ? '30-minute' : `${limit}-hour`} limit with a permit until ${fmtTime(s.rule[3])}` : `${pLabel(s.rule[0])} limit until ${fmtTime(s.rule[3])}` };
     if (s.kind === 'limit') continue;
+    if (BEN.mps) { waived += step; continue; }
     cost += s.rule[4] * step; paid += step;
     if (firstPaidAt == null) { firstPaidAt = t; rate = s.rule[4]; }
   }
   // Ticket machines in free 15-minute zones give the first quarter hour free.
   const quarterFree = set.q || props.f15;
   if (quarterFree && paid > 0) cost = Math.max(0, cost - Math.min(paid, 0.25) * (cost / paid));
-  return { ok: true, cost, quarterFree: !!quarterFree && stay <= 0.25, paidHours: paid, freeHours: stay - paid, firstPaidAt, rate };
+  return { ok: true, cost, quarterFree: !!quarterFree && stay <= 0.25, paidHours: paid, freeHours: stay - paid, firstPaidAt, rate, waived };
 }
 
 // Category used for colouring the kerb for the chosen stay.
