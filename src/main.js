@@ -150,7 +150,8 @@ function drawCarParks() {
     el.type = 'button'; el.className = 'cp-pin' + (S.sel === cp.id ? ' sel' : '');
     el.setAttribute('aria-label', cp.name);
     const price = carParkPrice(cp);
-    el.innerHTML = `<b>P</b>${cp.kind === 'parkride' ? prPin(cp) : price && !price.none ? (cp.maxRates && price.p > 0 ? `≤${money(price.p)}` : money(price.p)) : price?.none ? (price.why === 'long' ? 'Car park' : 'Closed?') : 'Car park'}`;
+    const est = !price ? estimateFor(cp) : null;
+    el.innerHTML = `<b>P</b>${cp.kind === 'parkride' ? prPin(cp) : est ? `~${money(est.mid)}` : price && !price.none ? (cp.maxRates && price.p > 0 ? `≤${money(price.p)}` : money(price.p)) : price?.none ? (price.why === 'long' ? 'Car park' : 'Closed?') : 'Car park'}`;
     el.addEventListener('click', (e) => { e.stopPropagation(); select(cp.id, true); });
     cpMarkers.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(cp.at).addTo(map));
     el.setAttribute('aria-label', `${cp.name}: ${el.textContent.slice(1)}`); // MapLibre replaces it with "Map marker
@@ -227,6 +228,18 @@ function carParkPrice(cp, day = S.day, h = S.hour, stay = S.stay) {
   return { none: true, why: short ? 'long' : 'time' };
 }
 const hm = (h) => fmtTime(h % 24);
+// Kerb's own estimate for car parks whose rates we can't publish: the spread of what car parks nearby that do
+// publish their rates (councils, venues) charge for the same arrival time and stay. Never shown as a real price.
+const NRMA_DAY = 'about $77 to $81 a day (NRMA, 2025)';
+function estimateFor(cp) {
+  if (cp.kind === 'parkride' || cp.rates?.length) return null;
+  const near = CARPARKS.filter((c) => c.estBasis && c.rates?.length && c !== cp).map((c) => ({ c, d: distM(c.at, cp.at), q: carParkPrice(c) }))
+    .filter((x) => x.d < 2500 && x.q && !x.q.none).sort((a, b) => a.d - b.d).slice(0, 5);
+  if (near.length < 2) return null;
+  const v = near.map((x) => x.q.p).sort((a, b) => a - b);
+  const mid = v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
+  return { low: Math.floor(v[0]), high: Math.ceil(v[v.length - 1]), mid: Math.round(mid), from: near.map((x) => x.c.name) };
+}
 function rateLines(cp) {
   const MN = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const season = (r) => (r.months ? ` (${MN[r.months[0]]}-${MN[r.months[r.months.length - 1]]})` : '');
@@ -331,6 +344,9 @@ function stayWords(long) {
 function walkText(m) { if (m > 2500) return `${(m / 1000).toFixed(m > 20000 ? 0 : 1)} km away`; const min = Math.max(1, Math.round(m / WALK_M_PER_MIN)); return `${min} min walk`; }
 
 function renderList() {
+  const keepScroll = body.dataset.mode === 'list' ? body.scrollTop : 0;
+  body.dataset.mode = 'list';
+  requestAnimationFrame(() => { if (body.dataset.mode === 'list') body.scrollTop = Math.min(keepScroll, body.scrollHeight); });
   body.replaceChildren();
   if (!KERBS) { body.innerHTML = `<div class="empty"><strong>Loading the kerbs…</strong>Pulling in every meter in the City of Sydney.</div>`; return; }
   const centre = S.dest ? S.dest.at : map.getCenter().toArray();
@@ -420,8 +436,9 @@ function cpRow(cp, d) {
   const price = carParkPrice(cp);
   const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
   const pr = cp.kind === 'parkride', v = pr ? occAt(cp, S.day, S.hour) : null;
-  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? (price.why === 'long' ? 'Price for this stay not published' : 'No rate for this time') : price ? price.k : `Run by ${cp.operator}. Rates not published`;
-  b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price free">Free</span>` : price && !price.none ? `<span class="price${price.p === 0 ? ' free' : ''}">${money(price.p)}</span>` : ''}<span class="walk">${walkText(d)}</span></span>`;
+  const est = !price && !pr ? estimateFor(cp) : null;
+  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? (price.why === 'long' ? 'Price for this stay not published' : 'No rate for this time') : price ? price.k : est ? `Estimate ${money(est.low)}-${money(est.high)}${cp.operator ? `, run by ${cp.operator}` : ''}` : `Run by ${cp.operator}. Rates not published`;
+  b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price free">Free</span>` : price && !price.none ? `<span class="price${price.p === 0 ? ' free' : ''}">${money(price.p)}</span>` : est ? `<span class="price est">~${money(est.mid)}</span>` : ''}<span class="walk">${walkText(d)}</span></span>`;
   b.onclick = () => select(cp.id, true);
   return b;
 }
@@ -651,6 +668,11 @@ function busyHTML(p) {
   return `<div class="busy">${head}${rows}</div>`;
 }
 
+function estHTML(cp, e, stayTxt) {
+  return `<div class="verdict est"><div><small>${spanText(stayTxt)}</small>Kerb's estimate</div><span class="big">~${money(e.mid)}</span></div>
+      <p class="plain">Probably ${money(e.low)} to ${money(e.high)}. ${cp.operator ? `${cp.operator} doesn't let us publish its rates, so this` : 'This'} is an estimate from what car parks nearby charge for the same time: ${e.from.join(', ')}.${S.stay >= 5 || S.night ? ` For a full day, Sydney car parks average ${NRMA_DAY}.` : ''}</p>
+      <p class="note">Not the real price. Busy CBD car parks often charge more, and early bird or online deals can be cheaper. The board at the entrance is what you'll pay.</p>`;
+}
 function prDetail(cp) {
   const v = occAt(cp, S.day, S.hour), full = prFullBy(cp, S.day);
   const now = v == null ? '' : v >= 95
@@ -697,6 +719,7 @@ function renderDetail() {
       <div><h2>${cp.name}</h2><div class="where">${[cp.address, cp.entry ? `Entry from ${cp.entry}` : '', cp.spots ? `${cp.spots} spaces` : ''].filter(Boolean).join('. ')}.</div></div>
       ${cp.kind === 'parkride' ? prDetail(cp) : price && !price.none ? `<div class="verdict"><div><small>${spanText(stayTxt)}</small>${price.k}</div><span class="big" style="color:var(--${price.p === 0 ? 'free' : 'fg'})">${money(price.p)}</span></div>`
         : price?.none ? `<div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>${price.why === 'long' ? 'No published price for a stay this long' : 'No published rate for this time'}</div></div><p class="plain">${price.why === 'long' ? "The owner only publishes the shorter stays below. Longer stays are charged at the operator's rates, so check the board at the entrance." : "It may be closed then, or the rate isn't published. Check the board at the entrance."}</p>`
+        : estimateFor(cp) ? estHTML(cp, estimateFor(cp), stayTxt)
         : `<p class="plain">${cp.operator ? `Run by ${cp.operator}. ` : ''}The rates aren't published anywhere we can use yet, so check the board at the entrance before you go in.</p>`}
       ${cp.rates?.length ? `<h3 class="h3">Rates</h3>${rateBoard(cp)}` : ''}
       ${cp.hours ? `<p class="plain">Open ${cp.hours}.</p>` : ''}
@@ -708,7 +731,9 @@ function renderDetail() {
       ${actionsHTML(cp.at, cp.id)}`;
   }
   body.appendChild(d);
-  body.scrollTop = 0;
+  // Stay where you were when the same detail just refreshes (time or stay changed); jump to the top for a new one.
+  if (body.dataset.mode !== `detail:${S.sel}`) body.scrollTop = 0;
+  body.dataset.mode = `detail:${S.sel}`;
   if (f) loadSignPhotos(f, d.querySelector('#signPhotos'));
   d.querySelector('.back').onclick = () => { S.sel = null; update(); };
   const id = S.sel;
@@ -831,58 +856,103 @@ function renderLegend() {
 }
 
 /* ---------- sheet (phones): min (full map), peek, open ---------- */
+// Drag the panel by its handle, the top of the dock, or by pulling the list down from the top.
+// The panel height is fixed in pixels (not dvh) so iOS's collapsing address bar can't make it jump.
 const panel = $('#panel');
 const root = document.documentElement;
-let sheet = 'peek';
+let sheet = 'peek', panelTouch = false, lastH = 0, lastW = 0;
 const px = (v) => parseFloat(getComputedStyle(root).getPropertyValue(v)) || 0;
+const isDesk = () => innerWidth >= 900;
+function sizeSheet() {
+  const h = Math.round(Math.min(innerHeight * 0.8, 740));
+  if (Math.abs(h - lastH) > 40 || innerWidth !== lastW) { lastH = h; lastW = innerWidth; root.style.setProperty('--sheet-h', `${h}px`); }
+}
 function setPeek() {
+  sizeSheet();
   const dock = $('#dock').getBoundingClientRect().height;
   const row = $('.dock-row').getBoundingClientRect().height;
   root.style.setProperty('--peek', `${Math.round(dock + 22 + 64)}px`);
   root.style.setProperty('--min', `${Math.round(row + 22 + 12)}px`);
-  setSheet(sheet, true);
+  setSheet(sheet);
 }
 function visibleHeight(state) {
-  if (innerWidth >= 900) return 0;
+  if (isDesk()) return 0;
   return state === 'open' ? panel.offsetHeight : state === 'min' ? px('--min') : px('--peek');
 }
-function setSheet(state, quiet) {
+function setSheet(state) {
   sheet = state; S.open = state === 'open';
   panel.classList.toggle('open', state === 'open');
   panel.classList.toggle('min', state === 'min');
   root.style.setProperty('--vis', `${Math.round(visibleHeight(state === 'open' ? 'peek' : state))}px`);
   const fb = $('#fullBtn');
   if (fb) { fb.setAttribute('aria-pressed', String(state === 'min')); fb.innerHTML = state === 'min' ? '<i class="ph ph-arrows-in-simple"></i>' : '<i class="ph ph-arrows-out-simple"></i>'; fb.setAttribute('aria-label', state === 'min' ? 'Show the options' : 'Full screen map'); }
-  if (!quiet) setTimeout(() => map.resize(), 340);
 }
 function setOpen(v) { setSheet(v ? 'open' : 'peek'); }
 (() => {
-  const h = $('#handle');
-  let y0 = null, moved = false, startOff = 0;
   const offFor = (state) => panel.offsetHeight - visibleHeight(state);
-  h.addEventListener('pointerdown', (e) => { y0 = e.clientY; moved = false; startOff = offFor(sheet); h.setPointerCapture(e.pointerId); panel.classList.add('dragging'); });
-  h.addEventListener('pointermove', (e) => {
-    if (y0 == null) return;
-    const dy = e.clientY - y0; if (Math.abs(dy) > 4) moved = true;
-    const off = Math.min(offFor('min'), Math.max(0, startOff + dy));
-    panel.style.transform = `translateY(${off}px)`;
-  });
-  const end = (e) => {
-    if (y0 == null) return;
-    const dy = e.clientY - y0; y0 = null; panel.classList.remove('dragging'); panel.style.transform = '';
-    if (!moved) { setSheet(sheet === 'min' ? 'peek' : sheet === 'peek' ? 'open' : 'peek'); return; }
-    const off = startOff + dy;
-    const options = ['open', 'peek', 'min'].map((s) => [s, Math.abs(offFor(s) - off)]);
-    setSheet(options.sort((x, y) => x[1] - y[1])[0][0]);
+  let drag = null; // { y0, t0, start, last, lastT, v, moved }
+  const begin = (y) => { drag = { y0: y, start: offFor(sheet), last: y, lastT: performance.now(), v: 0, moved: false }; };
+  const move = (y) => {
+    if (!drag) return false;
+    const dy = y - drag.y0;
+    if (!drag.moved && Math.abs(dy) < 6) return false;
+    if (!drag.moved) { drag.moved = true; panel.classList.add('dragging'); }
+    const now = performance.now();
+    drag.v = 0.7 * drag.v + 0.3 * ((y - drag.last) / Math.max(1, now - drag.lastT)); drag.last = y; drag.lastT = now;
+    panel.style.transform = `translateY(${Math.min(offFor('min'), Math.max(0, drag.start + dy))}px)`;
+    return true;
   };
-  h.addEventListener('pointerup', end); h.addEventListener('pointercancel', end);
-  $('#dock').addEventListener('click', (e) => { if (innerWidth < 900 && sheet !== 'open' && e.target.closest('button,input') === null) setSheet(sheet === 'min' ? 'peek' : 'open'); });
+  const finish = (y, tapToggles) => {
+    if (!drag) return;
+    const d = drag; drag = null;
+    panel.classList.remove('dragging'); panel.style.transform = '';
+    if (!d.moved) { if (tapToggles) setSheet(sheet === 'open' ? 'peek' : 'open'); return; }
+    const off = d.start + (y - d.y0), order = ['open', 'peek', 'min'];
+    let target;
+    if (Math.abs(d.v) > 0.45) { // a flick goes one step in its direction
+      const i = order.indexOf(sheet), j = d.v > 0 ? Math.min(2, i + 1) : Math.max(0, i - 1);
+      target = order[j];
+    } else target = order.map((st) => [st, Math.abs(offFor(st) - off)]).sort((a, b) => a[1] - b[1])[0][0];
+    setSheet(target);
+  };
+  // Handle and the non-control parts of the dock.
+  const grab = [$('#handle'), $('#dock')];
+  for (const el of grab) {
+    el.addEventListener('pointerdown', (e) => {
+      if (isDesk() || (el.id === 'dock' && e.target.closest('button, input, .stay, .ribbon'))) return;
+      begin(e.clientY); el.setPointerCapture?.(e.pointerId);
+    });
+    el.addEventListener('pointermove', (e) => { if (move(e.clientY)) e.preventDefault(); });
+    el.addEventListener('pointerup', (e) => finish(e.clientY, el.id === 'handle'));
+    el.addEventListener('pointercancel', (e) => finish(e.clientY, false));
+  }
+  // Pull the list down from its top to lower the sheet (like a native bottom sheet).
+  const list = $('#body');
+  let ty = null, pulling = false;
+  list.addEventListener('touchstart', (e) => { panelTouch = true; ty = e.touches[0].clientY; pulling = false; }, { passive: true });
+  list.addEventListener('touchmove', (e) => {
+    if (isDesk() || ty == null) return;
+    const y = e.touches[0].clientY;
+    if (!pulling && list.scrollTop <= 0 && y - ty > 6 && sheet === 'open') { pulling = true; begin(ty); }
+    if (pulling) { move(y); e.preventDefault(); }
+  }, { passive: false });
+  const tEnd = (e) => {
+    panelTouch = false;
+    if (pulling) finish(e.changedTouches[0].clientY, false);
+    ty = null; pulling = false;
+    if (pendingList) { pendingList = false; if (S.sel == null) renderList(); }
+  };
+  list.addEventListener('touchend', tEnd); list.addEventListener('touchcancel', tEnd);
   $('#fullBtn').addEventListener('click', () => setSheet(sheet === 'min' ? 'peek' : 'min'));
 })();
+let pendingList = false;
 
 /* ---------- keep the page pinned on phones (iOS can scroll or zoom the whole page after the keyboard) ---------- */
-function settle() { if (scrollX || scrollY) scrollTo(0, 0); map.resize(); setPeek(); }
-visualViewport?.addEventListener('resize', () => { clearTimeout(settle.t); settle.t = setTimeout(settle, 150); });
+function settle() {
+  if (scrollX || scrollY) scrollTo(0, 0);
+  if (innerWidth !== lastW || Math.abs(Math.min(innerHeight * 0.8, 740) - lastH) > 40) { map.resize(); setPeek(); }
+}
+visualViewport?.addEventListener('resize', () => { clearTimeout(settle.t); settle.t = setTimeout(settle, 250); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { settle(); map.triggerRepaint(); } });
 addEventListener('pageshow', settle);
 map.on('webglcontextlost', () => toast('The map paused. It will come back in a moment.'));
@@ -960,10 +1030,10 @@ for (const l of ['kerb-line', 'kerb-short', 'kerb-faint']) {
   map.on('mouseleave', l, () => (map.getCanvas().style.cursor = ''));
 }
 let moveTimer = null;
-map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel == null) renderList(); }, 120); });
+map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
 
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) kerbLayers(); drawRibbon(); });
-addEventListener('resize', () => { setPeek(); drawRibbon(); map.resize(); });
+addEventListener('resize', () => { setPeek(); drawRibbon(); });
 
 /* ---------- boot ---------- */
 renderLegend();

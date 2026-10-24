@@ -62,7 +62,7 @@ button { cursor: pointer; }
 /* ---------- panel (bottom sheet on phones) ---------- */
 .panel {
   position: absolute; z-index: 6; left: 0; right: 0; bottom: 0;
-  height: min(78dvh, 720px); display: flex; flex-direction: column;
+  height: var(--sheet-h, min(78vh, 720px)); display: flex; flex-direction: column; will-change: transform;
   background: var(--surface); border-radius: 22px 22px 0 0; box-shadow: 0 -10px 40px rgb(0 0 0 / .18);
   transform: translateY(calc(100% - var(--peek, 250px)));
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -70,7 +70,9 @@ button { cursor: pointer; }
 .panel.open { transform: translateY(0); }
 .panel.min { transform: translateY(calc(100% - var(--min, 80px))); }
 @media (prefers-reduced-motion: no-preference) { .panel { transition: transform .32s cubic-bezier(.2, .9, .25, 1); } .panel.dragging { transition: none; } }
-.handle { flex: none; height: 22px; border: 0; background: transparent; display: grid; place-items: center; touch-action: none; }
+.handle { flex: none; height: 28px; margin-bottom: -6px; border: 0; background: transparent; display: grid; place-items: center; touch-action: none; cursor: grab; }
+.dock { touch-action: pan-x; }
+.panel.dragging { user-select: none; }
 .handle span { width: 40px; height: 5px; border-radius: 3px; background: var(--line); }
 
 .dock { flex: none; display: flex; flex-direction: column; gap: 10px; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); }
@@ -173,6 +175,8 @@ button { cursor: pointer; }
 .ob.cur { outline: 2px solid var(--fg); outline-offset: 1px; }
 .occ-axis { padding: 0 6px; margin-top: -6px; font-size: 11px; color: var(--muted); font-weight: 600; }
 .occ-axis span { justify-self: center; white-space: nowrap; }
+.price.est { color: var(--muted); font-style: italic; }
+.verdict.est { border: 1px dashed var(--line); background: transparent; }
 .rateboard { display: flex; flex-direction: column; gap: 8px; }
 .rl { padding: 10px 12px; border-radius: var(--r); background: var(--surface-2); }
 .rt { font-weight: 750; }

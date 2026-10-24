@@ -40,7 +40,8 @@
   "source": "https://www.cityofsydney.nsw.gov.au/-/media/corporate/files/publications/policies/revenue-policy-fees-charges/2026-statement-of-revenue-policy-small-file-for-web.pdf",
   "checked": "2026-10-24",
   "research": "These are the City of Sydney's maximum rates for 2026/27: casual up to $14 an hour and $55 a day, evenings Mon-Fri up to $20 and weekends and public holidays up to $20 (entry and exit conditions apply, not published). The rate board at the entrance may be lower. Motorbikes $2 an hour, max $14.",
-  "note": "City of Sydney's maximum rates: up to $14 an hour, $55 a day, and up to $20 on weekday evenings and weekends (entry and exit conditions apply). The board at the entrance may be cheaper. Motorbikes $2 an hour."
+  "note": "City of Sydney's maximum rates: up to $14 an hour, $55 a day, and up to $20 on weekday evenings and weekends (entry and exit conditions apply). The board at the entrance may be cheaper. Motorbikes $2 an hour.",
+  "estBasis": true
  },
  {
   "id": "cos-2",
@@ -83,7 +84,8 @@
   "source": "https://www.cityofsydney.nsw.gov.au/-/media/corporate/files/publications/policies/revenue-policy-fees-charges/2026-statement-of-revenue-policy-small-file-for-web.pdf",
   "checked": "2026-10-24",
   "research": "These are the City of Sydney's maximum rates for 2026/27: casual up to $12 an hour and $50 a day, evenings Mon-Fri up to $20 and weekends up to $20 (entry and exit conditions apply, not published). The rate board at the entrance may be lower. Motorbikes $2 an hour, max $14.",
-  "note": "City of Sydney's maximum rates: up to $12 an hour, $50 a day, and up to $20 on weekday evenings and weekends (entry and exit conditions apply). The board at the entrance may be cheaper. Motorbikes $2 an hour."
+  "note": "City of Sydney's maximum rates: up to $12 an hour, $50 a day, and up to $20 on weekday evenings and weekends (entry and exit conditions apply). The board at the entrance may be cheaper. Motorbikes $2 an hour.",
+  "estBasis": true
  },
  {
   "id": "wav-0",
@@ -182,7 +184,8 @@
   "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
   "checked": "2026-10-24",
   "research": "Rates from the car parks page and the same figures in Waverley's Pricing Policy Fees & Charges 2026-2027 (https://www.waverley.nsw.gov.au/media/documents/council/operational_plans_and_fees_and_charges/Pricing_policy_fees_and_charges.pdf). First hour free; leave for at least 30 minutes for another free hour on same-day re-entry; a 30-minute gap is needed to move to the Library car park. Late bird: the web page says 'Night rate (6pm\u20139pm) $12.80 flat' and the fees PDF says 'Late bird Parking (6pm to close)'. Recorded as entry 6pm\u20139pm, leave by closing (11.30pm). All-day $19.80 is rooftop level only. Overnight costs $42.00 per night on top of parking fees. Major Event Parking $23.60 applies on advertised days only (not recorded). Lost ticket $43.00. Monthly $365.00. Licence plate recognition is used. The fees PDF lists a card surcharge on car parks (0.8%, 1 July\u201330 Sept 2026).",
-  "note": "First hour free. Wait 30 minutes before coming back for another free hour. The $19.80 all-day rate is for the rooftop only. Overnight stays cost $42 a night on top. Closed Good Friday, Easter Sunday and Christmas Day."
+  "note": "First hour free. Wait 30 minutes before coming back for another free hour. The $19.80 all-day rate is for the rooftop only. Overnight stays cost $42 a night on top. Closed Good Friday, Easter Sunday and Christmas Day.",
+  "estBasis": true
  },
  {
   "id": "wav-1",
@@ -263,7 +266,8 @@
   "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
   "checked": "2026-10-24",
   "research": "Rates from the car parks page, matching the 2026-27 fees PDF (https://www.waverley.nsw.gov.au/media/documents/council/operational_plans_and_fees_and_charges/Pricing_policy_fees_and_charges.pdf). Early bird $19.80: the web page says 'entry before 9.30AM and exit after 3.30PM'; the fees PDF says 'arrive before 9am and exit after 3:30pm'. Recorded with the stricter 9am. Neither source limits the Library early bird to weekdays (the Hollywood Ave one is Mon\u2013Fri), so all days are recorded as published. Library users get 2 hours free through validation (not recorded as a general rate). Overnight costs $42.00 per night on top of parking fees. Lost ticket $43.00. Monthly $365.00. A 30-minute gap is needed to move to Eastgate.",
-  "note": "Early bird: arrive before 9am, leave after 3:30pm. Closed Good Friday, Easter Sunday and Christmas Day."
+  "note": "Early bird: arrive before 9am, leave after 3:30pm. Closed Good Friday, Easter Sunday and Christmas Day.",
+  "estBasis": true
  },
  {
   "id": "wav-2",
@@ -356,7 +360,8 @@
   "source": "https://www.waverley.nsw.gov.au/residents/parking/car_parks",
   "checked": "2026-10-24",
   "research": "Rates from the car parks page. Days and conditions come from the 2026-27 fees PDF (https://www.waverley.nsw.gov.au/media/documents/council/operational_plans_and_fees_and_charges/Pricing_policy_fees_and_charges.pdf): 'Early bird parking (available Monday \u2013 Friday, arrive before 9am and exit after 3:30pm) $19.80' and 'Weekend Shopper Rate (available on Saturdays and Sundays only, no time restrictions) $22.40'. The web page says early bird entry is 'before 9.30AM', so the stricter 9am is recorded. Overnight costs $42.00 per night on top of parking fees. Lost ticket $43.00. Monthly $365.00 (separate residents' monthly rate by application).",
-  "note": "Early bird Mon-Fri: arrive before 9am, leave after 3:30pm. Weekend shopper rate Sat-Sun. Closed Good Friday, Easter Sunday and Christmas Day."
+  "note": "Early bird Mon-Fri: arrive before 9am, leave after 3:30pm. Weekend shopper rate Sat-Sun. Closed Good Friday, Easter Sunday and Christmas Day.",
+  "estBasis": true
  },
  {
   "id": "wav-9",
@@ -1023,7 +1028,8 @@
   "source": "https://iccsydney.com.au/visitors/getting-here/",
   "checked": "2026-10-24",
   "research": "0-10 min free (band set to 0.16 h). '4+ hours (to 4am only)' $50; rates reset 4am daily. Cashless only, tap-to-pay or ticket; no pre-booking. Height 2.2m. 826 spaces across both car parks. No event or early bird rates listed. Terms: iccsydney.com.au has no website terms-of-use page (footer only has privacy policy and '\u00a9 ICC Sydney all rights reserved'); venue is NSW Government-owned, managed by Legends Global. Coordinates from Wikipedia (ICC Sydney, 4 d.p.).",
-  "note": "First 10 minutes free. $50 covers 4+ hours until 4am, when rates reset. Card only. Height limit 2.2m. 826 spaces in two car parks."
+  "note": "First 10 minutes free. $50 covers 4+ hours until 4am, when rates reset. Card only. Height limit 2.2m. 826 spaces in two car parks.",
+  "estBasis": true
  },
  {
   "id": "new-rbg-mrs-macquaries-rd",
@@ -1210,7 +1216,8 @@
   "source": "https://www.marketcity.com.au/parking/",
   "checked": "2026-10-24",
   "research": "Casual fees apply on all levels; '4 hours + (daily maximum)' $45. Early bird, night and weekend day rates are pre-book rates for levels B2 and B3 only, booked online; the page does not state which days early bird and night apply. 'Flexi-saver from $20' up to 24 h not recorded. Validations: $50 spend at Thai Kee IGA = 1 hour free; 2 hours free dining at The Eight (9am-3:30pm); free entry after 6pm (exit by 1:30am) when dining at 1909 precinct; $10 after 6pm with $25 spend at Hay St Market. Over 600 spaces. Terms: marketcity.com.au has no terms-of-use page (none in footer; /terms-of-use not found).",
-  "note": "Casual rates on all levels, with a $45 daily maximum. Online pre-book deals and shop validations can be cheaper."
+  "note": "Casual rates on all levels, with a $45 daily maximum. Online pre-book deals and shop validations can be cheaper.",
+  "estBasis": true
  },
  {
   "id": "new-usyd-shepherd-st",
@@ -1588,7 +1595,8 @@
   "source": "https://www.svhs.org.au/patients-visitors/facility-access/parking",
   "checked": "2026-10-24",
   "research": "Casual rates apply every day incl. public holidays; '6 hours +: $50 maximum (per entry day)'. Evening flat rate '$15* entry after 4pm', must exit before close (asterisk not explained). Overnight $50 per night plus daily charges. Height limit 1.95m. Entry from Victoria St via the hospital foyer driveway near Burton St. No concessions currently. Coordinates: centre of the 394-404 Victoria St lot (NSW Planning Portal address API).",
-  "note": "$15 evening rate if you enter after 4pm and leave before closing. Overnight costs $50 a night on top. Height limit 1.95m."
+  "note": "$15 evening rate if you enter after 4pm and leave before closing. Overnight costs $50 a night on top. Height limit 1.95m.",
+  "estBasis": true
  },
  {
   "id": "new-randwick-hospitals",
@@ -1859,5 +1867,426 @@
   "source": "https://www.edgecliffcentre.com.au/",
   "checked": "2026-10-24",
   "research": "edgecliffcentre.com.au blocks automated access (robots); no rates or terms could be read. Coordinates: NSW Planning Portal lot centre."
+ },
+ {
+  "id": "nb-whistler",
+  "name": "Whistler Street Car Park",
+  "address": "5A Market Lane, Manly",
+  "at": [
+   151.28568,
+   -33.7976
+  ],
+  "operator": "Northern Beaches Council",
+  "spaces": 311,
+  "hours": "Mon-Thu 6:30am-12:30am, Fri-Sat 24 hours, Sun 6:30am-midnight",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 6.5,
+    "to": 19,
+    "bands": [
+     [
+      2,
+      0
+     ],
+     [
+      2.5,
+      13.5
+     ],
+     [
+      3,
+      18
+     ],
+     [
+      3.5,
+      22
+     ],
+     [
+      4,
+      26
+     ],
+     [
+      5,
+      40.5
+     ],
+     [
+      24,
+      55
+     ]
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "Evening",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     19,
+     23.99
+    ],
+    "exitBy": 24,
+    "price": 5.5
+   },
+   {
+    "kind": "flat",
+    "label": "Overnight",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     19,
+     23.99
+    ],
+    "exitBy": 8.5,
+    "price": 11
+   }
+  ],
+  "source": "https://www.northernbeaches.nsw.gov.au/services/parking/manly-parking-stations",
+  "checked": "2026-10-24",
+  "note": "Height limit 2m. First 2 hours free if you enter 6:30am-6:59pm. Coming back within 3 hours (here or another council car park in Manly) starts at the 2-2.5 hour rate. Evening entry from 7pm is $5.50, plus $5.50 overnight if you stay past midnight. Mobility permit holders pay standard fees.",
+  "estBasis": true,
+  "research": "Rates from the council's Manly parking stations page; coordinates from OpenStreetMap."
+ },
+ {
+  "id": "nb-peninsula",
+  "name": "Peninsula Car Park",
+  "address": "25 Wentworth Street, Manly",
+  "at": [
+   151.28803,
+   -33.79814
+  ],
+  "operator": "Northern Beaches Council",
+  "spaces": 289,
+  "hours": "Mon-Sat 7am-12:30am, Sun 7am-midnight",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 6.5,
+    "to": 19,
+    "bands": [
+     [
+      2,
+      0
+     ],
+     [
+      2.5,
+      13.5
+     ],
+     [
+      3,
+      18
+     ],
+     [
+      3.5,
+      22
+     ],
+     [
+      4,
+      26
+     ],
+     [
+      5,
+      40.5
+     ],
+     [
+      24,
+      55
+     ]
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "Evening",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     19,
+     23.99
+    ],
+    "exitBy": 24,
+    "price": 5.5
+   },
+   {
+    "kind": "flat",
+    "label": "Overnight",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     19,
+     23.99
+    ],
+    "exitBy": 8.5,
+    "price": 11
+   }
+  ],
+  "source": "https://www.northernbeaches.nsw.gov.au/services/parking/manly-parking-stations",
+  "checked": "2026-10-24",
+  "note": "Height limit 2.1m. First 2 hours free if you enter 6:30am-6:59pm. Coming back within 3 hours (here or another council car park in Manly) starts at the 2-2.5 hour rate. Evening entry from 7pm is $5.50, plus $5.50 overnight if you stay past midnight. Mobility permit holders pay standard fees.",
+  "estBasis": true,
+  "research": "Rates from the council's Manly parking stations page; coordinates from OpenStreetMap."
+ },
+ {
+  "id": "nb-pacific-waves",
+  "name": "Pacific Waves Car Park",
+  "address": "9-15 Central Avenue, Manly",
+  "at": [
+   151.28684,
+   -33.79667
+  ],
+  "operator": "Northern Beaches Council",
+  "spaces": 170,
+  "hours": "Mon-Sat 6:30am-12:30am, Sun 6:30am-midnight",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 6.5,
+    "to": 19,
+    "bands": [
+     [
+      2,
+      0
+     ],
+     [
+      2.5,
+      13.5
+     ],
+     [
+      3,
+      18
+     ],
+     [
+      3.5,
+      22
+     ],
+     [
+      4,
+      26
+     ],
+     [
+      5,
+      40.5
+     ],
+     [
+      24,
+      55
+     ]
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "Evening",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     19,
+     23.99
+    ],
+    "exitBy": 24,
+    "price": 5.5
+   },
+   {
+    "kind": "flat",
+    "label": "Overnight",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     19,
+     23.99
+    ],
+    "exitBy": 8.5,
+    "price": 11
+   }
+  ],
+  "source": "https://www.northernbeaches.nsw.gov.au/services/parking/manly-parking-stations",
+  "checked": "2026-10-24",
+  "note": "Height limit 2m. First 2 hours free if you enter 6:30am-6:59pm. Coming back within 3 hours (here or another council car park in Manly) starts at the 2-2.5 hour rate. Evening entry from 7pm is $5.50, plus $5.50 overnight if you stay past midnight. Mobility permit holders pay standard fees.",
+  "estBasis": true,
+  "research": "Rates from the council's Manly parking stations page; coordinates from OpenStreetMap."
+ },
+ {
+  "id": "nb-manly-national",
+  "name": "Manly National Car Park",
+  "address": "Central Avenue, Manly",
+  "at": [
+   151.28647,
+   -33.79642
+  ],
+  "operator": "Northern Beaches Council",
+  "spaces": 220,
+  "hours": "Mon-Sat 6:30am-12:30am, Sun 6:30am-midnight",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 6.5,
+    "to": 19,
+    "bands": [
+     [
+      2,
+      0
+     ],
+     [
+      2.5,
+      13.5
+     ],
+     [
+      3,
+      18
+     ],
+     [
+      3.5,
+      22
+     ],
+     [
+      4,
+      26
+     ],
+     [
+      5,
+      40.5
+     ],
+     [
+      24,
+      55
+     ]
+    ]
+   },
+   {
+    "kind": "flat",
+    "label": "Evening",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     19,
+     23.99
+    ],
+    "exitBy": 24,
+    "price": 5.5
+   },
+   {
+    "kind": "flat",
+    "label": "Overnight",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "enter": [
+     19,
+     23.99
+    ],
+    "exitBy": 8.5,
+    "price": 11
+   },
+   {
+    "kind": "flat",
+    "label": "Early bird",
+    "days": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "enter": [
+     6.5,
+     9
+    ],
+    "exitAfter": 15,
+    "price": 27.5
+   }
+  ],
+  "source": "https://www.northernbeaches.nsw.gov.au/services/parking/manly-parking-stations",
+  "checked": "2026-10-24",
+  "note": "Height limit 1.95m. Lift out of action 10 Aug-23 Oct 2026. First 2 hours free if you enter 6:30am-6:59pm. Coming back within 3 hours (here or another council car park in Manly) starts at the 2-2.5 hour rate. Evening entry from 7pm is $5.50, plus $5.50 overnight if you stay past midnight. Mobility permit holders pay standard fees.",
+  "estBasis": true,
+  "research": "Rates from the council's Manly parking stations page; coordinates from OpenStreetMap."
  }
 ]
