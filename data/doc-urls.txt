@@ -23,3 +23,29 @@ page https://www.innerwest.nsw.gov.au/live/information-for-residents/parking/per
 page https://www.innerwest.nsw.gov.au/live/information-for-residents/parking/parking-permit/leichhardt
 page https://www.innerwest.nsw.gov.au/live/information-for-residents/parking/parking-permit/marrickville
 page https://www.innerwest.nsw.gov.au/live/information-for-residents/parking/council-car-parks
+# Inner West (direct files, Oct 2026)
+https://www.google.com/maps/d/kml?mid=1cGIx1udzveXCIXXju5RO1vRO-vE_YIk&forcekml=1
+https://www.innerwest.nsw.gov.au/sites/default/files/2026-10/Fees%20and%20Charges%20%202026-27%20v2_Final.pdf
+https://www.innerwest.nsw.gov.au/ArticleDocuments/977/Parking%20Areas%20-%20A3.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/977/Parking%20Areas%20-%20A6.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/977/Parking%20Areas%20-%20A7.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/977/Parking%20Areas%20-%20A8.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/977/Parking%20Areas%20-%20A9.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/977/Parking%20Areas%20-%20A10.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/977/Parking%20Areas%20-%20A11.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/977/Residential%20Parking%20Area%2012%20-Implemented%2020Sep2019.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/975/Residential%20Parking%20Area%2013%20-Implemented%20Amended%2017%20July20.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/Parking%20Areas%20-%20M1.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/Parking%20Areas%20-%20M3.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/Parking%20Areas%20-%20M6.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/Parking%20Areas%20-%20M9.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/M12.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/M14%20Newtown.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/M15.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/Parking%20Areas%20-%20M16.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/M17%20Stanmore.pdf.aspx
+https://www.innerwest.nsw.gov.au/ArticleDocuments/979/M18.pdf.aspx
+https://hdp-au-prod-app-innerwest-yoursay-files.s3.ap-southeast-2.amazonaws.com/9416/5948/9302/4d89706e226ffb8ff606d8972f238596_Rozelle_RPS.png
+# Woollahra
+https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf
+https://www.woollahra.nsw.gov.au/files/assets/public/v/1/services/documents/resident_parking_zones_list.pdf.pdf
