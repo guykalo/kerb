@@ -141,6 +141,7 @@ function drawCarParks() {
     el.innerHTML = `<b>P</b>${cp.kind === 'parkride' ? prPin(cp) : price ? money(price.p) : 'Car park'}`;
     el.addEventListener('click', (e) => { e.stopPropagation(); select(cp.id, true); });
     cpMarkers.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(cp.at).addTo(map));
+    el.setAttribute('aria-label', `${cp.name}: ${el.textContent.slice(1)}`); // MapLibre replaces it with "Map marker
   }
 }
 // Park&Ride: free with a public transport trip. occ[day][hour] is how full it usually is (% from the past week).
@@ -271,7 +272,8 @@ function renderList() {
   const centre = map.getCenter().toArray();
   const inCoverage = centre[0] > BOUNDS[0] - 0.01 && centre[0] < BOUNDS[2] + 0.01 && centre[1] > BOUNDS[1] - 0.01 && centre[1] < BOUNDS[3] + 0.01;
   if (!inCoverage) {
-    body.innerHTML = `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), Waverley (Bondi, Bronte, Bondi Junction) and Woollahra (Rose Bay, Double Bay, Paddington). More councils are on the way.</div>`;
+    body.innerHTML = `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), Waverley (Bondi, Bronte, Bondi Junction) and Woollahra (Rose Bay, Double Bay, Paddington). More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`;
+    carParkRows();
     return;
   }
   // Best kerb per street near the centre of the map.
