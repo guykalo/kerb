@@ -223,7 +223,7 @@ export async function fetchOffstreet() {
   log(`  cbd car parks: ${g.features.length}`);
   return g.features.filter((f) => f.geometry?.coordinates).map((f) => ({ ...f.properties, at: f.geometry.coordinates }));
 }
-const hhmm = (n) => { n = +n || 0; const h = Math.floor(n / 100), m = n % 100; return `${h % 12 || 12}${m ? ':' + String(m).padStart(2, '0') : ''}${h < 12 || h === 24 ? 'am' : 'pm'}`; };
+const hhmm = (n) => { n = +n || 0; if (n === 0 || n === 2400) return 'midnight'; const h = Math.floor(n / 100), m = n % 100; return `${h % 12 || 12}${m ? ':' + String(m).padStart(2, '0') : ''}${h < 12 || h === 24 ? 'am' : 'pm'}`; };
 export function buildOffstreet(raw, existing) {
   const out = [];
   for (const c of raw) {
@@ -235,7 +235,7 @@ export function buildOffstreet(raw, existing) {
       address: [[c.Street_Number_GPS, c.Street_Name_GPS].filter(Boolean).join(' '), c.Suburb_GPS].filter(Boolean).join(', '),
       entry: c.Between ? `${c.Street_Name_GPS}, between ${c.Between}` : '', operator: c.Owner || '',
       spaces: +c.Total_number_of_bays || undefined, phone: c.Phone || '', url: /^https?:/.test(c.URL || '') ? c.URL : '',
-      hours: c.Open || c.Close ? `${hhmm(c.Open)} to ${hhmm(c.Close || 2400)}` : '',
+      hours: c.Open || c.Close ? `${hhmm(c.Open)} to ${hhmm(c.Close)}` : '',
       note: c.Height_Res ? `Height limit ${c.Height_Res}m.` : '',
       at, source: 'Transport for NSW car park list (2016)',
     });
