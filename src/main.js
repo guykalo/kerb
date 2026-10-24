@@ -400,6 +400,17 @@ function rateLines(cp) {
     return [`${r.label || 'Flat rate'} ${money(r.price)}`, `${days}, in ${hm(r.enter[0])}-${hm(r.enter[1])}${r.exitAfter != null ? `, out after ${hm(r.exitAfter)}` : ''}${r.exitBy != null ? `, out by ${hm(r.exitBy)}${r.exitBy < r.enter[0] ? ' next day' : ''}` : ''}`];
   });
 }
+// You picked a stay longer than this car park allows: show the longest stay you can have and what it costs.
+function maxStayHTML(cp, price, stayTxt) {
+  if (price.why === 'long') {
+    for (let s = Math.min(S.stay, 24) - 0.25; s >= 0.25; s -= 0.25) {
+      const q = carParkPrice(cp, S.day, S.hour, s);
+      if (q && !q.none) return `<div class="verdict"><div><small>You picked ${stayTxt}. The longest stay here from ${fmtTime(S.hour)} is ${stayWordsFor(s)}</small>${stayWordsFor(s)} max</div><span class="big" style="color:var(--${q.p === 0 ? 'free' : 'fg'})">${money(q.p)}</span></div>`;
+    }
+  }
+  return `<div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>${price.why === 'long' ? 'Not for that long' : 'No rate at this time'}</div></div>`;
+}
+const stayWordsFor = (h) => (h < 1 ? `${Math.round(h * 60)} min` : `${+h.toFixed(2)} hr${h === 1 ? '' : 's'}`);
 function rateBoard(cp) {
   return `<div class="rateboard">${rateLines(cp).map(([t, sub, bands]) => `<div class="rl"><div class="rt">${t}</div><div class="rs">${sub}</div>${bands ? `<div class="rb">${bands}</div>` : ''}</div>`).join('')}</div>`;
 }
@@ -780,6 +791,19 @@ function rulePlate(r) {
 
 // Says in plain words why the stay costs what it does.
 const costText = (c) => (c.unknownRate ? (c.cost > 0 ? `${money(c.cost)}+` : 'Meter') : money(c.cost));
+// The prices and limits on this kerb at a glance, shown right under the answer: "$7/hr 8am-10pm Mon-Fri".
+function rateStrip(set) {
+  const rules = (set.rules || []).filter((r) => r[6] !== 1);
+  if (!rules.length) return '';
+  const seen = new Set();
+  const chips = rules.map((r) => {
+    const price = r[4] > 0 ? `${money(r[4])}/hr` : r[4] < 0 ? 'Meter' : 'Free';
+    const lim = r[0] > 0 ? ` · ${pLabel(r[0])}` : '';
+    const when = r[2] === 0 && r[3] === 24 ? 'all day' : `${fmtTime(r[2])}-${fmtTime(r[3])}`;
+    return `<span class="rchip${r[4] ? ' paid' : ''}"><b>${price}</b>${lim} · ${when} ${fmtDays(r[1])}</span>`;
+  }).filter((c) => !seen.has(c) && seen.add(c));
+  return `<div class="ratestrip" aria-label="Rates and limits">${chips.join('')}</div>`;
+}
 function verdictText(p, c) {
   if (p.lk) return { head: 'Probably free', why: '' };
   if (c.ok === null) return { head: 'No published rules', why: '' };
@@ -860,6 +884,7 @@ function renderDetail() {
       <div><h2>${p.s}</h2><div class="where">${[p.sd, p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} ${p.k >= 0 ? 'paid ' : ''}spaces` : ''].filter(Boolean).join(', ')}</div></div>
       <div class="verdict"><div><small>${spanText(stayTxt)}</small>${v.head}</div>
         ${p.lk ? `<span class="big" style="color:var(--free)">$0?</span>` : c.ok ? `<span class="big" style="color:var(--${c.cost === 0 && !c.unknownRate ? 'free' : 'fg'})">${costText(c)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
+      ${set ? rateStrip(set) : ''}
       <p class="plain">${v.why || plainNow(p, RULES, S.day, S.hour)}${p.f15 ? ' This street is in a free 15-minute zone, so a ticket gets you the first quarter hour free.' : ''}</p>
       ${set ? `<h3 class="h3">What the signs say</h3><div class="plates">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div>
       <h3 class="h3">Across the week</h3>${weekHTML(p)}
@@ -876,10 +901,11 @@ function renderDetail() {
       <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
       <div><h2>${cp.name}</h2><div class="where">${[cp.address, cp.entry ? `Entry from ${cp.entry}` : '', cp.spots ? `${cp.spots} spaces` : ''].filter(Boolean).join('. ')}.</div></div>
       ${cp.kind === 'parkride' ? prDetail(cp) : price && !price.none ? `<div class="verdict"><div><small>${spanText(stayTxt)}</small>${price.k}</div><span class="big" style="color:var(--${price.p === 0 ? 'free' : 'fg'})">${money(price.p)}</span></div>`
-        : price?.none ? `<div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>${price.why === 'long' ? 'No published price for a stay this long' : 'No published rate for this time'}</div></div><p class="plain">${price.why === 'long' ? "The owner only publishes the shorter stays below. Longer stays are charged at the operator's rates, so check the board at the entrance." : "It may be closed then, or the rate isn't published. Check the board at the entrance."}</p>`
+        : price?.none ? maxStayHTML(cp, price, stayTxt)
         : estimateFor(cp) ? estHTML(cp, estimateFor(cp), stayTxt)
         : `<p class="plain">${cp.operator ? `Run by ${cp.operator}. ` : ''}The rates aren't published anywhere we can use yet, so check the board at the entrance before you go in.</p>`}
       ${cp.rates?.length ? `<h3 class="h3">Rates</h3>${rateBoard(cp)}` : ''}
+      ${price?.none ? `<p class="plain">${price.why === 'long' ? 'Longer stays aren\'t allowed or aren\'t published, so check the board at the entrance.' : 'It may be closed then, or the rate isn\'t published. Check the board at the entrance.'}</p>` : ''}
       ${cp.hours ? `<p class="plain">Open ${cp.hours}.</p>` : ''}
       ${cp.note ? `<p class="plain">${cp.note}</p>` : ''}
       ${cp.phone ? `<p class="plain">Phone <span class="num">${cp.phone}</span></p>` : ''}

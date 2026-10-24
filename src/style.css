@@ -319,3 +319,7 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
 .snapcta i { font-size: 26px; color: var(--accent); }
 .snapcta span { display: grid; gap: 2px; }
 .snapcta small { color: var(--muted); font-size: 13px; }
+.ratestrip { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; }
+.rchip { font-size: 13px; padding: 5px 9px; border-radius: 999px; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); }
+.rchip b { margin-right: 2px; }
+.rchip.paid b { color: var(--paid); }
