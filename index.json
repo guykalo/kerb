@@ -1,0 +1,92 @@
+[
+ {
+  "url": "https://hdp-au-prod-app-rcc-yoursay-files.s3.ap-southeast-2.amazonaws.com/9717/5741/6127/b84af58341fd86f92b39b7d9993d862c_Current20parking20Coogee20Beach20TC.pdf",
+  "file": "001-b84af58341fd86f92b39b7d9993d862c_Current20parking20Coogee20Beach20TC.pdf",
+  "bytes": 1090712,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://www.yoursay.randwick.nsw.gov.au/download_file/3030/905",
+  "file": "002-bda603bb649bc415b4554876e093020e_Current20parking20Randwick20TC.pdf",
+  "bytes": 894784,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://www.yoursay.randwick.nsw.gov.au/download_file/3032/905",
+  "file": "003-775a551310f1243952d7484fcff23189_Current20parking20Coogee20Bream20St.pdf",
+  "bytes": 397101,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://www.yoursay.randwick.nsw.gov.au/download_file/3033/905",
+  "file": "004-d7da092767bb76ee4ec4c37ab363d685_Current20parking20South20Coogee.pdf",
+  "bytes": 451622,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://www.yoursay.randwick.nsw.gov.au/download_file/3034/905",
+  "file": "005-8460429d847bd77d8bb58208821ebe8c_Current20parking20Malabar20TC.pdf",
+  "bytes": 380369,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://www.yoursay.randwick.nsw.gov.au/download_file/3035/905",
+  "file": "006-6d01ab8281a6d67dcbcc3eeb8fdfb5a5_Current20parking20Little20Bay.pdf",
+  "bytes": 232607,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://hdp-au-prod-app-woollahra-yoursay-files.s3.ap-southeast-2.amazonaws.com/7217/4063/8615/Woollahra_Local_Traffic_Committee_Report_Watsons_Bay_Permit_Parking_Trial_Review_26_July_2024_Extraordinary.DOCX",
+  "file": "009-Woollahra_Local_Traffic_Committee_Report_Watsons_Bay_Permit_Parking_Trial_Review_26_July_2.docx",
+  "bytes": 253753,
+  "type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+ },
+ {
+  "url": "https://hdp-au-prod-app-woollahra-yoursay-files.s3.ap-southeast-2.amazonaws.com/5317/4063/8280/Council_Report_Watsons_Bay_Parking_Review_-_Proposed_Permit_Parking_Trial_Scheme_15_November_2023.DOCX",
+  "file": "010-Council_Report_Watsons_Bay_Parking_Review_-_Proposed_Permit_Parking_Trial_Scheme_15_Novemb.docx",
+  "bytes": 57057,
+  "type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+ },
+ {
+  "url": "https://www.northsydney.nsw.gov.au/downloads/file/3974/map-of-parking-meter-rates-and-demand-areas",
+  "file": "012-parking_meter_rates_and_demand_areas_2025_2026_1.pdf",
+  "bytes": 1970603,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://www.google.com/maps/d/kml?mid=1cGIx1udzveXCIXXju5RO1vRO-vE_YIk&forcekml=1",
+  "file": "050-PaybyPlatePbPparkingmeterlocations.kml",
+  "bytes": 261163,
+  "type": "text/xml; charset=utf-8"
+ },
+ {
+  "url": "https://www.innerwest.nsw.gov.au/sites/default/files/2026-10/Fees%20and%20Charges%20%202026-27%20v2_Final.pdf",
+  "file": "051-Fees and Charges  2026-27 v2_Final.pdf",
+  "bytes": 4322924,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://hdp-au-prod-app-innerwest-yoursay-files.s3.ap-southeast-2.amazonaws.com/9416/5948/9302/4d89706e226ffb8ff606d8972f238596_Rozelle_RPS.png",
+  "file": "071-4d89706e226ffb8ff606d8972f238596_Rozelle_RPS.png",
+  "bytes": 393449,
+  "type": "image/png"
+ },
+ {
+  "url": "https://www.woollahra.nsw.gov.au/files/assets/public/v/2/council/documents/fees-and-charges-2026-27.pdf",
+  "file": "072-fees-and-charges-2026-27.pdf",
+  "bytes": 2357728,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://www.woollahra.nsw.gov.au/files/assets/public/v/1/services/documents/resident_parking_zones_list.pdf.pdf",
+  "file": "073-resident_parking_zones_list.pdf.pdf",
+  "bytes": 153249,
+  "type": "application/pdf"
+ },
+ {
+  "url": "https://www.revenue.nsw.gov.au/help-centre/resources-library/statistics/penalty-notice-data-2023-2024-dfosf-001-2023.xlsx",
+  "file": "074-penalty-notice-data-2023-2024-dfosf-001-2023.xlsx",
+  "bytes": 4474064,
+  "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+ }
+]
