@@ -322,6 +322,7 @@ function visibleKerbs() {
 /* ---------- options list ---------- */
 const body = $('#body');
 const spanText = (t) => `${S.night ? 'Overnight' : t}, ${DAYS[S.day]} ${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}${S.hour + S.stay >= 24 ? ` ${DAYS[(S.day + 1) % 7]}` : ''}`;
+const meterLine = (o) => (o.c.unknownRate ? `Nearest meter: <strong>${o.p.s}</strong> (the council doesn't publish its rate).` : `Cheapest meter: <strong>${o.p.s}</strong> at ${costText(o.c)}.`);
 function stayWords(long) {
   if (S.night) return long ? 'the night (until 8am)' : 'Overnight to 8am';
   if (long) return S.stay === 0.25 ? '15 minutes' : S.stay === 1 ? 'an hour' : `${S.stay} hours`;
@@ -364,8 +365,8 @@ function renderList() {
   const sum = document.createElement('div');
   sum.className = 'summary';
   const stayTxt = stayWords(true);
-  if (free[0]) sum.innerHTML = `Free for ${stayTxt}: <strong>${free[0].p.s}</strong>, ${walkText(free[0].d)} ${S.dest ? `from ${S.dest.name}` : 'from the middle of the map'}.${paid[0] ? ` Cheapest meter: <strong>${paid[0].p.s}</strong> at ${costText(paid[0].c)}.` : ''}`;
-  else if (paid[0]) sum.innerHTML = `No free kerbs nearby for ${stayTxt}. Cheapest meter: <strong>${paid[0].p.s}</strong> at ${costText(paid[0].c)}.`;
+  if (free[0]) sum.innerHTML = `Free for ${stayTxt}: <strong>${free[0].p.s}</strong>, ${walkText(free[0].d)} ${S.dest ? `from ${S.dest.name}` : 'from the middle of the map'}.${paid[0] ? ` ${meterLine(paid[0])}` : ''}`;
+  else if (paid[0]) sum.innerHTML = `No free kerbs nearby for ${stayTxt}. ${meterLine(paid[0])}`;
   else if (likely[0]) sum.innerHTML = `Probably free: <strong>${likely[0].p.s}</strong>, ${walkText(likely[0].d)} away. The council doesn't publish its signs here, so check before you park.`;
   else sum.innerHTML = S.dest ? `No kerb data within a ${S.walk}-minute walk of ${S.dest.name}. Try a longer walk.` : `No kerb data near the middle of the map. Move the map to a street with coloured kerbs.`;
   body.appendChild(sum);
