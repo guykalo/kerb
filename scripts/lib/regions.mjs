@@ -290,7 +290,7 @@ export async function fetchManual() {
     let n = 0;
     for (const a of ps.areas) for (const s of a.streets) {
       spec.streets.push({ street: s.street, suburb: a.suburb, side: s.side || ['both'], rules: null, permit: a.permit, src: a.src,
-        ...(s.whole ? { near: a.centre, radius: s.radius || a.radius } : { area: a.centre, from: s.from, to: s.to }) });
+        ...(s.whole ? { near: s.near || a.centre, radius: s.radius || a.radius } : { area: s.near || a.centre, from: s.from, to: s.to }) });
       n++;
     }
     log(`  permit streets: ${n} from ${ps.areas.length} areas`);
