@@ -1,0 +1,187 @@
+{
+ "about": "Resident permit streets read from council street guides and maps. No sign times are published, so these show as permit areas (visitors usually time-limited), never as a rule. Each area: centre [lon, lat] that its streets are looked for around. Each street: whole (every part of that street within `radius` m of the centre), or from/to cross streets (the block between them), optionally one side. Streets the council lists only by house number, or 'to the M4'/'to the river' with no cross street, are left out.",
+ "sources": {
+  "parrapermit": "City of Parramatta permit areas street guide: https://www.cityofparramatta.nsw.gov.au/community/getting-around/parking/permit-areas-street-guide",
+  "strathrps": "Strathfield Council resident parking scheme maps: https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic/Resident-Parking-Scheme"
+ },
+ "areas": [
+  { "permit": "Parramatta Area 01A", "suburb": "Harris Park", "centre": [151.0085, -33.8225], "radius": 700, "src": "parrapermit", "streets": [
+   { "street": "Ada Street", "whole": true },
+   { "street": "Albion Street", "whole": true },
+   { "street": "Cambridge Street", "whole": true },
+   { "street": "Harris Street", "from": "Parkes Street", "to": "Crown Street" },
+   { "street": "Marion Street", "from": "Station Street East", "to": "Harris Street" },
+   { "street": "Station Street East", "from": "Parkes Street", "to": "Marion Street" },
+   { "street": "Una Street", "whole": true },
+   { "street": "Wigram Street", "from": "Una Street", "to": "Cambridge Street" }
+  ]},
+  { "permit": "Parramatta Area 01B", "suburb": "Harris Park", "centre": [151.0135, -33.8215], "radius": 700, "src": "parrapermit", "streets": [
+   { "street": "Alice Street", "whole": true },
+   { "street": "Allen Street", "whole": true },
+   { "street": "Arthur Street", "from": "River Road West", "to": "Weston Street" },
+   { "street": "Bowden Street", "whole": true },
+   { "street": "Brisbane Street", "whole": true },
+   { "street": "Crown Street", "whole": true },
+   { "street": "Dalley Street", "whole": true },
+   { "street": "George Street", "from": "Purchase Street", "to": "Arthur Street" },
+   { "street": "Good Street", "from": "Alice Street", "to": "Virginia Street" },
+   { "street": "Gregory Place", "whole": true },
+   { "street": "Hope Street", "whole": true },
+   { "street": "Noller Parade", "whole": true },
+   { "street": "Oak Street", "whole": true },
+   { "street": "Prospect Street", "from": "Good Street", "to": "Alfred Street" },
+   { "street": "Purchase Street", "whole": true },
+   { "street": "River Road West", "whole": true },
+   { "street": "Ruse Street", "whole": true },
+   { "street": "Tramway Avenue", "whole": true },
+   { "street": "Weston Street", "from": "Harris Street", "to": "Arthur Street" }
+  ]},
+  { "permit": "Parramatta Area H02", "suburb": "Granville", "centre": [151.0085, -33.8355], "radius": 700, "src": "parrapermit", "streets": [
+   { "street": "Banks Street", "from": "Burnett Street", "to": "Steele Street" },
+   { "street": "Franklin Street", "whole": true },
+   { "street": "High Street", "from": "Junction Street", "to": "Raymond Street" },
+   { "street": "Meehan Street", "whole": true },
+   { "street": "Napier Lane", "whole": true },
+   { "street": "Napier Street", "from": "Burnett Street", "to": "Steele Street", "side": ["south"] },
+   { "street": "Steele Street", "from": "Banks Street", "to": "Napier Street", "side": ["west"] },
+   { "street": "Tottenham Street", "from": "Junction Street", "to": "Raymond Street" }
+  ]},
+  { "permit": "Parramatta Area 12", "suburb": "Granville", "centre": [151.0105, -33.83], "radius": 700, "src": "parrapermit", "streets": [
+   { "street": "Victoria Street", "from": "Good Street", "to": "Albert Street" }
+  ]},
+  { "permit": "Parramatta Area 02", "suburb": "Parramatta", "centre": [151.015, -33.8115], "radius": 700, "src": "parrapermit", "streets": [
+   { "street": "Betts Street", "whole": true },
+   { "street": "Elizabeth Street", "whole": true },
+   { "street": "Harvey Street", "whole": true },
+   { "street": "Henry Street", "whole": true },
+   { "street": "Macarthur Street", "from": "Victoria Road", "to": "Thomas Street", "side": ["west"] },
+   { "street": "New Zealand Street", "whole": true },
+   { "street": "Queens Avenue", "whole": true },
+   { "street": "Rangihou Crescent", "whole": true },
+   { "street": "Robertson Street", "whole": true },
+   { "street": "Stewart Street", "whole": true },
+   { "street": "Thomas Street", "from": "Elizabeth Street", "to": "Macarthur Street" },
+   { "street": "Victoria Road", "from": "Elizabeth Street", "to": "Macarthur Street", "side": ["south"] }
+  ]},
+  { "permit": "Parramatta Area 05", "suburb": "North Parramatta", "centre": [151.0085, -33.8035], "radius": 600, "src": "parrapermit", "streets": [
+   { "street": "Abbey Lane", "whole": true },
+   { "street": "Albert Street", "from": "Brickfield Street", "to": "Buller Street" },
+   { "street": "Buller Street", "from": "Isabella Street", "to": "Victoria Road" },
+   { "street": "Grose Street", "from": "Brickfield Street", "to": "Macarthur Street" },
+   { "street": "Isabella Street", "from": "Brickfield Street", "to": "Buller Street" },
+   { "street": "Macarthur Street", "from": "Victoria Road", "to": "Fennell Street" },
+   { "street": "Ross Street", "from": "Brickfield Street", "to": "Buller Street" },
+   { "street": "Short Street", "whole": true },
+   { "street": "Victoria Road", "from": "Brickfield Street", "to": "Macarthur Street", "side": ["north"] }
+  ]},
+  { "permit": "Parramatta Area 06", "suburb": "North Parramatta", "centre": [151.004, -33.802], "radius": 600, "src": "parrapermit", "streets": [
+   { "street": "Albert Street", "from": "Church Street", "to": "Brickfield Street" },
+   { "street": "Brickfield Street", "from": "Victoria Road", "to": "Gladstone Street" },
+   { "street": "Fennell Street", "from": "Church Street", "to": "Brickfield Street" },
+   { "street": "Gladstone Street", "from": "Pennant Hills Road", "to": "Brickfield Street" },
+   { "street": "Grose Street", "from": "Church Street", "to": "Brickfield Street" },
+   { "street": "Harold Street", "from": "Church Street", "to": "Brickfield Street" },
+   { "street": "Isabella Street", "from": "Pennant Hills Road", "to": "Brickfield Street" },
+   { "street": "Ross Street", "from": "Sorrell Street", "to": "Brickfield Street" },
+   { "street": "Sorrell Street", "from": "Victoria Road", "to": "Pennant Hills Road" },
+   { "street": "Victoria Road", "from": "Sorrell Street", "to": "Brickfield Street", "side": ["north"] }
+  ]},
+  { "permit": "Parramatta Area 07", "suburb": "North Parramatta", "centre": [150.9995, -33.801], "radius": 600, "src": "parrapermit", "streets": [
+   { "street": "Albert Street", "from": "Fleet Street", "to": "Church Street" },
+   { "street": "Church Street", "from": "Albert Street", "to": "Dunlop Street" },
+   { "street": "Dunlop Street", "from": "Church Street", "to": "New Street" },
+   { "street": "Factory Street", "from": "Church Street", "to": "New Street" },
+   { "street": "Fennell Street", "from": "Fleet Street", "to": "Villiers Street" },
+   { "street": "Fleet Street", "from": "Fennell Street", "to": "Factory Street" },
+   { "street": "Galloway Street", "whole": true },
+   { "street": "Harold Street", "from": "O'Connell Street", "to": "Villiers Street" },
+   { "street": "New Street", "from": "Factory Street", "to": "Dunlop Street" },
+   { "street": "Northcott Lane", "whole": true },
+   { "street": "O'Connell Street", "from": "Factory Street", "to": "Dunlop Street" },
+   { "street": "Ross Street", "from": "O'Connell Street", "to": "Villiers Street" },
+   { "street": "Trott Street", "whole": true },
+   { "street": "Victoria Road", "from": "O'Connell Street", "to": "Villiers Street", "side": ["north"] },
+   { "street": "Villiers Street", "from": "Harold Street", "to": "Ross Street", "side": ["west"] }
+  ]},
+  { "permit": "Parramatta Area 08", "suburb": "North Parramatta", "centre": [151.0185, -33.8055], "radius": 700, "src": "parrapermit", "streets": [
+   { "street": "Broughton Street", "whole": true, "side": ["north"] },
+   { "street": "Gore Street", "whole": true },
+   { "street": "Gould Place", "whole": true },
+   { "street": "Grandview Street", "whole": true },
+   { "street": "Melville Street", "whole": true },
+   { "street": "Morton Street", "from": "Broughton Street", "to": "Victoria Road" },
+   { "street": "Pemberton Lane", "from": "Broughton Street", "to": "Victoria Road" },
+   { "street": "Tennyson Street", "whole": true },
+   { "street": "Thomas Street", "from": "Macarthur Street", "to": "James Ruse Drive" },
+   { "street": "Victoria Road", "from": "Macarthur Street", "to": "Grandview Street", "side": ["south"] },
+   { "street": "Wandsworth Street", "whole": true }
+  ]},
+  { "permit": "Parramatta Area 09", "suburb": "Parramatta", "centre": [151.001, -33.8245], "radius": 700, "src": "parrapermit", "streets": [
+   { "street": "Bobart Street", "whole": true },
+   { "street": "Crimea Street", "whole": true },
+   { "street": "Glebe Street", "whole": true },
+   { "street": "Inkerman Street", "whole": true },
+   { "street": "King Street", "whole": true },
+   { "street": "Lennox Street", "whole": true },
+   { "street": "Marsden Street", "from": "Boundary Street", "to": "Great Western Highway" },
+   { "street": "O'Reilly Street", "whole": true }
+  ]},
+  { "permit": "Parramatta Area 10", "suburb": "Northmead", "centre": [150.9945, -33.7855], "radius": 800, "src": "parrapermit", "streets": [
+   { "street": "Balmoral Road", "whole": true }
+  ]},
+  { "permit": "Parramatta Area 11", "suburb": "Dundas", "centre": [151.0405, -33.8065], "radius": 900, "src": "parrapermit", "streets": [
+   { "street": "Anderson Avenue", "whole": true },
+   { "street": "Dudley Street", "whole": true },
+   { "street": "Rippon Avenue", "whole": true }
+  ]},
+  { "permit": "Parramatta Area 03", "suburb": "Westmead", "centre": [150.9885, -33.8085], "radius": 700, "src": "parrapermit", "streets": [
+   { "street": "Alfred Street", "whole": true },
+   { "street": "Ashley Lane", "whole": true },
+   { "street": "Caroline Street", "whole": true },
+   { "street": "Central Avenue", "whole": true },
+   { "street": "Hainsworth Street", "whole": true },
+   { "street": "Helen Street", "whole": true },
+   { "street": "Jessie Street", "whole": true },
+   { "street": "Queens Road", "whole": true },
+   { "street": "Railway Parade", "whole": true }
+  ]},
+  { "permit": "Strathfield Area 20", "suburb": "Homebush", "centre": [151.0805, -33.8655], "radius": 650, "src": "strathrps", "streets": [
+   { "street": "Smallwood Avenue", "whole": true },
+   { "street": "Bridge Road", "from": "Parramatta Road", "to": "Loftus Crescent" },
+   { "street": "Crane Street", "whole": true },
+   { "street": "Loftus Crescent", "whole": true },
+   { "street": "Loftus Lane", "whole": true },
+   { "street": "Subway Lane", "whole": true },
+   { "street": "Knight Street", "whole": true },
+   { "street": "Station Street", "from": "Parramatta Road", "to": "Loftus Crescent" }
+  ]},
+  { "permit": "Strathfield Area 1", "suburb": "Strathfield", "centre": [151.0905, -33.8755], "radius": 450, "src": "strathrps", "streets": [
+   { "street": "Beresford Road", "from": "Homebush Road", "to": "Elva Street" },
+   { "street": "Duke Lane", "whole": true },
+   { "street": "Albert Road", "from": "Homebush Road", "to": "Pilgrim Avenue" },
+   { "street": "Pilgrim Avenue", "whole": true },
+   { "street": "Elva Street", "whole": true },
+   { "street": "Stewart Place", "whole": true },
+   { "street": "Ardittos Lane", "whole": true },
+   { "street": "Churchill Avenue", "from": "Homebush Road", "to": "Elva Street" },
+   { "street": "Redmyre Road", "from": "Homebush Road", "to": "Elva Street", "side": ["north"] },
+   { "street": "Homebush Road", "from": "Redmyre Road", "to": "Beresford Road", "side": ["east"] }
+  ]},
+  { "permit": "Strathfield Area 10", "suburb": "Strathfield", "centre": [151.0915, -33.881], "radius": 550, "src": "strathrps", "streets": [
+   { "street": "Redmyre Road", "from": "Homebush Road", "to": "The Boulevarde", "side": ["south"] },
+   { "street": "Margaret Street", "whole": true },
+   { "street": "Carrington Avenue", "from": "Vernon Street", "to": "The Boulevarde" },
+   { "street": "Brunswick Avenue", "whole": true },
+   { "street": "Alviston Street", "whole": true },
+   { "street": "Vernon Street", "whole": true },
+   { "street": "Nichol Parade", "whole": true },
+   { "street": "Strathfield Avenue", "from": "Nichol Parade", "to": "The Boulevarde" },
+   { "street": "Torrington Road", "from": "Nichol Parade", "to": "The Boulevarde" },
+   { "street": "Woodward Avenue", "whole": true },
+   { "street": "Parsons Avenue", "whole": true },
+   { "street": "Albyn Road", "from": "Homebush Road", "to": "The Boulevarde", "side": ["north"] },
+   { "street": "Homebush Road", "from": "Albyn Road", "to": "Redmyre Road", "side": ["east"] },
+   { "street": "The Boulevarde", "from": "Redmyre Road", "to": "Albyn Road", "side": ["west"] }
+  ]}
+ ]
+}

@@ -283,11 +283,29 @@ export async function fetchManual() {
     spec.sources.iwdec = 'Inner West Local Traffic Committee: https://innerwest.infocouncil.biz';
     log(`  Inner West minutes: ${list.length} read, ${d.entries.length} placed, skipped ${JSON.stringify(d.skipped)}`);
   } catch (e) { log(`  Inner West minutes: none (${e.message.split('\n')[0]})`); }
-  const pts = spec.streets.map((e) => e.near || e.area);
-  const pad = 0.006;
-  const [x0, y0, x1, y1] = bbox(pts);
-  const roads = await fetchRoads([x0 - pad, y0 - pad, x1 + pad, y1 + pad], { lanes: true }); // council decisions are often about laneways
-  log(`  manual rules: ${spec.streets.length} street stretches, ${roads.length} road segments`);
+  // Resident permit streets from council street guides and maps (no sign times: shown as permit areas).
+  try {
+    const ps = JSON.parse(await readFile(new URL('../../data/permit-streets.json', import.meta.url), 'utf8'));
+    Object.assign(spec.sources, ps.sources);
+    let n = 0;
+    for (const a of ps.areas) for (const s of a.streets) {
+      spec.streets.push({ street: s.street, suburb: a.suburb, side: s.side || ['both'], rules: null, permit: a.permit, src: a.src,
+        ...(s.whole ? { near: a.centre, radius: s.radius || a.radius } : { area: a.centre, from: s.from, to: s.to }) });
+      n++;
+    }
+    log(`  permit streets: ${n} from ${ps.areas.length} areas`);
+  } catch (e) { log(`  permit streets: none (${e.message.split('\n')[0]})`); }
+  // Roads for each cluster of entries (Randwick, the Inner West, Parramatta...), not one box over all of Sydney.
+  const cells = new Map();
+  for (const p of spec.streets.map((e) => e.near || e.area)) { const key = `${Math.floor(p[0] / 0.08)}:${Math.floor(p[1] / 0.08)}`; if (!cells.has(key)) cells.set(key, []); cells.get(key).push(p); }
+  const pad = 0.012, roads = [], seen = new Set();
+  for (const pts of cells.values()) {
+    const [x0, y0, x1, y1] = bbox(pts);
+    for (const r of await fetchRoads([x0 - pad, y0 - pad, x1 + pad, y1 + pad], { lanes: true })) { // council decisions are often about laneways
+      if (!seen.has(r.attributes.objectid)) { seen.add(r.attributes.objectid); roads.push(r); }
+    }
+  }
+  log(`  manual rules: ${spec.streets.length} street stretches, ${roads.length} road segments in ${cells.size} areas`);
   return { spec, roads };
 }
 const DIRS = { north: [0, 1], south: [0, -1], east: [1, 0], west: [-1, 0] };
@@ -335,7 +353,8 @@ export function buildManual(raw, reg) {
   };
   for (const e of raw.spec.streets) {
     const srcText = raw.spec.sources[e.src] ? raw.spec.sources[e.src].split(': http')[0] : e.src;
-    const k = reg.add({ rules: e.rules, q: 0, g: e.unrestrictedOutside === false ? 'free' : 'free', u: e.rules.length ? 0 : 1, src: e.date ? `${srcText}, ${e.date}` : srcText, text: e.text || '' });
+    // A permit street with no published sign times has no rule set: it shows as a permit area, never as a rule.
+    const k = e.rules == null ? -1 : reg.add({ rules: e.rules, q: 0, g: 'free', u: e.rules.length ? 0 : 1, src: e.date ? `${srcText}, ${e.date}` : srcText, text: e.text || '' });
     const centre = e.near || e.area;
     const paths = pathsNear(e.street, centre, e.radius ? e.radius + 300 : e.a ? 2500 : 1500);
     let A = null, B = null;
@@ -375,7 +394,7 @@ export function buildManual(raw, reg) {
           if (!cur[sd]) {
             const ang = (Math.atan2(sd * nx, sd * ny) * 180) / Math.PI;
             const sdName = ['North', 'North-east', 'East', 'South-east', 'South', 'South-west', 'West', 'North-west'][Math.round(((ang + 360) % 360) / 45) % 8] + ' side';
-            cur[sd] = { type: 'Feature', properties: { s: e.street, b: e.suburb, sd: sdName, k, z: e.beach ? 3 : 2, pa: e.permit || '', f15: 0, n: 0, src: 'man' }, geometry: { type: 'LineString', coordinates: [off(s0)] } };
+            cur[sd] = { type: 'Feature', properties: { s: e.street, b: e.suburb, sd: sdName, k, z: e.beach ? 3 : 2, pa: e.permit || '', f15: 0, n: 0, src: 'man', ...(k < 0 ? { ps: srcText } : {}) }, geometry: { type: 'LineString', coordinates: [off(s0)] } };
           }
           cur[sd].geometry.coordinates.push(off(s1));
         }
