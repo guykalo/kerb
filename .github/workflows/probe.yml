@@ -12,8 +12,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: sudo apt-get install -y -qq poppler-utils >/dev/null
-      - run: cd probe && node run.mjs
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+        continue-on-error: true
+      - run: cd probe && node run.mjs 2>&1 | tee run.log; mkdir -p out; cp run.log out/ || true
+        continue-on-error: true
       - run: |
           cd probe/out
           git init -q -b probe-out
