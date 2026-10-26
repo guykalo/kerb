@@ -91,6 +91,7 @@ jobs:
         run: node scripts/build-fines.mjs
       - name: Keep the published data for any city not built today
         run: |
+          mkdir -p public/data
           [ -f public/data/fines.json ] || curl -fsSL "$SITE/data/fines.json" -o public/data/fines.json || rm -f public/data/fines.json
           for c in mel bne per; do
             if [ ! -f "public/data/$c/meta.json" ]; then
