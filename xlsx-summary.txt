@@ -1,0 +1,45 @@
+===== dsf011.xlsx ['Report']
+--- Report (60, 9)
+     0                                        1              2            3          4            5          6             7                8
+0  NaN                                      NaN            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+1  NaN                         Parking offences            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+2  NaN                                      NaN            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+3  NaN                                      NaN            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+4  NaN                                      NaN            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+5  NaN                                   Notes:            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+6  NaN  1. Data at COB 01/10/2026. Report in...            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+7  NaN  2. Report contains all penalty notic...            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+8  NaN  3. Report is only as accurate as the...            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+9  NaN  4. Report includes data from the Rev...            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+10 NaN                                      NaN            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+11 NaN                              PARKING_IND              Y          NaN        NaN          NaN        NaN           NaN              NaN
+12 NaN                                      NaN            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+13 NaN      SELECT VALUES FROM THE DROPDOWN BOX            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+14 NaN                           ISSUING_AGENCY          (All)          NaN        NaN          NaN        NaN           NaN              NaN
+15 NaN                          SCHOOL_ZONE_IND          (All)          NaN        NaN          NaN        NaN           NaN              NaN
+16 NaN                                      NaN            NaN          NaN        NaN          NaN        NaN           NaN              NaN
+17 NaN                                      NaN            NaN  COUNCIL_IND     Values          NaN        NaN           NaN              NaN
+18 NaN                                      NaN            NaN      COUNCIL        NaN  NON COUNCIL        NaN  Total NUMBER  Total VALUE ($)
+19 NaN                          OFFENCE_FINYEAR  OFFENCE_MONTH       NUMBER  VALUE ($)       NUMBER  VALUE ($)           NaN              NaN
+20 NaN                                2026-2027            Sep       108319   22405970        11724    1862625        120043         24268595
+21 NaN                                      NaN            Aug       119195   24448945        13653    2233374        132848         26682319
+22 NaN                                      NaN            Jul       120327   24260197        13551    2295349        133878         26555546
+23 NaN                          2026-2027 Total            NaN       347841   71115112        38928    6391348        386769         77506460
+24 NaN                                2025-2026            Jun       115149   23092599        11778    1962604        126927         25055203
+25 NaN                                      NaN            May       117629   23912339        14412    2258512        132041         26170851
+26 NaN                                      NaN            Apr       105375   20605055        14227    2079364        119602         22684419
+27 NaN                                      NaN            Mar       114025   23032404        13887    2209412        127912         25241816
+28 NaN                                      NaN            Feb       102960   20905290        12304    1924863        115264         22830153
+29 NaN                                      NaN            Jan        98275   19295369         8641    1503932        106916         20799301
+30 NaN                                      NaN            Dec        91309   18177688         8560    1483522         99869         19661210
+31 NaN                                      NaN            Nov       108715   21259895        11233    1741444        119948         23001339
+32 NaN                                      NaN            Oct       114875   22142733        13386    2044519        128261         24187252
+33 NaN                                      NaN            Sep       111057   21304542        14198    2084873        125255         23389415
+34 NaN                                      NaN            Aug       104435   20668970        13037    2091128        117472         22760098
+35 NaN                                      NaN            Jul       110387   21333866        10201    1669803        120588         23003669
+36 NaN                          2025-2026 Total            NaN      1294191  255730750       145864   23053976       1440055        278784726
+37 NaN                                2024-2025            Jun       112289   21535928        12183    1931328        124472         23467256
+38 NaN                                      NaN            May       120408   23624287        14165    2159111        134573         25783398
+39 NaN                                      NaN            Apr       108924   21333492        14060    2109215        122984         23442707
+40 NaN                                      NaN            Mar       121308   24093635        13303    2117268        134611         26210903
+41 NaN                              
