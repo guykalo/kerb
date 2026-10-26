@@ -10,6 +10,9 @@ import {
 } from './rules.js';
 import { parsePart } from '../scripts/lib/parse-rules.mjs';
 import { initSnap, snapsToKerbs, initBoard, loadBoards } from './snap.js';
+import { initAnalytics } from './analytics.js';
+
+initAnalytics();
 
 const $ = (s) => document.querySelector(s);
 const DATA = './data/';

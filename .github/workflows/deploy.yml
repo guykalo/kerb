@@ -62,6 +62,7 @@ jobs:
           VITE_MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
           VITE_SIGN_READ_URL: ${{ secrets.VITE_SIGN_READ_URL }}
           VITE_SNAP_SHARE_URL: ${{ secrets.VITE_SNAP_SHARE_URL }}
+          VITE_CF_BEACON_TOKEN: ${{ secrets.VITE_CF_BEACON_TOKEN }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
