@@ -21,6 +21,9 @@ const BUSY = [
   [151.2415, -33.9165, 450], [151.2265, -33.9235, 350], [151.224, -33.909, 350], [151.2405, -33.9455, 400], [151.257, -33.921, 550],
   [151.2575, -33.9495, 450], [151.2675, -33.9135, 350], [151.231, -33.9175, 650], [151.239, -33.9195, 450], [151.231, -33.958, 250],
   [151.248, -33.963, 250], [151.2595, -33.9365, 300], [151.218, -33.903, 600],
+  // Around Sydney Airport (Bayside): stations, centres, the airport itself, Port Botany and the business parks
+  [151.1874, -33.9233, 500], [151.1935, -33.9300, 350], [151.1543, -33.9282, 550], [151.1467, -33.9366, 400], [151.1965, -33.9465, 450],
+  [151.172, -33.946, 1800], [151.215, -33.968, 1500], [151.226, -33.946, 600], [151.186, -33.917, 650], [151.1395, -33.9525, 450], [151.152, -33.966, 400],
   // Parklands and venues with their own (often paid) parking rules
   [151.233, -33.897, 1100], [151.2275, -33.9065, 650], [150.993, -33.8125, 750], [151.0255, -33.8255, 450],
 ];
@@ -28,6 +31,8 @@ export const LIKELY_FREE_COUNCILS = [
   { lga: 'PARRAMATTA', label: "City of Parramatta's permit areas street guide" },
   { lga: 'STRATHFIELD', label: "Strathfield Council's resident parking scheme maps" },
   { lga: 'RANDWICK', label: "Randwick Council's resident parking zone map" },
+  // Only the suburbs around the airport (Mascot, Botany, Eastlakes, Pagewood, Daceyville, Wolli Creek, Arncliffe).
+  { lga: 'BAYSIDE', label: "Bayside Council's resident parking scheme map", box: [151.135, -33.962, 151.235, -33.915] },
 ];
 
 export async function fetchLikelyFree(councils = LIKELY_FREE_COUNCILS) {
@@ -40,7 +45,8 @@ export async function fetchLikelyFree(councils = LIKELY_FREE_COUNCILS) {
     if (!f?.geometry?.rings) throw new Error(`no boundary for ${c.lga}`);
     const rings = f.geometry.rings;
     const xs = rings.flat().map((p) => p[0]), ys = rings.flat().map((p) => p[1]);
-    const roads = (await fetchRoads([Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]))
+    const bb = c.box || [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+    const roads = (await fetchRoads(bb))
       .filter((x) => x.attributes.functionhierarchy === 6 && x.geometry?.paths);
     out.push({ ...c, name: f.attributes.lganame, rings, roads: roads.map((x) => ({ n: [x.attributes.roadnamebase, x.attributes.roadnametype, x.attributes.roadnamesuffix].filter(Boolean).join(' '), p: x.geometry.paths })) });
     log(`  likely free: ${f.attributes.lganame}, ${roads.length} local road pieces`);
@@ -65,7 +71,7 @@ export function buildLikelyFree(raw, { existing = [] } = {}) {
     for (const rd of area.roads) for (const path of rd.p) {
       let run = [];
       const flush = () => { if (run.length > 1 && dist(run[0], run[run.length - 1]) > 25) { features.push({ type: 'Feature', properties: { s: titleCase(rd.n), b: '', k: -1, z: 0, pa: '', lk: 1, lks: area.label, f15: 0, n: 0, src: 'lf' }, geometry: { type: 'LineString', coordinates: run.map((c) => round(c)) } }); n++; } run = []; };
-      for (const p of path) { if (!inRings(p, area.rings) || busy(p) || covered(p)) flush(); else run.push(p); }
+      for (const p of path) { if (!inRings(p, area.rings) || (area.box && !(p[0] >= area.box[0] && p[0] <= area.box[2] && p[1] >= area.box[1] && p[1] <= area.box[3])) || busy(p) || covered(p)) flush(); else run.push(p); }
       flush();
     }
     log(`  likely free: ${area.name}, ${n} street pieces`);
