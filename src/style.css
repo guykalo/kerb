@@ -417,3 +417,11 @@ button.brand { font: inherit; cursor: pointer; position: relative; }
   .satbtn { display: none; }
   .snapbtn { bottom: calc(var(--vis, 250px) + 56px); width: 44px; height: 44px; }
 }
+
+/* Fines here */
+.fines .fine-rows { display: grid; gap: 2px; border-radius: var(--r); overflow: hidden; }
+.fines .fine-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; background: var(--surface-2); font-size: 14px; }
+.fines .fine-row b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fines .fine-row.now { background: color-mix(in srgb, var(--restricted) 14%, var(--surface-2)); }
+.fines .fine-row.now b { color: var(--restricted); }
+.fines .lvl { display: inline-block; color: #fff; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-right: 4px; vertical-align: 1px; }

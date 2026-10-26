@@ -84,8 +84,14 @@ jobs:
         if: steps.mode.outputs.full == 'true'
         continue-on-error: true
         run: npm run data:cities
+      # NSW parking fines: amounts by offence and fines per council (Revenue NSW open data).
+      - name: Build fines data
+        if: steps.mode.outputs.full == 'true'
+        continue-on-error: true
+        run: node scripts/build-fines.mjs
       - name: Keep the published data for any city not built today
         run: |
+          [ -f public/data/fines.json ] || curl -fsSL "$SITE/data/fines.json" -o public/data/fines.json || rm -f public/data/fines.json
           for c in mel bne per; do
             if [ ! -f "public/data/$c/meta.json" ]; then
               mkdir -p "public/data/$c"

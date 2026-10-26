@@ -959,6 +959,37 @@ function prDetail(cp) {
       <p class="note">From Transport for NSW's car park counters over the past week. Public holidays and school holidays will be quieter.</p>` : ''}`;
 }
 
+/* ---------- fines (NSW): what a mistake here costs, and how hard this council's rangers enforce ---------- */
+let FINES = null, finesLoading = null;
+function loadFines() {
+  if (CITY_ID !== 'syd' || FINES || finesLoading) return;
+  finesLoading = fetch(DATA + 'fines.json' + (META?.builtAt ? `?v=${encodeURIComponent(META.builtAt)}` : '')).then((r) => (r.ok ? r.json() : null)).then((j) => { FINES = j; if (j && typeof S.sel === 'number') renderDetail(); }).catch(() => {});
+}
+const FINE_FOR = [[/school/i, 83596], [/clearway/i, 82682], [/bus (zone|lane)/i, 82817], [/no stopping|yellow/i, 83595], [/no parking/i, 82740], [/loading/i, 82890], [/taxi/i, 83518], [/mobility|disab/i, 83517], [/motor ?(bike|cycle)/i, 83535], [/mail/i, 83631], [/truck/i, 83638]];
+const fineAmt = (codes) => { const os = codes.map((c) => FINES?.offences?.[c]).filter(Boolean); if (!os.length) return null; const lo = Math.min(...os.map((o) => o.amounts[0])), hi = Math.max(...os.map((o) => o.amounts[1])); return lo === hi ? money(lo) : `${money(lo)}–${money(hi)}`; };
+const inPoly = ([x, y], rings) => { let c = false; for (const ring of rings) for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) { const [xi, yi] = ring[i], [xj, yj] = ring[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c; } return c; };
+function councilAt(pt) { return pt && FINES?.councils?.find((c) => inPoly(pt, c.rings)); }
+function fineHTML(p, set, c) {
+  if (CITY_ID !== 'syd') return '';
+  if (!FINES) { loadFines(); return ''; }
+  const rows = [];
+  const seen = new Set();
+  const add = (label, codes, now) => { const a = fineAmt(codes); if (a && !seen.has(label)) { seen.add(label); rows.push({ label, a, now }); } };
+  const nowNote = c && c.ok === false ? String(c.why || '') : '';
+  for (const r of mergeOvernight(set?.rules || [])) {
+    if (r[6]) { const note = r[7] || 'No parking'; const hit = FINE_FOR.find(([re]) => re.test(note)); if (hit) add(`${note.replace(/\s*\(.*$/, '')}, ${r[2] === 0 && r[3] === 24 ? 'all day' : `${fmtTime(r[2])}-${fmtTime(r[3])}`} ${fmtDays(r[1])}`, [hit[1]], nowNote.startsWith(note)); }
+  }
+  if (set?.rules.some((r) => r[0] > 0 && r[0] < 24)) add('Staying longer than the sign allows', [92362, 92363, 92352, 92353], /limit/i.test(nowNote));
+  if (set?.rules.some((r) => r[4] !== 0)) add('Not paying the meter', [97244, 97245]);
+  const cn = councilAt(mids.get(p.id));
+  if (!rows.length && !cn) return '';
+  const lv = cn ? { 'very high': 'restricted', high: 'paid', medium: 'limit', low: 'free' }[cn.level] : '';
+  return `<div class="fines"><h3 class="h3">Fines here</h3>
+    ${rows.length ? `<div class="fine-rows">${rows.slice(0, 5).map((x) => `<div class="fine-row${x.now ? ' now' : ''}"><span>${x.label}${x.now ? ' <b>(right now)</b>' : ''}</span><b>${x.a}</b></div>`).join('')}</div>` : ''}
+    ${cn ? `<p class="plain"><span class="lvl" style="background:var(--${lv})">${cn.level[0].toUpperCase() + cn.level.slice(1)} ranger activity</span> ${cn.name} wrote ${cn.n.toLocaleString('en-AU')} parking fines in ${FINES.councilYear.replace('-20', '-')}, about ${cn.perKm2.toLocaleString('en-AU')} per square km (${cn.rank === 1 ? 'the most' : `number ${cn.rank}`} of ${FINES.of} Sydney councils).</p>` : ''}
+    <p class="note">Fine amounts from Revenue NSW's ${FINES.fineYear.replace('-20', '-')} penalty data (they usually go up a little each July). Two amounts mean it depends on the area. Fines by council from Revenue NSW open data.</p></div>`;
+}
+
 function renderDetail() {
   const f = typeof S.sel === 'number' ? byId.get(S.sel) : null;
   const cp = !f && CARPARKS.find((c) => c.id === S.sel);
@@ -980,6 +1011,7 @@ function renderDetail() {
         ${p.lk ? `<span class="big" style="color:var(--free)">$0?</span>` : c.ok ? `<span class="big" style="color:var(--${c.cost === 0 && !c.unknownRate ? 'free' : 'fg'})">${costText(c)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
       ${set ? `<div class="signhero"><div class="sh-cap">The sign${set.src ? '' : 's'} here</div><div class="plates big">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div></div>` : ''}
       <p class="plain">${v.why || plainNow(p, RULES, S.day, S.hour)}${p.f15 ? ' This street is in a free 15-minute zone, so a ticket gets you the first quarter hour free.' : ''}</p>
+      ${fineHTML(p, set, c)}
       ${set ? `<h3 class="h3">Across the week</h3>${weekHTML(p)}
       <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
