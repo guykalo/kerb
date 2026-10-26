@@ -1,0 +1,17 @@
+{
+ "at": "2026-10-26T09:15:55.393Z",
+ "cities": {
+  "syd": {
+   "error": "fetch failed"
+  },
+  "mel": {
+   "error": "fetch failed"
+  },
+  "bne": {
+   "error": "fetch failed"
+  },
+  "per": {
+   "error": "fetch failed"
+  }
+ }
+}
