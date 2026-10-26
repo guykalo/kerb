@@ -69,11 +69,10 @@ for (const [cid, [cname, dir]] of Object.entries(CITIES)) {
       if (set.rules.some((r) => r[4] !== 0)) meters++;
       if (lim.length) freeLimit++;
       paid.forEach((r) => rates.push(r[4]));
-      const st = streets.get(p.s) || streets.set(p.s, { n: 0, texts: new Map(), paid: [], freeNow: 0 }).get(p.s);
+      // Per street, count each sign (rule set) by how many stretches carry it.
+      const st = streets.get(p.s) || streets.set(p.s, { n: 0, sets: new Map() }).get(p.s);
       st.n++;
-      if (set.text) st.texts.set(set.text, (st.texts.get(set.text) || 0) + 1);
-      paid.forEach((r) => st.paid.push(r[4]));
-      if (lim.length) st.freeNow++;
+      st.sets.set(p.k, (st.sets.get(p.k) || 0) + 1);
     }
     if (meters + freeLimit + likely + permit < 10) continue;
     const near = C.filter((cp) => Array.isArray(cp.at) && Math.hypot((cp.at[0] - cx) * 92000, (cp.at[1] - cy) * 111000) < 900)
@@ -82,17 +81,31 @@ for (const [cid, [cname, dir]] of Object.entries(CITIES)) {
     const min = rates.length ? Math.min(...rates) : null, max = rates.length ? Math.max(...rates) : null;
     const title = `Parking in ${a.name}${a.name === cname ? '' : `, ${cname}`}: free streets, meter rates and car parks | Kerb`;
     const desc = `Where to park in ${a.name}: ${meters ? `${meters} metered stretches${min != null ? ` (${money(min)} to ${money(max)} an hour)` : ''}, ` : ''}${freeLimit ? `${freeLimit} free time-limited stretches, ` : ''}${near.length ? `${near.length} car parks nearby, ` : ''}from council open data. Check any street at any time on Kerb's live map.`;
-    const rows = [...streets.entries()].sort((x, y) => y[1].n - x[1].n).slice(0, 40).map(([s, st]) => {
-      const text = [...st.texts.entries()].sort((x, y) => y[1] - x[1])[0]?.[0] || '';
-      const pr = st.paid.length ? `<span class="paid">${money(Math.min(...st.paid))}${Math.max(...st.paid) > Math.min(...st.paid) ? `–${money(Math.max(...st.paid))}` : ''}/hr</span>` : st.freeNow ? '<span class="free">Free (time limit)</span>' : '';
-      return `<tr><td><b>${esc(s)}</b></td><td>${pr}</td><td><small>${esc(text.slice(0, 140))}</small></td></tr>`;
+    // What a driver can do on each street: the parking signs on it (free with a limit, or paid), most common first.
+    const fmt = (h) => { const H = Math.floor(h), m = Math.round((h - H) * 60); return `${H % 12 || 12}${m ? ':' + String(m).padStart(2, '0') : ''}${H < 12 || H === 24 ? 'am' : 'pm'}`; };
+    const D = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const days = (d) => { const s = d.join(); return s === '0,1,2,3,4,5,6' ? 'every day' : s === '1,2,3,4,5' ? 'Mon-Fri' : s === '1,2,3,4,5,6' ? 'Mon-Sat' : s === '0,6' ? 'Sat-Sun' : d.map((x) => D[x]).join(', '); };
+    const ruleWords = (r) => `${r[0] > 0 && r[0] < 24 ? `${r[0] < 1 ? `${Math.round(r[0] * 60)} min` : `${r[0]}P`} ` : ''}${r[4] > 0 ? `${money(r[4])}/hr` : r[4] < 0 ? 'meter' : 'free'} ${fmt(r[2])}-${fmt(r[3])} ${days(r[1])}`;
+    const usable = [];
+    for (const [s, st] of streets) {
+      let best = null;
+      for (const [k, n] of st.sets) { const set = R[k]; const park = set.rules.filter((r) => !r[6] && (r[4] !== 0 || (r[0] > 0 && r[0] < 24))); if (park.length && (!best || n > best.n)) best = { set, park, n }; }
+      if (!best) continue;
+      const paid = best.park.filter((r) => r[4] > 0).map((r) => r[4]);
+      usable.push({ s, n: st.n, paid, park: best.park, free: best.park.some((r) => r[4] === 0) });
+    }
+    usable.sort((x, y) => (y.free - x.free) || (y.n - x.n));
+    const rows = usable.slice(0, 40).map((u) => {
+      const pr = u.paid.length ? `<span class="paid">${money(Math.min(...u.paid))}${Math.max(...u.paid) > Math.min(...u.paid) ? `–${money(Math.max(...u.paid))}` : ''}/hr</span>` : u.free ? '<span class="free">Free</span>' : 'Meter';
+      return `<tr><td><b>${esc(u.s)}</b></td><td>${pr}</td><td><small>${esc(u.park.slice(0, 4).map(ruleWords).join('; '))}</small></td></tr>`;
     }).join('');
+    const noPark = streets.size - usable.length;
     const cps = near.map(({ cp, p }) => `<tr><td><b>${esc(cp.name)}</b>${cp.operator ? `<br><small>${esc(cp.operator)}</small>` : ''}</td><td>${p == null ? '<small>Rates not published</small>' : p === 0 ? '<span class="free">Free</span>' : `${cp.maxRates ? 'up to ' : ''}<b>${money(p)}</b>`}</td></tr>`).join('');
     const body = `<h1>Parking in ${esc(a.name)}</h1><p class="lead">${esc(cname)}. Free streets, meter rates and car park prices from council open data, updated nightly.</p>
 <a class="cta" href="${'../'.repeat(3)}?city=${cid}#at=${cy.toFixed(5)},${cx.toFixed(5)}">Open the live map of ${esc(a.name)}</a>
-<div class="stats">${meters ? `<div class="stat"><b>${meters}</b>metered stretches${min != null ? `<br><small>${money(min)}–${money(max)} an hour</small>` : ''}</div>` : ''}${freeLimit ? `<div class="stat"><b>${freeLimit}</b>free stretches with a time limit</div>` : ''}${permit ? `<div class="stat"><b>${permit}</b>resident permit stretches</div>` : ''}${likely ? `<div class="stat"><b>${likely}</b>streets with no published limit<br><small>probably free, check the sign</small></div>` : ''}</div>
+<div class="stats">${meters ? `<div class="stat"><b>${meters}</b>metered stretches${min != null ? `<br><small>${min === max ? money(min) : `${money(min)}–${money(max)}`} an hour</small>` : ''}</div>` : ''}${freeLimit ? `<div class="stat"><b>${freeLimit}</b>free stretches with a time limit</div>` : ''}${permit ? `<div class="stat"><b>${permit}</b>resident permit stretches</div>` : ''}${likely ? `<div class="stat"><b>${likely}</b>streets with no published limit<br><small>probably free, check the sign</small></div>` : ''}</div>
 ${near.length ? `<h2>Car parks nearby</h2><p class="note">Cheapest published price for 2 hours on a weekday from 10am.</p><table><tr><th>Car park</th><th>2 hours</th></tr>${cps}</table>` : ''}
-<h2>Streets</h2><table><tr><th>Street</th><th>Price</th><th>What the signs say</th></tr>${rows}</table>`;
+${rows ? `<h2>Streets where you can park</h2><p class="note">The main parking sign on each street, from council data. Free means free within the time limit shown.</p><table><tr><th>Street</th><th>Price</th><th>Sign</th></tr>${rows}</table>` : ''}${noPark > 0 ? `<p class="note">${noPark} more streets here only have no parking, no stopping, loading or permit zones published.</p>` : ''}`;
     await mkdir(`dist/${path}`, { recursive: true });
     await writeFile(`dist/${path}index.html`, page(title, desc, body, path));
     pages.push({ path, name: a.name, city: cname, cid, n: a.kerbs.length });
