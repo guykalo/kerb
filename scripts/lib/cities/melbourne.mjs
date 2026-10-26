@@ -78,7 +78,7 @@ export function buildMelbourne(raw, reg) {
   const bySeg = new Map();
   for (const b of raw.bays) { if (!bySeg.has(b[0])) bySeg.set(b[0], []); bySeg.get(b[0]).push(b); }
   const features = [];
-  const stats = { sensorZone: 0, payStay: 0, oneZone: 0, unknown: 0 };
+  const stats = { sensorZone: 0, sideZone: 0, payStay: 0, oneZone: 0, unknown: 0 };
   for (const [seg, pts] of bySeg) {
     const name = titleCase(String(pts[0][2] || '').split(/ between /i)[0]);
     const cx = pts.reduce((a, p) => a + p[3], 0) / pts.length, cy = pts.reduce((a, p) => a + p[4], 0) / pts.length, k = kx(cy);
@@ -97,17 +97,25 @@ export function buildMelbourne(raw, reg) {
       list.sort((a, b) => a.along - b.along);
       // Bays without a sensor take the zone of the nearest bay that has one, within 30 m.
       for (const q of list) if (q.zone == null) { let best = null; for (const o of list) if (o.zone != null && Math.abs(o.along - q.along) < 30 && (!best || Math.abs(o.along - q.along) < Math.abs(best.along - q.along))) best = o; if (best) q.zone = best.zone; }
+      // Still no zone: if every sensor bay on this side of the block is in one zone, and the council links that
+      // zone to this block, the bays between them are in it too.
+      const sideZones = new Set(list.filter((q) => q.sensor).map((q) => q.zone));
+      if (sideZones.size === 1) { const z = [...sideZones][0]; if (zonesBySeg.get(seg)?.has(z)) for (const q of list) if (q.zone == null) { q.zone = z; q.side = 1; } }
       const runs = [];
       for (const q of list) { const last = runs[runs.length - 1]; if (last && q.along - last[last.length - 1].along < 25 && q.zone === last[0].zone) last.push(q); else runs.push([q]); }
       for (const run of runs) {
         let rules = null, how = '';
-        if (run[0].zone != null) { rules = zoneRules(run[0].zone, seg); how = 'sensorZone'; }
+        if (run[0].zone != null) { rules = zoneRules(run[0].zone, seg); how = run.some((q) => q.side) ? 'sideZone' : 'sensorZone'; }
         if (!rules && payZonesBySeg.get(seg)?.size) {
           // Several Pay Stay zones on one segment (usually the two sides): fine if they all say the same thing.
           const opts = [...new Set([...payZonesBySeg.get(seg)].map((z) => JSON.stringify(payRules(z))))];
           if (opts.length === 1) { rules = JSON.parse(opts[0]); how = 'payStay'; }
         }
-        if (!rules && zonesBySeg.get(seg)?.size === 1) { rules = zoneRules([...zonesBySeg.get(seg)][0], seg); how = 'oneZone'; }
+        if (!rules && zonesBySeg.get(seg)?.size) {
+          // Every zone the council links to this block says the same thing: that's the rule, whichever side.
+          const opts = [...new Set([...zonesBySeg.get(seg)].map((z) => JSON.stringify(zoneRules(z, seg))))];
+          if (opts.length === 1 && opts[0] !== 'null') { rules = JSON.parse(opts[0]); how = 'oneZone'; }
+        }
         if (!rules || !rules.length) { stats.unknown += run.length; continue; }
         stats[how] += run.length;
         const text = run[0].zone != null ? (platesByZone.get(run[0].zone) || []).map((p) => `${p.restriction_display} ${p.restriction_days} ${String(p.time_restrictions_start).slice(0, 5)}-${String(p.time_restrictions_finish).slice(0, 5)}`).join('; ') : '';
@@ -123,6 +131,6 @@ export function buildMelbourne(raw, reg) {
     }
   }
   const bays = raw.sensors.map((s) => [String(s[0]), s[2], s[3]]);
-  log(`  melbourne: ${features.length} kerb runs; bays placed by sensor zone ${stats.sensorZone}, by Pay Stay ${stats.payStay}, by single zone ${stats.oneZone}, unknown ${stats.unknown}`);
+  log(`  melbourne: ${features.length} kerb runs; bays placed by sensor zone ${stats.sensorZone}, by the side's zone ${stats.sideZone}, by Pay Stay ${stats.payStay}, by single zone ${stats.oneZone}, unknown ${stats.unknown}`);
   return { features, carparks: [], bays };
 }
