@@ -63,12 +63,24 @@ function bayLine(ring) {
 export function buildPerth(raw, reg) {
   const features = [];
   let skipped = 0;
+  // Each restriction on a bay is its own polygon ("explode"): the same bay can have a Mon-Sat polygon and a
+  // Sunday one. Put the polygons of one bay back together by where they sit.
+  const bays = new Map();
   for (const b of raw.bays) {
     const r = perthRules(b.RESTRICT_DESC, b.FEE);
     const line = bayLine(b.ring);
     if (!r || !r.rules.length || !line) { skipped++; continue; }
-    const k = reg.add({ rules: r.rules, q: 0, g: r.g, u: 0, src: 'City of Perth parking bay restrictions (open data, CC BY)', text: String(b.RESTRICT_DESC || '').replace(/\s+/g, ' ').trim() });
-    const mid = [(line[0][0] + line[1][0]) / 2, (line[0][1] + line[1][1]) / 2], near = nearestOnLines(mid, raw.roads || [], 30);
+    const mid = [(line[0][0] + line[1][0]) / 2, (line[0][1] + line[1][1]) / 2];
+    const key = `${Math.round(mid[0] * 40000)}:${Math.round(mid[1] * 40000)}`; // ~2.5 m cells
+    if (!bays.has(key)) bays.set(key, { line, mid, parts: [] });
+    bays.get(key).parts.push({ r, text: String(b.RESTRICT_DESC || '').replace(/\s+/g, ' ').trim() });
+  }
+  for (const { line, mid, parts } of bays.values()) {
+    const uniq = [...new Map(parts.map((p) => [p.text, p])).values()];
+    const rules = uniq.flatMap((p) => p.r.rules);
+    const g = uniq.some((p) => p.r.g === 'free') ? 'free' : 'unknown';
+    const k = reg.add({ rules, q: 0, g, u: 0, src: 'City of Perth parking bay restrictions (open data, CC BY)', text: uniq.map((p) => p.text).join('; ') });
+    const near = nearestOnLines(mid, raw.roads || [], 30);
     features.push({ type: 'Feature', properties: { s: near?.road.name || 'Street parking', b: 'Perth', sd: sideName(mid, near), k, z: 1, pa: '', f15: 0, n: 1, src: 'per' }, geometry: { type: 'LineString', coordinates: line } });
   }
   const carparks = raw.carparks.map((c) => ({

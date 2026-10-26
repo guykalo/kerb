@@ -95,7 +95,7 @@ const DAYN = { SUN: 0, MON: 1, TUE: 2, WED: 3, THU: 4, FRI: 5, SAT: 6 };
 const ALL = [0, 1, 2, 3, 4, 5, 6];
 function dayRange(a, b) { const out = []; for (let d = DAYN[a]; ; d = (d + 1) % 7) { out.push(d); if (d === DAYN[b]) break; } return out; }
 function readDays(s) {
-  const t = s.toUpperCase().replace(/\s*-\s*/g, '-');
+  const t = s.toUpperCase().replace(/\s*-\s*/g, '-').replace(/\bM-F(RI)?\b/g, 'MON-FRI').replace(/\bS-S\b/g, 'SAT-SUN');
   if (/\b7 DAYS|DAILY|ALL DAYS|AT ALL TIMES|ANY ?TIME/.test(t)) return ALL;
   const out = new Set();
   let found = false;
@@ -146,4 +146,20 @@ export function joinDays(rules) {
   const m = new Map();
   for (const r of rules) { const k = JSON.stringify([r[0], r[2], r[3], r[4], r[5], r[6], r[7], r[8]]); if (!m.has(k)) m.set(k, [r[0], [], ...r.slice(2)]); m.get(k)[1].push(...r[1]); }
   return [...m.values()].map((r) => { r[1] = [...new Set(r[1])].sort(); return r; });
+}
+
+// Drop points within `tol` metres of the line between their neighbours (Douglas-Peucker), to keep files small.
+export function simplify(pts, tol = 1.5) {
+  if (pts.length < 3) return pts;
+  const k = kx(pts[0][1]);
+  const keep = new Uint8Array(pts.length); keep[0] = keep[pts.length - 1] = 1;
+  const stack = [[0, pts.length - 1]];
+  while (stack.length) {
+    const [a, b] = stack.pop();
+    const ax = pts[a][0] * k, ay = pts[a][1] * KY, bx = pts[b][0] * k, by = pts[b][1] * KY, L = Math.hypot(bx - ax, by - ay) || 1;
+    let best = 0, bi = -1;
+    for (let i = a + 1; i < b; i++) { const d = Math.abs((bx - ax) * (ay - pts[i][1] * KY) - (ax - pts[i][0] * k) * (by - ay)) / L; if (d > best) { best = d; bi = i; } }
+    if (best > tol) { keep[bi] = 1; stack.push([a, bi], [bi, b]); }
+  }
+  return pts.filter((_, i) => keep[i]);
 }
