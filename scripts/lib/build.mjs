@@ -48,7 +48,7 @@ export function buildData(raw) {
     if (!rules.length) continue;
     const q = quarterIds.has(a.Meter_ID) ? 1 : 0;
     const key = JSON.stringify([rules, q]);
-    if (!ruleKey.has(key)) { ruleKey.set(key, ruleSets.length); ruleSets.push({ rules: rules.map(({ p, d, f: from, t, r, ph }) => [p, d, from, t, r, ph ? 1 : 0]), q, text: a.Popup }); }
+    if (!ruleKey.has(key)) { ruleKey.set(key, ruleSets.length); ruleSets.push({ rules: rules.map(({ p, d, f: from, t, r, ph }) => [p, d, from, t, r, ph ? 1 : 0]), q, text: a.Popup, src: 'City of Sydney parking meters (open data)' }); }
     pts.push({ p: [f.geometry.x, f.geometry.y], street: norm(a.Street), suburb: a.Suburb, k: ruleKey.get(key), n: a.ApproxPaySpaces || 0, id: a.Location_ID });
   }
 
@@ -154,7 +154,7 @@ export function buildData(raw) {
     const remap = new Map();
     const kOf = (k) => {
       if (k < 0) return k;
-      if (!remap.has(k)) { const key = JSON.stringify([carry.rules[k].rules, carry.rules[k].q || 0]); if (!ruleKey.has(key)) { ruleKey.set(key, ruleSets.length); ruleSets.push(carry.rules[k]); } remap.set(k, ruleKey.get(key)); }
+      if (!remap.has(k)) { const key = JSON.stringify([carry.rules[k].rules, carry.rules[k].q || 0]); if (!ruleKey.has(key)) { ruleKey.set(key, ruleSets.length); ruleSets.push({ src: 'City of Sydney parking meters (open data)', ...carry.rules[k] }); } remap.set(k, ruleKey.get(key)); }
       return remap.get(k);
     };
     // Keep one kerb per piece of street (a metered copy beats a blank one).

@@ -6,7 +6,7 @@ import { stateAt, costFor } from '../src/rules.js';
 
 const BASE = process.argv[2] || 'https://guykalo.github.io/kerb/data/';
 const CITIES = {
-  syd: { dir: '', box: [150.5, -34.2, 151.5, -33.4], cores: [['Sydney CBD', 151.2073, -33.8688, 900], ['Parramatta CBD', 151.0035, -33.8155, 500], ['Bondi Junction', 151.2475, -33.8915, 350], ['Chatswood', 151.1815, -33.7968, 350], ['Mascot station', 151.1874, -33.9233, 300]] },
+  syd: { dir: '', box: [150.4, -35.0, 151.6, -33.3], cores: [['Sydney CBD', 151.2073, -33.8688, 900], ['Parramatta CBD', 151.0035, -33.8155, 500], ['Bondi Junction', 151.2475, -33.8915, 350], ['Chatswood', 151.1815, -33.7968, 350], ['Mascot station', 151.1874, -33.9233, 300]] },
   mel: { dir: 'mel/', box: [144.3, -38.6, 145.8, -37.3], cores: [['Melbourne CBD', 144.9631, -37.8136, 700]] },
   bne: { dir: 'bne/', box: [152.5, -28, 153.6, -26.9], cores: [['Brisbane CBD', 153.0251, -27.4698, 600], ['Fortitude Valley', 153.0345, -27.4575, 300]] },
   per: { dir: 'per/', box: [115.4, -32.6, 116.4, -31.4], cores: [['Perth CBD', 115.8605, -31.9523, 600]] },

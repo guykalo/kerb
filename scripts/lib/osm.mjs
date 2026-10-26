@@ -172,6 +172,7 @@ export function buildOsmParking(raw, reg, { areaNotes = [] } = {}) {
         if (cond === 'ticket') st.fee = 'yes';
       }
       if (st[''] === undefined) continue;
+      if (!t.name) { skipped['no street name'] = (skipped['no street name'] || 0) + 1; continue; } // car park aisles and driveways
       const out = sideRules(st);
       if (out.skip) { skipped[out.skip] = (skipped[out.skip] || 0) + 1; continue; }
       const text = out.unrestricted ? 'Unrestricted' : out.rules.map(ruleText).join('; ');
