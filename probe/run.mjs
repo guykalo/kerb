@@ -1,4 +1,4 @@
-// Probe round 6: City of Parramatta Traffic Committee items, from council agendas (businesspapers.parracity.nsw.gov.au).
+// Probe round 7: Strathfield Council meeting papers -> Local Transport Forum / traffic items (Homebush, Strathfield).
 import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 await mkdir('out', { recursive: true });
@@ -6,69 +6,46 @@ await mkdir('tmp', { recursive: true });
 const log = [];
 const say = (...a) => { console.log(...a); log.push(a.join(' ')); };
 const UA = { 'User-Agent': 'Mozilla/5.0 (Kerb parking map; github.com/guykalo/kerb)' };
-const BP = 'https://businesspapers.parracity.nsw.gov.au/';
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const text = (html) => html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<\/(p|div|tr|li|h\d)>/gi, '\n').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;|&lsquo;/g, "'").replace(/&quot;|&ldquo;|&rdquo;/g, '"').replace(/&ndash;|&mdash;/g, '-').replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n');
+const BASE = 'https://www.strathfield.nsw.gov.au';
+const get = async (u) => { const r = await fetch(u, { headers: UA, signal: AbortSignal.timeout(120000) }); if (!r.ok) throw new Error(`HTTP ${r.status}`); return r; };
+const abs = (h) => new URL(h.replace(/&amp;/g, '&'), BASE).href;
 
-// 1. Meeting list per year (the page's own View form).
-const r0 = await fetch(BP, { headers: UA });
-const cookie = (r0.headers.get('set-cookie') || '').split(';')[0];
-const html = await r0.text();
-const urls = new Set([...html.matchAll(/URL=(Open\/[^"&'\s]+)/g)].map((m) => m[1]));
-const hidden = (h) => Object.fromEntries([...h.matchAll(/<input[^>]+type="hidden"[^>]*>/g)].map((m) => [/name="([^"]+)"/.exec(m[0])?.[1], /value="([^"]*)"/.exec(m[0])?.[1] || '']).filter(([k]) => k));
-const years = [...html.matchAll(/<option[^>]*value="(20\d\d)"/g)].map((m) => m[1]);
-say('years offered', years.join(' '));
-for (const y of years.filter((x) => +x >= 2017)) {
-  const body = new URLSearchParams({ ...hidden(html), ddlCommittee: '1', ddlYear: y, ddlMonth: '0', btnView: 'View' });
+// 1. Every meeting page, following the list's pagination.
+const meetingPages = new Set(), listPages = new Set([`${BASE}/Council/Council-Meetings`]), done = new Set();
+while ([...listPages].some((p) => !done.has(p))) {
+  const p = [...listPages].find((x) => !done.has(x)); done.add(p);
   try {
-    const r = await fetch(BP, { method: 'POST', body, headers: { ...UA, 'Content-Type': 'application/x-www-form-urlencoded', Cookie: cookie, Referer: BP } });
-    const h = await r.text();
-    const before = urls.size;
-    for (const m of h.matchAll(/URL=(Open\/[^"&'\s]+)/g)) urls.add(m[1]);
-    say('year', y, r.status, 'new docs', urls.size - before);
-    if (urls.size === before) await writeFile(`out/bp-${y}.html`, h);
-  } catch (e) { say('year failed', y, e.message); }
-  await sleep(1000);
+    const h = await (await get(p)).text();
+    for (const m of h.matchAll(/href="([^"]*Council-Meetings\/[^"#?]+)"/g)) { const u = abs(m[1]); if (!/Council-Meetings-Live|Council-Meetings\/?$/i.test(u)) meetingPages.add(u); }
+    for (const m of h.matchAll(/href="([^"]*Council-Meetings\?[^"]*page[^"]*)"/gi)) listPages.add(abs(m[1]));
+  } catch (e) { say('list failed', p, e.message); }
+  if (done.size > 40) break;
 }
-for (let y = 2024; y <= 2026; y++) for (let m = 1; m <= 12; m++) {
-  try { const x = await (await fetch(`${BP}Sitemap/Open/${y}/${String(m).padStart(2, '0')}/sitemap.xml`, { headers: UA })).text(); for (const u of x.matchAll(/URL=(Open\/[^<"&\s]+)/g)) urls.add(u[1]); } catch { /* none */ }
+say('list pages', done.size, 'meetings', meetingPages.size);
+// 2. Agenda / minutes PDFs from each meeting page.
+const pdfs = new Map();
+for (const mp of meetingPages) {
+  try {
+    const h = await (await get(mp)).text();
+    for (const m of h.matchAll(/href="([^"]+\.pdf)"[^>]*>([^<]*)/gi)) { const u = abs(m[1]); if (/agenda|minutes|attachment|business/i.test(u + m[2])) pdfs.set(u, { meeting: mp.split('/').pop(), label: m[2].trim() }); }
+  } catch (e) { say('meeting failed', mp, e.message); }
 }
-await writeFile('out/bp-all-urls.txt', [...urls].sort().join('\n'));
-// 2. Council agendas: one document per meeting (web page preferred, else the PDF with attachments).
-const meetings = new Map();
-for (const u of urls) {
-  const m = /Open\/\d{4}\/\d\d\/(OC|SP)_(\d{8})_AGN_(\d+)(_AT)?(_SUP)?(_WEB)?\.(htm|PDF)$/i.exec(u);
-  if (!m || m[5]) continue;
-  const key = `${m[1]}_${m[2]}`;
-  const rank = (m[6] ? 4 : 0) + (/htm/i.test(m[7]) ? 2 : 0) + (m[4] ? 1 : 0);
-  if (!meetings.has(key) || meetings.get(key).rank < rank) meetings.set(key, { u, rank, date: m[2] });
-}
-say('meetings', meetings.size);
+say('pdfs', pdfs.size);
+await writeFile('out/strath-pdfs.json', JSON.stringify([...pdfs], null, 1));
+// 3. Traffic items: pages around "Local Transport Forum", "Traffic Committee", "parking restriction".
 const items = [];
-let i = 0;
-for (const [key, { u, date }] of [...meetings].sort()) {
-  i++;
-  let t = '';
+for (const [u, info] of pdfs) {
+  if (!/agenda|attachment|business/i.test(u + info.label)) continue;
   try {
-    const r = await fetch(`${BP}RedirectToDoc.aspx?URL=${u}`, { headers: UA, signal: AbortSignal.timeout(300000) });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    if (/\.pdf$/i.test(u)) { await writeFile('tmp/a.pdf', Buffer.from(await r.arrayBuffer())); execFileSync('pdftotext', ['-layout', 'tmp/a.pdf', 'tmp/a.txt']); t = await readFile('tmp/a.txt', 'utf8'); }
-    else t = text(await r.text());
-  } catch (e) { say('doc failed', u, e.message); continue; }
-  // Traffic Committee items: "ITEM 2311 A1 - 28 CAMBRIDGE STREET, EPPING - ..." up to the next item.
-  const flat = t.replace(/\r/g, '');
-  const heads = [...flat.matchAll(/ITEM\s+(\d{4})\s+([AB]\d+)\s*[-–]\s*([^\n]{5,200})/g)];
-  const got = new Map();
-  for (let h = 0; h < heads.length; h++) {
-    const id = `${heads[h][1]} ${heads[h][2]}`;
-    const body = flat.slice(heads[h].index, heads[h + 1] ? heads[h + 1].index : heads[h].index + 8000).slice(0, 8000);
-    if (!/park|stopping|loading|zone|\dP\b|permit|clearway|meter/i.test(body)) continue;
-    const prev = got.get(id);
-    got.set(id, { id, title: heads[h][3].trim(), text: (prev ? prev.text + '\n---\n' : '') + body.replace(/[ \t]+/g, ' ') });
-  }
-  for (const v of got.values()) items.push({ meeting: key, date: `${date.slice(0, 2)}/${date.slice(2, 4)}/${date.slice(4)}`, doc: u, ...v });
-  say(i, key, u.split('/').pop(), 'chars', t.length, 'items', got.size);
+    await writeFile('tmp/a.pdf', Buffer.from(await (await get(u)).arrayBuffer()));
+    execFileSync('pdftotext', ['-layout', 'tmp/a.pdf', 'tmp/a.txt']);
+    const t = await readFile('tmp/a.txt', 'utf8');
+    const pages = t.split('\f');
+    const hit = pages.map((p, i) => [i, p]).filter(([, p]) => /Local Transport Forum|Traffic Committee|Local Traffic/i.test(p) && /park|stopping|\dP\b|loading|zone/i.test(p));
+    for (const [i] of hit) items.push({ meeting: info.meeting, doc: u, page: i + 1, text: pages.slice(i, i + 2).join('\n').replace(/[ \t]+/g, ' ').slice(0, 9000) });
+    say(info.meeting, u.split('/').pop(), 'pages', pages.length, 'hits', hit.length);
+  } catch (e) { say('pdf failed', u, e.message); }
 }
-await writeFile('out/parra-traffic-items.json', JSON.stringify(items, null, 1));
-say('traffic items', items.length);
+await writeFile('out/strath-traffic-items.json', JSON.stringify(items, null, 1));
+say('strathfield items', items.length);
 await writeFile('out/log.txt', log.join('\n'));
