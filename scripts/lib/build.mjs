@@ -252,13 +252,14 @@ export function buildData(raw) {
   const tally = {};
   for (const f of kerbGeo.features) {
     const rs = ruleSets[f.properties.k];
-    if (!rs || !/traffic committee/i.test(rs.src || '')) continue;
+    if (!rs || !/traffic committee|transport forum/i.test(rs.src || '')) continue;
     for (const part of String(rs.text || '').split(';')) {
       const m = /permit holders excepted,?\s*area\s+([A-Z0-9]+)/i.exec(part);
       if (!m) continue;
       const sign = part.replace(/,?\s*permit holders excepted.*$/i, '').replace(/\s+/g, ' ').trim();
       if (/ticket/i.test(sign) || !sign) continue;
-      const a = (tally[m[1].toUpperCase()] ||= {}); a[sign] = (a[sign] || 0) + 1;
+      const pre = /^City of Parramatta/i.test(rs.src) ? 'PARRAMATTA AREA ' : /^Strathfield/i.test(rs.src) ? 'STRATHFIELD AREA ' : '';
+      const a = (tally[pre + m[1].toUpperCase()] ||= {}); a[sign] = (a[sign] || 0) + 1;
     }
   }
   const permitPatterns = {};

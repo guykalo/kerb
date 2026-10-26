@@ -283,6 +283,17 @@ export async function fetchManual() {
     spec.sources.iwdec = 'Inner West Local Traffic Committee: https://innerwest.infocouncil.biz';
     log(`  Inner West minutes: ${list.length} read, ${d.entries.length} placed, skipped ${JSON.stringify(d.skipped)}`);
   } catch (e) { log(`  Inner West minutes: none (${e.message.split('\n')[0]})`); }
+  // City of Parramatta Traffic Committee and Strathfield Local Transport Forum decisions, read from council papers.
+  for (const [file, src, label] of [['decisions-parra.json', 'parradec', 'City of Parramatta Traffic Committee: https://businesspapers.parracity.nsw.gov.au'], ['decisions-strath.json', 'strathdec', 'Strathfield Council Local Transport Forum (council papers): https://www.strathfield.nsw.gov.au/Council/Council-Meetings']]) {
+    try {
+      const { minutesToEntries } = await import('./decisions.mjs');
+      const list = JSON.parse(await readFile(new URL(`../../data/${file}`, import.meta.url), 'utf8'));
+      const d = minutesToEntries(list, src);
+      spec.streets.push(...d.entries);
+      spec.sources[src] = label;
+      log(`  ${file}: ${list.length} read, ${d.entries.length} placed, skipped ${JSON.stringify(d.skipped)}`);
+    } catch (e) { log(`  ${file}: none (${e.message.split('\n')[0]})`); }
+  }
   // Resident permit streets from council street guides and maps (no sign times: shown as permit areas).
   try {
     const ps = JSON.parse(await readFile(new URL('../../data/permit-streets.json', import.meta.url), 'utf8'));

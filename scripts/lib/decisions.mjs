@@ -25,9 +25,21 @@ export const SUBURBS = {
   sydenham: [151.167, -33.916], tempe: [151.159, -33.924], 'summer hill': [151.138, -33.892], ashfield: [151.126, -33.889],
   croydon: [151.115, -33.882], 'croydon park': [151.107, -33.897], haberfield: [151.139, -33.88], 'dobroyd point': [151.145, -33.873],
   'hurlstone park': [151.132, -33.909], ashbury: [151.12, -33.898],
+  // City of Parramatta
+  parramatta: [151.003, -33.815], 'north parramatta': [151.005, -33.801], 'harris park': [151.009, -33.822], rosehill: [151.02, -33.822],
+  granville: [151.012, -33.833], 'south granville': [151.01, -33.856], westmead: [150.987, -33.807], northmead: [150.996, -33.786],
+  'north rocks': [151.017, -33.773], rydalmere: [151.035, -33.812], ermington: [151.055, -33.812], 'melrose park': [151.07, -33.815],
+  dundas: [151.034, -33.802], 'dundas valley': [151.053, -33.788], telopea: [151.042, -33.794], oatlands: [151.027, -33.795],
+  carlingford: [151.048, -33.778], epping: [151.082, -33.773], eastwood: [151.08, -33.791], beecroft: [151.065, -33.749],
+  'winston hills': [150.98, -33.776], 'old toongabbie': [150.97, -33.786], toongabbie: [150.952, -33.788], 'constitution hill': [150.976, -33.791],
+  wentworthville: [150.972, -33.807], 'mays hill': [150.992, -33.822], camellia: [151.026, -33.818], 'sydney olympic park': [151.069, -33.847],
+  'wentworth point': [151.074, -33.828], newington: [151.056, -33.838], silverwater: [151.047, -33.835], 'parramatta park': [150.99, -33.813],
+  // Strathfield
+  homebush: [151.083, -33.866], 'homebush west': [151.068, -33.865], strathfield: [151.093, -33.876], 'strathfield south': [151.083, -33.892],
+  'north strathfield': [151.09, -33.859], belfield: [151.084, -33.904], greenacre: [151.06, -33.904], flemington: [151.07, -33.865],
 };
 // Entries read from Inner West committee minutes (data/decisions-iw.json) into map entries.
-export function minutesToEntries(list) {
+export function minutesToEntries(list, src = 'iwdec') {
   const out = [], skipped = { place: 0, sign: 0, suburb: 0 };
   for (const e of list) {
     const area = SUBURBS[String(e.suburb || '').toLowerCase()];
@@ -38,7 +50,7 @@ export function minutesToEntries(list) {
     if (!unrestricted && !rules.length) { skipped.sign++; continue; }
     if (/TICKET|METER/i.test(e.sign || '')) continue; // paid kerbs come from the meter list
     const side = (e.side || []).map((x) => String(x).toLowerCase());
-    out.push({ street: e.street, suburb: e.suburb, area, side: side.length ? side : ['both'], ...(e.a && e.b ? { a: e.a, b: e.b } : { from: e.from, to: e.to }), rules, text: unrestricted ? 'Unrestricted' : e.sign, src: 'iwdec', date: e.date, ref: e.ref });
+    out.push({ street: e.street, suburb: e.suburb, area, side: side.length ? side : ['both'], ...(e.a && e.b ? { a: e.a, b: e.b } : { from: e.from, to: e.to }), rules, text: unrestricted ? 'Unrestricted' : e.sign, src, date: e.date, ref: e.ref });
   }
   return { entries: out, skipped };
 }
