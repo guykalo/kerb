@@ -4,6 +4,7 @@ import { densify, distToSeg, dist, inRings, bbox, round } from './geo.mjs';
 import { buildWaverley, buildWoollahra, buildRandwick, buildOffstreet, buildManual } from './regions.mjs';
 import { buildOsmParking } from './osm.mjs';
 import { buildClearways } from './clearways.mjs';
+import { buildLikelyFree } from './likely-free.mjs';
 import { buildParkRide } from './tfnsw.mjs';
 import { buildFromSigns } from './spot.mjs';
 
@@ -229,6 +230,13 @@ export function buildData(raw) {
     const out = buildClearways(raw.clearways, reg, { existing: kerbGeo.features });
     for (const ft of out.features) { ft.properties.id = nextId++; kerbGeo.features.push(ft); }
     regions.clearways = { kerbs: out.features.length };
+  }
+
+  // Local streets with nothing published, in councils whose permit streets Kerb has in full: probably no limit.
+  if (raw.likelyfree) {
+    const out = buildLikelyFree(raw.likelyfree, { existing: kerbGeo.features });
+    for (const ft of out.features) { ft.properties.id = nextId++; kerbGeo.features.push(ft); }
+    regions.likelyfree = { kerbs: out.features.length };
   }
 
   if (raw.parkride) { const pr = buildParkRide(raw.parkride); carParkList.push(...pr); regions.parkride = { carParks: pr.length }; }
