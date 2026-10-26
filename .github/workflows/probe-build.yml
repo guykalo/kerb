@@ -25,6 +25,8 @@ jobs:
           node probe/shots.mjs || true
         continue-on-error: true
       - run: |
+          mkdir -p out/seo && cp -r dist/parking/index.html out/seo/ 2>/dev/null; cp dist/sitemap.xml out/seo/ 2>/dev/null; for d in syd/newtown syd/sydney bne/brisbane-city mel/melbourne per/perth syd/mascot; do mkdir -p out/seo/$d; cp dist/parking/$d/index.html out/seo/$d/ 2>/dev/null; done
+          (npx vite preview --port 4174 --strictPort &) ; sleep 3; node -e "const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844}});for(const d of ['syd/newtown','bne/brisbane-city']){try{await p.goto('http://localhost:4174/parking/'+d+'/');await p.screenshot({path:'out/seo-'+d.replace('/','-')+'.png',fullPage:true});}catch(e){console.log(e.message)}}await b.close();})()" || true
           mkdir -p out && cp cities.log out/ && for c in mel bne per; do mkdir -p out/$c; cp public/data/$c/meta.json out/$c/ 2>/dev/null; cp public/data/$c/rules.json out/$c/ 2>/dev/null; ls -la public/data/$c >> out/sizes.txt 2>/dev/null; done
           cd out && git init -q -b probe-build-out
           git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
