@@ -4768,5 +4768,309 @@
   "note": "Council car park: 1P 7am-6pm, 2P 6pm-7am. Ticketless meters: follow the signs (the council doesn't publish a rate). EV charger.",
   "research": "Strathfield Council parking page (Oct 2026). Location: OpenStreetMap (ODbL).",
   "checked": "2026-10-26"
+ },
+ {
+  "id": "syd-airport-blu-emu",
+  "name": "Blu Emu Car Park (Sydney Airport)",
+  "address": "Ross Smith Avenue, Sydney Airport",
+  "at": [
+   151.18671,
+   -33.94149
+  ],
+  "operator": "Sydney Airport",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "bands": [
+     [
+      1,
+      0
+     ],
+     [
+      3,
+      37.7
+     ],
+     [
+      24,
+      44.3
+     ]
+    ]
+   }
+  ],
+  "source": "https://prebook.sydneyairport.com.au/en/parkinginformation/drive-up-rates/",
+  "note": "First hour free. Free shuttle bus to T2 and T3 Domestic (not T1). Drive-up: 2 days $84.40, 3 days $105, then $20.60 a day. Pre-booking online is usually much cheaper (Sydney Airport says up to 70% off). ",
+  "research": "Sydney Airport drive-up and overstay rates page, read 26 Oct 2026. Location: OpenStreetMap (ODbL).",
+  "checked": "2026-10-26"
+ },
+ {
+  "id": "syd-airport-p1",
+  "name": "P1 Prime Park (Sydney Airport)",
+  "address": "Domestic terminals T2/T3, Sydney Airport",
+  "at": [
+   151.18001,
+   -33.93337
+  ],
+  "operator": "Sydney Airport",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "bands": [
+     [
+      0.5,
+      33.3
+     ],
+     [
+      1,
+      63.3
+     ],
+     [
+      24,
+      110.5
+     ]
+    ]
+   }
+  ],
+  "source": "https://prebook.sydneyairport.com.au/en/parkinginformation/drive-up-rates/",
+  "note": "Premium car park closest to T2/T3. Drive-up $110.50 for each extra day. Pre-booking online is usually much cheaper (Sydney Airport says up to 70% off). ",
+  "research": "Sydney Airport drive-up and overstay rates page, read 26 Oct 2026. Location: OpenStreetMap (ODbL).",
+  "checked": "2026-10-26"
+ },
+ {
+  "id": "syd-airport-p2",
+  "name": "P2 Domestic Car Park (Sydney Airport)",
+  "address": "Keith Smith Avenue, between T2 and T3",
+  "at": [
+   151.18241,
+   -33.93373
+  ],
+  "operator": "Sydney Airport",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "bands": [
+     [
+      0.5,
+      12.6
+     ],
+     [
+      1,
+      25.2
+     ],
+     [
+      2,
+      35.6
+     ],
+     [
+      3,
+      48
+     ],
+     [
+      24,
+      78.8
+     ]
+    ]
+   }
+  ],
+  "source": "https://prebook.sydneyairport.com.au/en/parkinginformation/drive-up-rates/",
+  "note": "Multi-storey, 4-5 min walk to T2/T3. Drive-up: 2 days $157.60, 3 days $236.40, then $78.80 a day. Pre-booking online is usually much cheaper (Sydney Airport says up to 70% off). ",
+  "research": "Sydney Airport drive-up and overstay rates page, read 26 Oct 2026. Location: OpenStreetMap (ODbL).",
+  "checked": "2026-10-26"
+ },
+ {
+  "id": "syd-airport-p3",
+  "name": "P3 Domestic Car Park and Express Pick-up (Sydney Airport)",
+  "address": "T2/T3 Domestic, Sydney Airport",
+  "at": [
+   151.18395,
+   -33.93399
+  ],
+  "operator": "Sydney Airport",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "bands": [
+     [
+      0.25,
+      0
+     ],
+     [
+      0.5,
+      12.6
+     ],
+     [
+      1,
+      25.2
+     ],
+     [
+      2,
+      35.6
+     ],
+     [
+      3,
+      48
+     ],
+     [
+      24,
+      78.8
+     ]
+    ]
+   }
+  ],
+  "source": "https://prebook.sydneyairport.com.au/en/parkinginformation/drive-up-rates/",
+  "note": "Express Pick-up is free for up to 15 minutes, one entry per calendar day. Drive-up: 2 days $157.60, 3 days $236.40, then $78.80 a day. Pre-booking online is usually much cheaper (Sydney Airport says up to 70% off). ",
+  "research": "Sydney Airport drive-up and overstay rates page, read 26 Oct 2026. Location: OpenStreetMap (ODbL).",
+  "checked": "2026-10-26"
+ },
+ {
+  "id": "syd-airport-p7",
+  "name": "P7 International Car Park (Sydney Airport)",
+  "address": "Opposite T1 International, Sydney Airport",
+  "at": [
+   151.16464,
+   -33.9352
+  ],
+  "operator": "Sydney Airport",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "bands": [
+     [
+      0.5,
+      12.6
+     ],
+     [
+      1,
+      25.2
+     ],
+     [
+      2,
+      35.6
+     ],
+     [
+      3,
+      48
+     ],
+     [
+      24,
+      80.9
+     ]
+    ]
+   }
+  ],
+  "source": "https://prebook.sydneyairport.com.au/en/parkinginformation/drive-up-rates/",
+  "note": "Multi-storey, 2-5 min walk to T1, mostly undercover. $80.90 for each extra day. T1 Quick Park (1 min walk) costs $40 for 30 min, $60 for 1 hr, $80 for 2 hrs, then $80 an hour. Pre-booking online is usually much cheaper (Sydney Airport says up to 70% off). ",
+  "research": "Sydney Airport drive-up and overstay rates page, read 26 Oct 2026. Location: OpenStreetMap (ODbL).",
+  "checked": "2026-10-26"
+ },
+ {
+  "id": "syd-airport-p9",
+  "name": "P9 Public Pick-up (Sydney Airport)",
+  "address": "T1 International, Sydney Airport",
+  "at": [
+   151.16344,
+   -33.93525
+  ],
+  "operator": "Sydney Airport",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 0,
+    "to": 24,
+    "bands": [
+     [
+      0.25,
+      0
+     ],
+     [
+      0.5,
+      12.6
+     ],
+     [
+      1,
+      25.2
+     ],
+     [
+      2,
+      35.6
+     ],
+     [
+      3,
+      48
+     ],
+     [
+      24,
+      80.9
+     ]
+    ]
+   }
+  ],
+  "source": "https://prebook.sydneyairport.com.au/en/parkinginformation/drive-up-rates/",
+  "note": "Public pick-up car park for T1: free for up to 15 minutes, one entry per calendar day. Open-air, about 7 min walk. $80.90 for each extra day.",
+  "research": "Sydney Airport drive-up and overstay rates page, read 26 Oct 2026. Location: OpenStreetMap (ODbL).",
+  "checked": "2026-10-26"
  }
 ]
