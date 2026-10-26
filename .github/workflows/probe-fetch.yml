@@ -14,11 +14,8 @@ jobs:
           npm i --no-save playwright@1.47 && npx playwright install --with-deps chromium >/dev/null
           node probe/pages.mjs || true
       - run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils >/dev/null || true
-          UA="Mozilla/5.0 (X11; Linux x86_64) Chrome/128"
-          curl -fsSL -A "$UA" "https://www.bayside.nsw.gov.au/sites/default/files/2026-06/2026-27_fees_charges.pdf" -o bay.pdf && pdftotext -layout -f 56 -l 62 bay.pdf out/bayside-fees.txt || echo fail > out/bayside-fees.txt
-          curl -fsSL "https://services7.arcgis.com/L1i6OQHVUek3lIg4/arcgis/rest/services/Parking_Scheme/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson" -o out/bayside-scheme.geojson || true
-          curl -fsSL "https://services7.arcgis.com/v8XBa2naYNQGOjlG/arcgis/rest/services/PLN_BND_NEIGHBOURHOODS_PVi/FeatureServer/0/query?where=1%3D1&outFields=NEIGHBOURHOOD&outSR=4326&f=geojson&geometryPrecision=5" -o out/perth-hoods.geojson || true
+          q='[out:json][timeout:60];nwr[amenity=parking](-33.965,151.15,-33.915,151.2);out center tags;'
+          curl -fsSL --data-urlencode "data=$q" https://overpass-api.de/api/interpreter -o out/airport-parking.json || true
       - run: |
           cd out && git init -q -b probe-fetch-out
           git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
