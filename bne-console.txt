@@ -1,0 +1,3 @@
+warning: Expected value to be of type number, but found null instead.
+warning: Expected value to be of type number, but found null instead.
+warning: Expected value to be of type number, but found null instead.

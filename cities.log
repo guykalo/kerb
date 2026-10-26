@@ -1,0 +1,31 @@
+
+> kerb@1.0.0 data:cities
+> node scripts/build-cities.mjs
+
+Melbourne:
+  osm st-kilda: https://overpass-api.de/api/interpreter HTTP 502
+  osm st-kilda: https://overpass-api.de/api/interpreter HTTP 502
+  osm st-kilda: https://overpass.private.coffee/api/interpreter The operation was aborted due to timeout
+  osm st-kilda: 0 streets with parking tags
+  osm chapel-st: https://overpass-api.de/api/interpreter HTTP 502
+  osm chapel-st: 25 streets with parking tags
+  osm fitzroy-collingwood: 46 streets with parking tags
+  osm brunswick: https://overpass-api.de/api/interpreter HTTP 502
+  osm brunswick: https://overpass-api.de/api/interpreter HTTP 504
+  osm brunswick: 3 streets with parking tags
+  osm richmond: https://overpass-api.de/api/interpreter HTTP 502
+  osm richmond: 27 streets with parking tags
+  osm carlton: 188 streets with parking tags
+  melbourne: 29053 bays, 6324 sensors, 1821 sign plates, 6270 pay stay rates
+  osm street parking: 277 kerb sides from 255 streets, skipped {"no rules mapped":56,"mapped separately":21,"hours not read":15,"no street name":24,"not public":3}
+  melbourne osm: 176 kerb sides from OpenStreetMap
+  melbourne: 1792 kerb runs; bays placed by sensor zone 5132, by the side's zone 890, by Pay Stay 4652, by single zone 820, unknown 17559
+  {"city":"mel","builtAt":"2026-10-26T09:50:33.171Z","fetchedAt":"2026-10-26T09:50:32.912Z","stale":false,"kerbs":1792,"ruleSets":317,"carParks":5,"bays":6324,"meters":0,"permitPatterns":{}}
+Brisbane:
+  brisbane: 945 meters, 9660 kerb markings, 648 clearways, 7005 streets
+  brisbane: 11243 kerb pieces, 0 meters skipped; car parks at {"kgs":[153.02363,-27.46803],"wickham":[153.02567,-27.46503]}
+  {"city":"bne","builtAt":"2026-10-26T09:51:11.696Z","fetchedAt":"2026-10-26T09:51:11.099Z","stale":false,"kerbs":11243,"ruleSets":216,"carParks":2,"bays":0,"meters":0,"permitPatterns":{}}
+Perth:
+  perth: 8674 bays, 32 car parks, 3842 streets, 7 neighbourhoods
+  perth: 7553 bays drawn, 108 skipped; paid bays priced by fee area 5135, not priced 119; car parks without rates: THE GARAGE
+  {"city":"per","builtAt":"2026-10-26T09:51:46.046Z","fetchedAt":"2026-10-26T09:51:45.285Z","stale":false,"kerbs":7553,"ruleSets":248,"carParks":32,"bays":0,"meters":0,"permitPatterns":{}}

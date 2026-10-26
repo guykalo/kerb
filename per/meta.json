@@ -1,0 +1,12 @@
+{
+  "city": "per",
+  "builtAt": "2026-10-26T09:51:46.046Z",
+  "fetchedAt": "2026-10-26T09:51:45.285Z",
+  "stale": false,
+  "kerbs": 7553,
+  "ruleSets": 248,
+  "carParks": 32,
+  "bays": 0,
+  "meters": 0,
+  "permitPatterns": {}
+}

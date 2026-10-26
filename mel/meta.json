@@ -1,0 +1,12 @@
+{
+  "city": "mel",
+  "builtAt": "2026-10-26T09:50:33.171Z",
+  "fetchedAt": "2026-10-26T09:50:32.912Z",
+  "stale": false,
+  "kerbs": 1792,
+  "ruleSets": 317,
+  "carParks": 5,
+  "bays": 6324,
+  "meters": 0,
+  "permitPatterns": {}
+}

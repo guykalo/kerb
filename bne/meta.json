@@ -1,0 +1,12 @@
+{
+  "city": "bne",
+  "builtAt": "2026-10-26T09:51:11.696Z",
+  "fetchedAt": "2026-10-26T09:51:11.099Z",
+  "stale": false,
+  "kerbs": 11243,
+  "ruleSets": 216,
+  "carParks": 2,
+  "bays": 0,
+  "meters": 0,
+  "permitPatterns": {}
+}

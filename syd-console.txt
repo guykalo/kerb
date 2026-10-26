@@ -1,0 +1,7 @@
+warning: [.WebGL-0x1dec000b6300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+warning: [.WebGL-0x1dec000b6300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+warning: [.WebGL-0x1dec000b6300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+warning: [.WebGL-0x1dec000b6300]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+warning: Expected value to be of type number, but found null instead.
+warning: Expected value to be of type number, but found null instead.
+warning: Expected value to be of type number, but found null instead.

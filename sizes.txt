@@ -1,0 +1,25 @@
+total 792
+drwxr-xr-x 2 runner runner   4096 Oct 26 09:50 .
+drwxr-xr-x 5 runner runner   4096 Oct 26 09:51 ..
+-rw-r--r-- 1 runner runner 200718 Oct 26 09:50 bays.json
+-rw-r--r-- 1 runner runner   5872 Oct 26 09:50 carparks.json
+-rw-r--r-- 1 runner runner 478614 Oct 26 09:50 kerbs.json
+-rw-r--r-- 1 runner runner    229 Oct 26 09:50 meta.json
+-rw-r--r-- 1 runner runner      2 Oct 26 09:50 meters.json
+-rw-r--r-- 1 runner runner  99471 Oct 26 09:50 rules.json
+total 2712
+drwxr-xr-x 2 runner runner    4096 Oct 26 09:51 .
+drwxr-xr-x 5 runner runner    4096 Oct 26 09:51 ..
+-rw-r--r-- 1 runner runner    2157 Oct 26 09:51 carparks.json
+-rw-r--r-- 1 runner runner 2700874 Oct 26 09:51 kerbs.json
+-rw-r--r-- 1 runner runner     227 Oct 26 09:51 meta.json
+-rw-r--r-- 1 runner runner       2 Oct 26 09:51 meters.json
+-rw-r--r-- 1 runner runner   51400 Oct 26 09:51 rules.json
+total 1852
+drwxr-xr-x 2 runner runner    4096 Oct 26 09:51 .
+drwxr-xr-x 5 runner runner    4096 Oct 26 09:51 ..
+-rw-r--r-- 1 runner runner   21404 Oct 26 09:51 carparks.json
+-rw-r--r-- 1 runner runner 1775254 Oct 26 09:51 kerbs.json
+-rw-r--r-- 1 runner runner     227 Oct 26 09:51 meta.json
+-rw-r--r-- 1 runner runner       2 Oct 26 09:51 meters.json
+-rw-r--r-- 1 runner runner   76846 Oct 26 09:51 rules.json
