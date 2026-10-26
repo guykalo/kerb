@@ -1,0 +1,32 @@
+name: Probe build (test cities on a branch)
+on:
+  push:
+    branches: ['probe/build']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npm run data:cities 2>&1 | tee cities.log
+        continue-on-error: true
+      - run: |
+          mkdir -p public/data
+          for f in meta kerbs rules meters carparks; do curl -fsSL "https://guykalo.github.io/kerb/data/$f.json" -o "public/data/$f.json"; done
+      - run: npm run build
+      - run: |
+          npm i --no-save playwright@1.47 && npx playwright install --with-deps chromium >/dev/null
+          (npx vite preview --port 4173 --strictPort &) ; sleep 4
+          node probe/shots.mjs || true
+        continue-on-error: true
+      - run: |
+          mkdir -p out && cp cities.log out/ && for c in mel bne per; do mkdir -p out/$c; cp public/data/$c/meta.json out/$c/ 2>/dev/null; cp public/data/$c/rules.json out/$c/ 2>/dev/null; ls -la public/data/$c >> out/sizes.txt 2>/dev/null; done
+          cd out && git init -q -b probe-build-out
+          git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Probe build $(date -u +%F)"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" probe-build-out
