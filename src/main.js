@@ -5,7 +5,7 @@ import '@phosphor-icons/web/fill';
 import './style.css';
 import {
   DAYS, DAYS_LONG, fmtTime, fmtClock, fmtDays, pLabel, money,
-  stateAt, costFor, category, plainNow, dayTimeline, BEN,
+  stateAt, costFor, category, plainNow, dayTimeline, BEN, permitMine,
   busy, busyLevel, BUSY_WORD, BANDS, band,
 } from './rules.js';
 import { parsePart } from '../scripts/lib/parse-rules.mjs';
@@ -66,6 +66,7 @@ Object.assign(S, today);
 try { const st = localStorage.getItem('kerb-stay'); if (st === 'night') { S.night = true; S.stay = nightStay(S.hour); } else if ([0.25, 1, 2, 3, 4, 8].includes(+st)) S.stay = +st; } catch { /* storage unavailable */ }
 try { const w = +localStorage.getItem('kerb-walk'); if ([2, 5, 10, 15, 20].includes(w)) S.walk = w; } catch { /* storage unavailable */ }
 try { BEN.mps = localStorage.getItem('kerb-mps') === '1' && CITY_ID === 'syd'; } catch { /* storage unavailable */ } // NSW concessions only
+try { const car = JSON.parse(localStorage.getItem('kerb-car') || '{}'); BEN.vehicle = car.vehicle || 'car'; BEN.permit = (car.permits || {})[CITY_ID] || ''; } catch { /* storage unavailable */ }
 const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } },
@@ -611,7 +612,7 @@ function renderList() {
     if (p.k < 0 && !p.lk && !p.pa) continue;
     const d = distM(mids.get(p.id), centre);
     if (d > nearM) continue;
-    const c = p.k < 0 ? (p.lk ? { ok: true, cost: 0, likely: true } : { ok: true, cost: 0, permitOnly: true }) : costFor(p, RULES, S.day, S.hour, S.stay);
+    const c = kerbCost(p);
     if (c.ok === null) continue; // only partly known (a clearway road): not a parking option
     const key = `${p.s}|${p.b}|${p.sd || ''}`;
     const score = (c.ok ? 0 : 1e6) + (c.ok ? c.cost * 40 : 0) + (c.unknownRate ? 400 : 0) + (c.likely ? 250 : 0) + (c.permitOnly ? 350 : 0) + d;
@@ -667,7 +668,7 @@ function optRow(o) {
   const cat = category(o.p, RULES, S.day, S.hour, S.stay);
   const s = stateAt(o.p, RULES, S.day, S.hour);
   const sub = o.c.ok
-    ? (o.c.permitOnly ? (usual(o.p) ? `Permit ${o.p.pa}: usually ${usual(o.p).sign} for visitors` : `Resident permit ${o.p.pa}. Visitors usually time-limited`) : o.c.likely ? 'No permit scheme, check the sign' : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}` : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
+    ? (o.c.yourPermit ? `Your permit area (${o.p.pa}): no time limit` : o.c.permitOnly ? (usual(o.p) ? `Permit ${o.p.pa}: usually ${usual(o.p).sign} for visitors` : `Resident permit ${o.p.pa}. Visitors usually time-limited`) : o.c.likely ? 'No permit scheme, check the sign' : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? (s.rule[0] >= 24 || s.rule[0] < 0 ? `${s.rule[7] || 'Free'} until ${fmtTime(s.rule[3])}` : `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}`) : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
     : o.c.why;
   const lv = busyLevel(busy(o.p, RULES, S.day, S.hour));
   b.innerHTML = `<span class="bar" style="background:var(--${cat === 'short' ? 'paid' : cat})"></span>
@@ -730,7 +731,7 @@ function savedRows(centre) {
   for (const { r } of list) {
     if (r.cp) { body.appendChild(cpRow(r.cp, distM(r.cp.at, centre))); continue; }
     const p = r.f.properties;
-    const c = p.k < 0 ? (p.lk ? { ok: true, cost: 0, likely: true } : { ok: null }) : costFor(p, RULES, S.day, S.hour, S.stay);
+    const c = p.k < 0 && !p.lk && !permitMine(p.pa) ? { ok: null } : kerbCost(p);
     body.appendChild(optRow({ f: r.f, p, c: c.ok === null ? { ok: false, why: 'No published rules' } : c, d: distM(mids.get(p.id), centre) }));
   }
 }
@@ -776,6 +777,14 @@ function compareLine(free, paid, centre, nearM) {
   else if (cp.pr.p < kerb.cost) el.innerHTML = `<strong>${cp.cp.name}</strong> is cheaper than the street: ${money(cp.pr.p)}, saving ${money(kerb.cost - cp.pr.p)}.`;
   else el.innerHTML = `<strong>${cp.cp.name}</strong> is also ${money(cp.pr.p)} for ${stayWords(true)}.`;
   body.appendChild(el);
+}
+
+// What a kerb costs for the chosen stay, including kerbs Kerb only knows as a permit area or "probably free".
+function kerbCost(p) {
+  if (p.k >= 0) return costFor(p, RULES, S.day, S.hour, S.stay);
+  if (p.lk) return { ok: true, cost: 0, likely: true };
+  if (p.pa && permitMine(p.pa)) return { ok: true, cost: 0, yourPermit: true };
+  return p.pa ? { ok: true, cost: 0, permitOnly: true } : { ok: null };
 }
 
 /* ---------- I parked here: where the car is, and when to move it ---------- */
@@ -899,6 +908,7 @@ function rateStrip(set) {
 }
 function verdictText(p, c) {
   if (p.lk) return { head: 'Probably free', why: '' };
+  if (c.yourPermit) return { head: 'Free for you: your permit area', why: `${p.pa} is your resident permit area, so the time limits for visitors don't apply to you. Display your permit. Meters, no parking and no stopping times on the sign still apply.` };
   if (c.ok === null) return c.partial ? { head: 'Check the sign', why: plainNow(p, RULES, S.day, S.hour) } : { head: 'No published rules', why: '' };
   if (!c.ok) return { head: "You can't stay that long", why: '' };
   if (c.quarterFree) return { head: 'Free with a ticket', why: 'The first 15 minutes are free. Grab a ticket from the meter.' };
@@ -906,8 +916,10 @@ function verdictText(p, c) {
   if (c.waived > 0 && c.paidHours === 0) return { head: 'Free with your mobility permit', why: `The meter normally charges ${money(stateAt(p, RULES, S.day, S.hour).rule?.[4] || c.rate || 0)} an hour here. Mobility parking permit holders park free at council and street meters in NSW, and time limits over 30 minutes don't apply. Display the permit.` };
   if (c.paidHours === 0) {
     const s = stateAt(p, RULES, S.day, S.hour);
+    if (s.kind === 'limit' && (s.rule[0] >= 24 || s.rule[0] < 0)) return { head: `Free for you: ${(s.rule[7] || 'your bay').toLowerCase()}`, why: `${s.rule[7] || 'This bay'} ${s.rule[2] === 0 && s.rule[3] === 24 ? 'at all times' : `from ${fmtTime(s.rule[2])} to ${fmtTime(s.rule[3])}`}.${s.rule[0] < 0 ? ' Check the sign for any time limit.' : ''}` };
     if (s.kind === 'limit') return { head: 'Free, within the time limit', why: `It's a free ${pLabel(s.rule[0])} zone ${s.rule[2] === 0 && s.rule[3] === 24 ? 'at all times' : `from ${fmtTime(s.rule[2])} to ${fmtTime(s.rule[3])}`}, so your ${S.stay === 0.25 ? '15 minutes fit' : `${S.stay} hour${S.stay > 1 ? 's fit' : ' fits'}`}.${s.rule[7] ? ` ${s.rule[7]}.` : ''}` };
     if (s.why === 'unrestricted') return { head: 'Free, no time limit', why: 'Unrestricted parking. No sign limits this kerb.' };
+    if (s.why === 'permit') return { head: 'Free for you: your permit area', why: `The sign's time limit has "permit holders excepted" for ${BEN.permit}, your resident permit area. Display your permit.` };
     if (s.why === 'outside-sign') return { head: 'Free the whole time', why: plainNow(p, RULES, S.day, S.hour) };
     const why = s.why === 'before-hours' || s.why === 'night'
       ? `The meters don't start until ${fmtTime(s.until)}, and you're gone by ${fmtTime(end)}.`
@@ -999,7 +1011,7 @@ function renderDetail() {
   const stayTxt = stayWords(false);
   if (f) {
     const p = f.properties;
-    const c = p.lk ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
+    const c = kerbCost(p);
     const set = p.k >= 0 ? RULES[p.k] : null;
     const lv = busyLevel(busy(p, RULES, S.day, S.hour));
     const v = verdictText(p, c);
@@ -1084,7 +1096,7 @@ async function shareSel(f, cp) {
   let at, text;
   if (f) {
     const p = f.properties; at = mids.get(p.id);
-    const c = p.lk ? { ok: true, cost: 0, likely: true } : costFor(p, RULES, S.day, S.hour, S.stay);
+    const c = kerbCost(p);
     const v = verdictText(p, c);
     text = `${p.s}${p.sd ? ` (${p.sd.toLowerCase()})` : ''}: ${v.head}${c.ok && !c.likely ? `, ${costText(c)}` : ''} for ${when}.`;
   } else {
@@ -1160,13 +1172,30 @@ function renderLegend() {
   const chip = (cls, pressed, html, title, onclick) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.setAttribute('aria-pressed', String(pressed)); b.innerHTML = html; b.title = title; b.onclick = onclick; lg.appendChild(b); return b; };
   const cpOn = !S.hidden.has('carpark');
   chip('perm', cpOn, `<i class="ph ph-local-parking" aria-hidden="true"></i>Car parks${cpOn ? '' : ' off'}`, 'Show or hide car parks', () => { cpOn ? S.hidden.add('carpark') : S.hidden.delete('carpark'); renderLegend(); drawCarParks(); renderBody(); });
-  if (CITY_ID === 'syd') chip('perm', BEN.mps, `<i class="ph ph-wheelchair" aria-hidden="true"></i>${BEN.mps ? 'Mobility permit on' : 'Mobility permit'}`, 'I have a NSW mobility parking permit', () => {
-    BEN.mps = !BEN.mps;
-    try { localStorage.setItem('kerb-mps', BEN.mps ? '1' : '0'); } catch { /* private mode */ }
-    toast(BEN.mps ? 'Showing prices and time limits for mobility permit holders' : 'Mobility permit off');
-    renderLegend(); update();
-  });
+  const carBits = [BEN.vehicle === 'moto' ? 'Motorbike' : BEN.vehicle === 'ev' ? 'Electric' : '', BEN.permit ? `Permit ${BEN.permit.replace(/^.*Area\s*/i, '')}` : '', BEN.mps ? 'Mobility' : ''].filter(Boolean);
+  chip('perm', carBits.length > 0, `<i class="ph ph-${BEN.vehicle === 'moto' ? 'motorcycle' : 'car-profile'}" aria-hidden="true"></i>${carBits.length ? carBits.join(' · ') : 'My car'}`, 'My car: vehicle, resident permit, mobility permit', () => toggleCar());
   chip('keybtn', false, '<i class="ph ph-swatches" aria-hidden="true"></i>Key', 'What the colours mean', () => toggleKey());
+}
+// My car: the answers change to fit the driver (motorbike bays, EV bays, their own permit area, mobility permit).
+function saveCar() {
+  try { const car = JSON.parse(localStorage.getItem('kerb-car') || '{}'); car.vehicle = BEN.vehicle; car.permits = { ...(car.permits || {}), [CITY_ID]: BEN.permit }; localStorage.setItem('kerb-car', JSON.stringify(car)); } catch { /* private mode */ }
+}
+function toggleCar(force) {
+  let pop = $('#carPop');
+  if (pop && force !== true) { pop.remove(); return; }
+  $('#keyPop')?.remove();
+  if (!pop) { pop = document.createElement('div'); pop.id = 'carPop'; pop.className = 'keypop carpop'; $('#app').appendChild(pop); }
+  const areas = [...new Set(KERBS.features.map((f) => f.properties.pa).filter((a) => a && !/^area cbd$/i.test(a)))].sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
+  const veh = [['car', 'Car', 'car-profile'], ['moto', 'Motorbike', 'motorcycle'], ['ev', 'Electric car', 'lightning']];
+  pop.innerHTML = `<div class="kp-top"><b>My car</b><button type="button" aria-label="Close"><i class="ph ph-x"></i></button></div>
+    <div class="seg" role="radiogroup" aria-label="Vehicle">${veh.map(([k, n, ic]) => `<button type="button" role="radio" data-veh="${k}" aria-checked="${BEN.vehicle === k}"><i class="ph ph-${ic}"></i>${n}</button>`).join('')}</div>
+    ${areas.length ? `<label class="kp-field"><span>Resident parking permit</span><select id="permitSel"><option value="">None</option>${areas.map((a) => `<option${a === BEN.permit ? ' selected' : ''}>${a}</option>`).join('')}</select></label>` : ''}
+    ${CITY_ID === 'syd' ? `<label class="kp-row"><i class="ph ph-wheelchair" style="background:none;width:auto;height:auto;font-size:18px"></i><span>NSW mobility parking permit</span><input type="checkbox" id="mpsBox"${BEN.mps ? ' checked' : ''}></label>` : ''}
+    <p class="kp-note">Kerb then shows motorbike or EV bays as yours, your permit area without visitor time limits, and mobility permit concessions. Saved on this phone only.</p>`;
+  pop.querySelector('.kp-top button').onclick = () => pop.remove();
+  pop.querySelectorAll('[data-veh]').forEach((b) => (b.onclick = () => { BEN.vehicle = b.dataset.veh; saveCar(); pop.querySelectorAll('[data-veh]').forEach((x) => x.setAttribute('aria-checked', String(x === b))); renderLegend(); update(); }));
+  const sel = pop.querySelector('#permitSel'); if (sel) sel.onchange = () => { BEN.permit = sel.value; saveCar(); renderLegend(); update(); };
+  const mb = pop.querySelector('#mpsBox'); if (mb) mb.onchange = () => { BEN.mps = mb.checked; try { localStorage.setItem('kerb-mps', BEN.mps ? '1' : '0'); } catch { /* private mode */ } renderLegend(); update(); };
 }
 // The colour key, out of the way until asked for. Each colour can still be hidden from here.
 function toggleKey(force) {

@@ -47,6 +47,11 @@ export function stateAt(props, rules, day, h) {
   // When periods overlap, a no-parking period wins over parking.
   const on = today.find((r) => r[6] === 1 && h >= r[2] && h < r[3]) || today.find((r) => h >= r[2] && h < r[3]);
   if (on) {
+    // My car: motorbike bays for motorbikes, EV bays for electric cars (while charging), and no time limit in
+    // the driver's own resident permit area when the sign says permit holders are excepted.
+    if (on[6] === 1 && BEN.vehicle === 'moto' && /motor ?(bike|cycle)/i.test(on[7] || '')) return { kind: 'limit', rule: [24, on[1], on[2], on[3], 0, on[5], 0, 'Motorbike parking'], until: on[3], set };
+    if (on[6] === 1 && BEN.vehicle === 'ev' && /\bEV\b|electric|charging/i.test(on[7] || '')) return { kind: 'limit', rule: [-1, on[1], on[2], on[3], 0, on[5], 0, 'EV charging bay, while charging'], until: on[3], set };
+    if (on[6] !== 1 && on[0] > 0 && on[0] < 24 && permitMine(on[7])) return { kind: 'free', until: on[3], why: 'permit', set };
     // A mobility parking space is a free space for mobility permit holders (BEN is set before any call).
     if (on[6] === 1 && /mobility|disab/i.test(on[7] || '') && globalThis.__kerbMps) return { kind: 'limit', rule: [24, on[1], on[2], on[3], 0, on[5], 0, 'Mobility parking space'], until: on[3], set };
     if (on[6] === 1) return { kind: 'restricted', rule: on, until: on[3], note: on[7], set };
@@ -102,7 +107,16 @@ export const BEN = {
   _mps: false,
   get mps() { return this._mps; },
   set mps(v) { this._mps = !!v; globalThis.__kerbMps = !!v; },
+  // "My car": vehicle ('car' | 'moto' | 'ev') and a resident parking permit area (as Kerb names it, e.g. "Area 22").
+  vehicle: 'car',
+  permit: '',
 };
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// Does this sign wording or permit area name the driver's own permit area? ("Permit holders Area 22 excepted")
+export function permitMine(text) {
+  if (!BEN.permit || !text) return false;
+  return new RegExp(`(^|[^A-Za-z0-9])${esc(BEN.permit)}($|[^A-Za-z0-9])`, 'i').test(String(text));
+}
 const mpsLimit = (p) => (p < 0 || p > 0.5 ? Infinity : p === 0.5 ? 2 : 0.5);
 
 // Can you park for `stay` hours from day/h, and what does it cost?
@@ -138,7 +152,7 @@ export function costFor(props, rules, day, h, stay) {
 
 // Category used for colouring the kerb for the chosen stay.
 export function category(props, rules, day, h, stay) {
-  if (props.k < 0) return props.lk ? 'likely' : props.pa ? 'permit' : 'unknown';
+  if (props.k < 0) return props.lk ? 'likely' : props.pa ? (permitMine(props.pa) ? 'free' : 'permit') : 'unknown';
   const c = costFor(props, rules, day, h, stay);
   if (c.ok === null) return 'unknown';
   if (!c.ok) { const k = stateAt(props, rules, day, h).kind; return k === 'meter' || k === 'limit' ? 'short' : 'restricted'; }
