@@ -13,7 +13,7 @@ jobs:
       - run: |
           echo skip
       - run: |
-          q='[out:json][timeout:60];nwr[amenity=parking](-33.965,151.15,-33.915,151.2);out center tags;'
+          mkdir -p out; q='[out:json][timeout:60];nwr[amenity=parking](-33.965,151.15,-33.915,151.2);out center tags;'
           curl -sS -A "Kerb parking map (github.com/guykalo/kerb)" --data-urlencode "data=$q" https://overpass-api.de/api/interpreter -o out/airport-parking.json || curl -sS -A "Kerb" --data-urlencode "data=$q" https://overpass.private.coffee/api/interpreter -o out/airport-parking.json; ls -la out
       - run: |
           cd out && git init -q -b probe-fetch-out
