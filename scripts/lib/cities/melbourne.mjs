@@ -159,5 +159,21 @@ export function buildMelbourne(raw, reg) {
   }
   const bays = raw.sensors.map((s) => [String(s[0]), s[2], s[3]]);
   log(`  melbourne: ${features.length} kerb runs; bays placed by sensor zone ${stats.sensorZone}, by the side's zone ${stats.sideZone}, by Pay Stay ${stats.payStay}, by single zone ${stats.oneZone}, unknown ${stats.unknown}`);
-  return { features, carparks: [], bays };
+  return { features, carparks: STONNINGTON, bays };
 }
+
+// City of Stonnington's car parks around Chapel Street (rates from the council's car parks page, checked 26 Oct 2026;
+// locations from OpenStreetMap). Only the ones Kerb could place for certain.
+const ALLD = [0, 1, 2, 3, 4, 5, 6];
+const STN_SRC = 'https://www.stonnington.vic.gov.au/Services/Parking/Car-parks-in-Stonnington';
+const OPEN_AIR = [{ kind: 'casual', days: ALLD, from: 9, to: 18, bands: [[1, 4], [2, 8], [3, 14], [4, 20], [5, 26], [6, 32], [7, 38], [8, 44], [9, 50]] }, { kind: 'free', days: ALLD, from: 18, to: 24 }];
+const openAir = (id, name, address, at) => ({ id: `stn-${id}`, name, address, at, operator: 'City of Stonnington', rates: OPEN_AIR, source: STN_SRC, note: 'Council open-air car park. Pay 9am-6pm, 7 days: $4 an hour for the first 2 hours, then $6 an hour.' });
+const STONNINGTON = [
+  { id: 'stn-elizabeth', name: 'Elizabeth Street Car Park', address: '9 Elizabeth Street, South Yarra', at: [144.99283, -37.84537], operator: 'City of Stonnington', source: STN_SRC,
+    rates: [{ kind: 'casual', days: ALLD, from: 0, to: 24, bands: [[0.5, 4], [1, 6], [2, 10], [3, 12.5], [4, 15], [5, 20], [6, 22], [24, 24]] }],
+    note: 'Council car park, open 24/7. Early bird $18 on Mondays and Wednesdays.' },
+  openAir('darling', 'Darling Street Car Park', '3-7 Darling Street, South Yarra', [144.99113, -37.83822]),
+  openAir('murphy', 'Murphy Street Car Park', '13-17 Murphy Street, South Yarra', [144.98999, -37.83814]),
+  openAir('caroline', 'Caroline Street South Car Park', '36-38 Caroline Street South, South Yarra', [144.98818, -37.83905]),
+  openAir('powell', 'Powell Street Car Park', '55 Powell Street, South Yarra', [144.98945, -37.83919]),
+];
