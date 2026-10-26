@@ -51,7 +51,9 @@ jobs:
       - uses: actions/cache@v4
         if: steps.mode.outputs.full == 'true'
         with:
-          path: data/raw
+          path: |
+            data/raw
+            data/raw-cities
           key: raw-${{ github.run_id }}
           restore-keys: raw-
       - name: Get council parking decisions
@@ -75,6 +77,20 @@ jobs:
         if: steps.fetch.outcome == 'success'
         continue-on-error: true
         run: npm run data:build
+      # Melbourne, Brisbane and Perth: each city builds on its own and keeps last night's download if its server is down.
+      - name: Build other cities
+        id: cities
+        if: steps.mode.outputs.full == 'true'
+        continue-on-error: true
+        run: npm run data:cities
+      - name: Keep the published data for any city not built today
+        run: |
+          for c in mel bne per; do
+            if [ ! -f "public/data/$c/meta.json" ]; then
+              mkdir -p "public/data/$c"
+              for f in meta kerbs rules meters carparks bays; do curl -fsSL "$SITE/data/$c/$f.json" -o "public/data/$c/$f.json" || rm -f "public/data/$c/$f.json"; done
+            fi
+          done
       # If today's download or build failed (or was skipped), keep the map that's live now and still ship app changes.
       - name: Keep the published data
         if: steps.fetch.outcome != 'success' || steps.kerbdata.outcome != 'success'

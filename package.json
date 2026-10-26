@@ -8,6 +8,7 @@
     "build": "vite build",
     "data:fetch": "node scripts/fetch-data.mjs",
     "data:build": "node scripts/build-data.mjs",
+    "data:cities": "node scripts/build-cities.mjs",
     "data": "npm run data:fetch && npm run data:build"
   },
   "keywords": [],

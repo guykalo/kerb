@@ -20,12 +20,13 @@
 </head>
 <body>
   <div class="app" id="app">
-    <div class="map" id="map" aria-label="Map of Sydney kerbs"></div>
+    <div class="map" id="map" aria-label="Map of kerbs"></div>
 
     <header class="topbar">
-      <a class="brand" href="./" aria-label="Kerb home">
-        <span class="mark" aria-hidden="true">K</span><span class="word">Kerb</span>
-      </a>
+      <button class="brand" id="cityBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Kerb: choose a city">
+        <span class="mark" aria-hidden="true">K</span><span class="word">Kerb</span><span class="cityname" id="cityName">Sydney</span><i class="ph ph-caret-down caret" aria-hidden="true"></i>
+      </button>
+      <div class="citymenu" id="cityMenu" role="menu" hidden></div>
       <form class="search" id="searchForm" role="search" autocomplete="off">
         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
         <label class="sr" for="q">Search a street or place</label>

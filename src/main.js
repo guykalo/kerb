@@ -15,8 +15,38 @@ import { initAnalytics } from './analytics.js';
 initAnalytics();
 
 const $ = (s) => document.querySelector(s);
-const DATA = './data/';
-const START = { center: [151.2075, -33.8722], zoom: 15.2 };
+// Cities Kerb covers. Sydney's data lives in data/, the others in data/<id>/. One city is loaded at a time.
+const CITIES = {
+  syd: { name: 'Sydney', center: [151.2075, -33.8722], zoom: 15.2, tz: 'Australia/Sydney', data: './data/', box: [149, -35.5, 153, -32], search: '150.5,-34.3,151.45,-33.4' },
+  mel: { name: 'Melbourne', center: [144.9631, -37.8136], zoom: 15.4, tz: 'Australia/Melbourne', data: './data/mel/', box: [144.3, -38.6, 145.8, -37.3], search: '144.6,-38.1,145.3,-37.6', live: true },
+  bne: { name: 'Brisbane', center: [153.0251, -27.4698], zoom: 15.4, tz: 'Australia/Brisbane', data: './data/bne/', box: [152.5, -28, 153.6, -26.9], search: '152.8,-27.7,153.25,-27.2' },
+  per: { name: 'Perth', center: [115.8605, -31.9523], zoom: 15.6, tz: 'Australia/Perth', data: './data/per/', box: [115.4, -32.6, 116.4, -31.4], search: '115.6,-32.3,116.1,-31.7' },
+};
+const inBox = (c, [x0, y0, x1, y1]) => c[0] > x0 && c[0] < x1 && c[1] > y0 && c[1] < y1;
+// Shared links carry #at=lat,lng (either order); the link's city wins, then ?city=, then the last city used.
+const LINK = (() => {
+  const m = /at=(-?\d+\.\d+),(-?\d+\.\d+)/.exec(location.hash);
+  if (!m) return null;
+  const a = +m[1], b = +m[2];
+  return Object.values(CITIES).some((c) => inBox([b, a], c.box)) ? [b, a] : Object.values(CITIES).some((c) => inBox([a, b], c.box)) ? [a, b] : null;
+})();
+const CITY_ID = (() => {
+  if (LINK) return Object.keys(CITIES).find((k) => inBox(LINK, CITIES[k].box));
+  const q = new URLSearchParams(location.search).get('city');
+  if (q && CITIES[q]) return q;
+  try { const s = localStorage.getItem('kerb-city'); if (s && CITIES[s]) return s; } catch { /* storage unavailable */ }
+  return 'syd';
+})();
+const CITY = CITIES[CITY_ID];
+try { localStorage.setItem('kerb-city', CITY_ID); } catch { /* storage unavailable */ }
+document.documentElement.dataset.city = CITY_ID;
+document.title = `Kerb · ${CITY.name} parking`;
+function goToCity(id, at) {
+  try { localStorage.setItem('kerb-city', id); } catch { /* storage unavailable */ }
+  location.href = `${location.pathname}?city=${id}${at ? `#at=${at[1].toFixed(5)},${at[0].toFixed(5)}` : ''}`;
+}
+const DATA = CITY.data;
+const START = { center: CITY.center, zoom: CITY.zoom };
 const NEAR_M = 650; // list shows kerbs within this distance of the map centre
 const WALK_M_PER_MIN = 80;
 
@@ -24,8 +54,8 @@ const WALK_M_PER_MIN = 80;
 const S = { day: 1, hour: 9, stay: 2, night: false, sel: null, hidden: new Set(), open: false, dest: null, walk: 10 };
 // Overnight: from the arrival time until 8am the next morning.
 const nightStay = (h) => Math.max(1, h < 8 ? 8 - h : 32 - h);
-function sydneyNow() {
-  const p = new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Sydney', weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
+function sydneyNow() { // "now" in the city on the map
+  const p = new Intl.DateTimeFormat('en-AU', { timeZone: CITY.tz, weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
   const g = (t) => (p.find((x) => x.type === t) || {}).value;
   const day = DAYS.indexOf(g('weekday').slice(0, 3));
   const h = (+g('hour') % 24) + Math.floor(+g('minute') / 15) * 0.25;
@@ -35,19 +65,11 @@ const today = sydneyNow();
 Object.assign(S, today);
 try { const st = localStorage.getItem('kerb-stay'); if (st === 'night') { S.night = true; S.stay = nightStay(S.hour); } else if ([0.25, 1, 2, 3, 4, 8].includes(+st)) S.stay = +st; } catch { /* storage unavailable */ }
 try { const w = +localStorage.getItem('kerb-walk'); if ([2, 5, 10, 15, 20].includes(w)) S.walk = w; } catch { /* storage unavailable */ }
-try { BEN.mps = localStorage.getItem('kerb-mps') === '1'; } catch { /* storage unavailable */ }
+try { BEN.mps = localStorage.getItem('kerb-mps') === '1' && CITY_ID === 'syd'; } catch { /* storage unavailable */ } // NSW concessions only
 const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } },
 };
-// A shared link looks like #at=-33.89123,151.27456 and opens the kerb or car park at that spot.
-// Shared links carry #at=lat,lng. Accept either order, and ignore anything that isn't in the Sydney region.
-const LINK = (() => {
-  const m = /at=(-?\d+\.\d+),(-?\d+\.\d+)/.exec(location.hash);
-  if (!m) return null;
-  const a = +m[1], b = +m[2], ok = (lng, lat) => lng > 149 && lng < 153 && lat > -35.5 && lat < -32;
-  return ok(b, a) ? [b, a] : ok(a, b) ? [a, b] : null;
-})();
 if (LINK) { START.center = LINK; START.zoom = 17; }
 
 /* ---------- theme colours (read from CSS so the map follows light/dark) ---------- */
@@ -89,6 +111,12 @@ function distM(a, b) {
 }
 
 /* ---------- map ---------- */
+const ATTRIB = {
+  syd: 'Kerb data: <a href="https://data.cityofsydney.nsw.gov.au/" target="_blank" rel="noopener">City of Sydney</a>, NSW councils, Transport for NSW, © OpenStreetMap contributors',
+  mel: 'Kerb data: <a href="https://data.melbourne.vic.gov.au/" target="_blank" rel="noopener">City of Melbourne</a> (CC BY)',
+  bne: 'Kerb data: <a href="https://data.brisbane.qld.gov.au/" target="_blank" rel="noopener">Brisbane City Council</a>, © OpenStreetMap contributors',
+  per: 'Kerb data: <a href="https://geohub-perth.opendata.arcgis.com/" target="_blank" rel="noopener">City of Perth</a> (CC BY), © OpenStreetMap contributors',
+};
 const map = new maplibregl.Map({
   fadeDuration: 260,
   container: 'map', style: 'https://tiles.openfreemap.org/styles/positron',
@@ -96,7 +124,7 @@ const map = new maplibregl.Map({
 });
 map.touchZoomRotate.disableRotation();
 window.__kerbMap = map; // handy for debugging in the browser console
-map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: 'Kerb data: <a href="https://data.cityofsydney.nsw.gov.au/" target="_blank" rel="noopener">City of Sydney</a>' }), 'top-right');
+map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: ATTRIB[CITY_ID] }), 'top-right');
 
 function restyleBase() {
   const t = BASE[dark() ? 'dark' : 'light'];
@@ -313,7 +341,7 @@ function occHTML(cp) {
 
 // Car park prices come from data/carparks.json, checked by hand against each owner's own website.
 // cp.rates lists every published option; the cheapest one that fits the arrival time and stay wins.
-const MONTH = +new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Sydney', month: 'numeric' }).format(new Date());
+const MONTH = +new Intl.DateTimeFormat('en-AU', { timeZone: CITY.tz, month: 'numeric' }).format(new Date());
 function rateQuote(r, day, h, stay) {
   if (!r.days || !r.days.includes(day)) return null;
   if (r.months && !r.months.includes(MONTH)) return null;
@@ -514,12 +542,22 @@ function stayWords(long) {
 }
 function walkText(m) { if (m > 2500) return `${(m / 1000).toFixed(m > 20000 ? 0 : 1)} km away`; const min = Math.max(1, Math.round(m / WALK_M_PER_MIN)); return `${min} min walk`; }
 
+const FOOT = {
+  mel: 'Rules come from the City of Melbourne\'s open data: its parking zones and sign plates, Pay Stay meter rates, and the in-ground bay sensors, which show live which bays are free.',
+  bne: 'Rules come from Brisbane City Council\'s open data: every parking meter with its hours, time limit and rates, painted kerb markings and clearways.',
+  per: 'Rules come from the City of Perth\'s open data: the restriction on every on-street parking bay, and the City of Perth Parking car parks.',
+};
+const COVER = {
+  mel: 'In Melbourne, Kerb covers the City of Melbourne\'s on-street parking (CBD, Southbank, Docklands, Carlton, North Melbourne, East Melbourne) from the council\'s parking zones, meter rates and live bay sensors.',
+  bne: 'In Brisbane, Kerb covers every Brisbane City Council parking meter (CBD, Spring Hill, Fortitude Valley, South Brisbane, West End, Woolloongabba, Newstead, Milton…) plus no stopping lines, bus and taxi zones and clearways in the inner suburbs.',
+  per: 'In Perth, Kerb covers every City of Perth on-street parking bay (CBD, Northbridge, East Perth, West Perth, Crawley) and the City of Perth car parks.',
+};
 function renderList() {
   const keepScroll = body.dataset.mode === 'list' ? body.scrollTop : 0;
   body.dataset.mode = 'list';
   requestAnimationFrame(() => { if (body.dataset.mode === 'list') body.scrollTop = Math.min(keepScroll, body.scrollHeight); });
   body.replaceChildren();
-  if (!KERBS) { body.innerHTML = `<div class="empty"><strong>Loading the kerbs…</strong>Pulling in every meter in the City of Sydney.</div>`; return; }
+  if (!KERBS) { body.innerHTML = `<div class="empty"><strong>Loading the kerbs…</strong>Pulling in the kerbs for ${CITY.name}.</div>`; return; }
   const centre = S.dest ? S.dest.at : map.getCenter().toArray();
   const nearM = S.dest ? S.walk * WALK_M_PER_MIN : NEAR_M;
   destBar();
@@ -527,7 +565,7 @@ function renderList() {
   const inCoverage = KERBS.features.some((f) => { const m = mids.get(f.properties.id); return Math.abs(m[0] - centre[0]) < 0.015 && Math.abs(m[1] - centre[1]) < 0.012; });
   if (!inCoverage) {
     drawDest(S.dest ? { free: [], paid: [], likely: [] } : null);
-    body.insertAdjacentHTML('beforeend', `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington, Coogee, Randwick, Maroubra), Manly, Chatswood, and the Inner West's meters in Balmain, Rozelle and Leichhardt. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`);
+    body.insertAdjacentHTML('beforeend', CITY_ID !== 'syd' ? `<div class="empty"><strong>Not covered yet</strong>${COVER[CITY_ID]}</div>` : `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington, Coogee, Randwick, Maroubra), Manly, Chatswood, and the Inner West's meters in Balmain, Rozelle and Leichhardt. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`);
     carParkRows();
     return;
   }
@@ -577,8 +615,8 @@ function renderList() {
   group(`Can't stay ${stayTxt}`, no, 6);
   carParkRows();
   const foot = document.createElement('div'); foot.className = 'foot';
-  const upd = META ? new Date(META.fetchedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', timeZone: 'Australia/Sydney' }) : '';
-  foot.innerHTML = `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey, Woollahra's resident permit areas, Randwick's resident permit kerbs, Randwick's and Inner West's published parking maps and meter lists, and street sign surveys for Manly (2020) and Chatswood, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
+  const upd = META ? new Date(META.fetchedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', timeZone: CITY.tz }) : '';
+  foot.innerHTML = CITY_ID !== 'syd' ? `${FOOT[CITY_ID]}${upd ? ` Refreshed nightly, last on ${upd}.` : ''} Councils don't publish every sign, so always read the sign before you park.` : `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey, Woollahra's resident permit areas, Randwick's resident permit kerbs, Randwick's and Inner West's published parking maps and meter lists, and street sign surveys for Manly (2020) and Chatswood, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
   body.appendChild(foot);
 }
 
@@ -598,7 +636,7 @@ function optRow(o) {
   const lv = busyLevel(busy(o.p, RULES, S.day, S.hour));
   b.innerHTML = `<span class="bar" style="background:var(--${cat === 'short' ? 'paid' : cat})"></span>
     <span style="min-width:0"><div class="name">${o.p.s}</div><div class="sub">${[o.p.sd, o.p.b].filter(Boolean).join(', ')}${o.p.sd || o.p.b ? '. ' : ''}${sub}</div></span>
-    <span class="right">${o.c.permitOnly ? '<span class="price">?</span>' : o.c.ok ? `<span class="price ${o.c.cost === 0 && !o.c.unknownRate ? 'free' : ''}">${costText(o.c)}</span>` : ''}<span class="walk">${walkText(o.d)}${o.c.ok ? `, ${BUSY_WORD[lv].toLowerCase()}` : ''}</span></span>`;
+    <span class="right">${o.c.permitOnly ? '<span class="price">?</span>' : o.c.ok ? `<span class="price ${o.c.cost === 0 && !o.c.unknownRate ? 'free' : ''}">${costText(o.c)}</span>` : ''}<span class="walk">${walkText(o.d)}${liveCount(o.p) ? `, <b class="livetag">${liveCount(o.p).free} free now</b>` : o.c.ok ? `, ${BUSY_WORD[lv].toLowerCase()}` : ''}</span></span>`;
   b.onclick = () => select(o.p.id, true);
   return b;
 }
@@ -714,8 +752,8 @@ function parkedNow(f) {
   setSessionMarker(); toast(legal != null && legal < 24 ? `Saved. Move by ${clockAt(sess.until)}.` : 'Saved where you parked.');
   S.sel = null; update();
 }
-const clockAt = (ms) => new Date(ms).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', timeZone: 'Australia/Sydney' }).replace(' ', '').toLowerCase();
-const dayAt = (ms) => new Date(ms).toLocaleDateString('en-AU', { weekday: 'short', timeZone: 'Australia/Sydney' });
+const clockAt = (ms) => new Date(ms).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', timeZone: CITY.tz }).replace(' ', '').toLowerCase();
+const dayAt = (ms) => new Date(ms).toLocaleDateString('en-AU', { weekday: 'short', timeZone: CITY.tz });
 let carMarker = null;
 function setSessionMarker() {
   carMarker?.remove(); carMarker = null;
@@ -895,6 +933,7 @@ function renderDetail() {
     d.innerHTML = `
       <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
       <div><h2>${p.s}</h2><div class="where">${[p.sd, p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} ${p.k >= 0 ? 'paid ' : ''}spaces` : ''].filter(Boolean).join(', ')}</div></div>
+      ${liveCount(p) ? `<div class="live"><i class="ph-fill ph-broadcast" aria-hidden="true"></i><span><b>${liveText(liveCount(p))}</b><small>Live from the council's in-ground sensors, ${Math.max(1, Math.round((Date.now() - LIVE_AT) / 60000))} min ago</small></span></div>` : ''}
       <div class="verdict"><div><small>${spanText(stayTxt)}</small>${v.head}</div>
         ${p.lk ? `<span class="big" style="color:var(--free)">$0?</span>` : c.ok ? `<span class="big" style="color:var(--${c.cost === 0 && !c.unknownRate ? 'free' : 'fg'})">${costText(c)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
       ${set ? `<div class="signhero"><div class="sh-cap">The sign${set.src ? '' : 's'} here</div><div class="plates big">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div></div>` : ''}
@@ -1045,7 +1084,7 @@ function renderLegend() {
   const chip = (cls, pressed, html, title, onclick) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.setAttribute('aria-pressed', String(pressed)); b.innerHTML = html; b.title = title; b.onclick = onclick; lg.appendChild(b); return b; };
   const cpOn = !S.hidden.has('carpark');
   chip('perm', cpOn, `<i class="ph ph-local-parking" aria-hidden="true"></i>Car parks${cpOn ? '' : ' off'}`, 'Show or hide car parks', () => { cpOn ? S.hidden.add('carpark') : S.hidden.delete('carpark'); renderLegend(); drawCarParks(); renderBody(); });
-  chip('perm', BEN.mps, `<i class="ph ph-wheelchair" aria-hidden="true"></i>${BEN.mps ? 'Mobility permit on' : 'Mobility permit'}`, 'I have a NSW mobility parking permit', () => {
+  if (CITY_ID === 'syd') chip('perm', BEN.mps, `<i class="ph ph-wheelchair" aria-hidden="true"></i>${BEN.mps ? 'Mobility permit on' : 'Mobility permit'}`, 'I have a NSW mobility parking permit', () => {
     BEN.mps = !BEN.mps;
     try { localStorage.setItem('kerb-mps', BEN.mps ? '1' : '0'); } catch { /* private mode */ }
     toast(BEN.mps ? 'Showing prices and time limits for mobility permit holders' : 'Mobility permit off');
@@ -1239,6 +1278,7 @@ function pick(item) {
   results.hidden = true; q.value = item.title; q.blur(); S.sel = null;
   if (item.kind === 'carpark') { setDest(null); q.value = item.title; select(item.id, true); return; }
   q.blur(); setSheet('peek'); // keep the map in view so the options can be seen; the list is one swipe up
+  { const other = !inBox(item.at, CITY.box) && Object.keys(CITIES).find((k) => inBox(item.at, CITIES[k].box)); if (other) { goToCity(other, item.at); return; } }
   setDest({ at: item.at, name: item.sub && item.kind === 'street' ? `${item.title}, ${item.sub}` : item.title });
 }
 function showResults(local, places, loading) {
@@ -1276,7 +1316,7 @@ async function runSearch() {
   searchCtl?.abort(); searchCtl = new AbortController();
   try {
     const c = map.getCenter();
-    const u = `https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&lat=${c.lat.toFixed(4)}&lon=${c.lng.toFixed(4)}&limit=8&bbox=150.5,-34.3,151.45,-33.4&lang=en`;
+    const u = `https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&lat=${c.lat.toFixed(4)}&lon=${c.lng.toFixed(4)}&limit=8&bbox=${CITY.search}&lang=en`;
     const j = await fetch(u, { signal: searchCtl.signal }).then((r) => r.json());
     if (q.value.trim() !== text) return; // the user kept typing
     lastPlaces = (j.features || []).filter((f) => f.properties.countrycode === 'AU').map((f) => {
@@ -1293,6 +1333,7 @@ $('#locate').onclick = () => {
   if (!navigator.geolocation) return toast("This browser can't share your location.");
   navigator.geolocation.getCurrentPosition((pos) => {
     const at = [pos.coords.longitude, pos.coords.latitude];
+    { const other = !inBox(at, CITY.box) && Object.keys(CITIES).find((k) => inBox(at, CITIES[k].box)); if (other) { toast(`Opening Kerb for ${CITIES[other].name}…`); goToCity(other, at); return; } }
     if (!meMarker) { const el = document.createElement('div'); el.style.cssText = `width:16px;height:16px;border-radius:50%;background:${C().accent};border:3px solid #fff;box-shadow:0 0 0 6px color-mix(in srgb, ${C().accent} 25%, transparent)`; meMarker = new maplibregl.Marker({ element: el }); }
     meMarker.setLngLat(at).addTo(map);
     map.flyTo({ center: at, zoom: 16.2, duration: 900 });
@@ -1347,6 +1388,42 @@ map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => 
 
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); destLayers(); } if (S.sat) setSat(true); drawRibbon(); });
 addEventListener('resize', () => { setPeek(); drawRibbon(); });
+
+/* ---------- live bays (Melbourne's in-ground sensors) ---------- */
+const LIVE_URL = 'https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets/on-street-parking-bay-sensors/exports/json?select=kerbsideid,status_description';
+let LIVE = null, LIVE_AT = 0, BAYS = null;
+function liveCount(p) {
+  if (!LIVE || !p.kb) return null;
+  let free = 0, known = 0;
+  for (const id of p.kb) { const st = LIVE.get(String(id)); if (st == null) continue; known++; if (st) free++; }
+  return known ? { free, known } : null;
+}
+const liveText = (l) => `${l.free} of ${l.known} bay${l.known > 1 ? 's' : ''} free right now`;
+async function loadLive() {
+  if (!CITY.live || document.hidden) return;
+  try {
+    if (!BAYS) BAYS = await fetch(DATA + 'bays.json?v=' + encodeURIComponent(META?.builtAt || '')).then((r) => r.json());
+    const rows = await fetch(LIVE_URL).then((r) => r.json());
+    LIVE = new Map(rows.map((r) => [String(r.kerbsideid), r.status_description === 'Unoccupied']));
+    LIVE_AT = Date.now();
+    const fc = { type: 'FeatureCollection', features: BAYS.map(([id, x, y]) => ({ type: 'Feature', properties: { st: LIVE.has(id) ? (LIVE.get(id) ? 'free' : 'taken') : 'unknown' }, geometry: { type: 'Point', coordinates: [x, y] } })) };
+    if (map.getSource('bays')) map.getSource('bays').setData(fc);
+    else if (map.isStyleLoaded()) {
+      map.addSource('bays', { type: 'geojson', data: fc });
+      map.addLayer({ id: 'bay-dot', type: 'circle', source: 'bays', minzoom: 15.5, paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 15.5, 2.5, 18, 6], 'circle-color': ['match', ['get', 'st'], 'free', C().free, 'taken', C().restricted, C().unknown], 'circle-stroke-width': 1.2, 'circle-stroke-color': C().bg, 'circle-opacity': 0.95 } });
+    }
+    renderBody();
+  } catch { /* live data is a bonus: the map works without it */ }
+}
+if (CITY.live) { setInterval(loadLive, 120000); document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - LIVE_AT > 60000) loadLive(); }); }
+
+/* ---------- city switcher ---------- */
+const CITY_NOTE = { syd: 'CBD to the beaches, Parramatta', mel: 'Live free bays', bne: 'Every meter, with rates', per: 'Every bay in the CBD' };
+$('#cityName').textContent = CITY.name;
+$('#cityMenu').innerHTML = Object.entries(CITIES).map(([id, c]) => `<button type="button" role="menuitem" data-city="${id}"${id === CITY_ID ? ' aria-current="true"' : ''}>${c.name}<small>${CITY_NOTE[id]}</small></button>`).join('');
+$('#cityBtn').addEventListener('click', (e) => { e.stopPropagation(); const m = $('#cityMenu'); m.hidden = !m.hidden; $('#cityBtn').setAttribute('aria-expanded', String(!m.hidden)); });
+$('#cityMenu').addEventListener('click', (e) => { const b = e.target.closest('[data-city]'); if (!b) return; if (b.dataset.city === CITY_ID) { $('#cityMenu').hidden = true; map.flyTo({ center: CITY.center, zoom: CITY.zoom }); } else goToCity(b.dataset.city); });
+document.addEventListener('click', (e) => { if (!e.target.closest('#cityMenu, #cityBtn')) { $('#cityMenu').hidden = true; $('#cityBtn').setAttribute('aria-expanded', 'false'); } });
 
 /* ---------- boot ---------- */
 renderLegend();
@@ -1409,4 +1486,5 @@ map.on('style.load', async () => {
   destLayers();
   if (S.sat) setSat(true);
   update();
+  if (CITY.live) loadLive();
 });

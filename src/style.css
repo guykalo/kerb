@@ -347,3 +347,20 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
 .kp-row i.dash { background: repeating-linear-gradient(90deg, var(--paid) 0 4px, transparent 4px 7px) !important; }
 .kp-row i.dash-permit { background: repeating-linear-gradient(90deg, var(--permit) 0 4px, transparent 4px 7px) !important; }
 a.snapcta { text-decoration: none; box-sizing: border-box; }
+
+/* city switcher (the brand) */
+button.brand { font: inherit; cursor: pointer; position: relative; }
+.cityname { font-weight: 700; font-size: 14px; color: var(--muted); margin-left: -2px; }
+.brand .caret { font-size: 13px; color: var(--muted); margin-left: -4px; }
+.citymenu { position: absolute; top: 56px; left: 0; z-index: 30; background: var(--glass); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 6px; display: grid; min-width: 220px; }
+.citymenu button { all: unset; cursor: pointer; padding: 10px 12px; border-radius: 10px; display: flex; justify-content: space-between; gap: 12px; color: var(--fg); font-weight: 600; }
+.citymenu button:hover, .citymenu button:focus-visible { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.citymenu button small { color: var(--muted); font-weight: 500; }
+.citymenu button[aria-current="true"] { color: var(--accent); }
+@media (max-width: 520px) { .cityname { font-size: 13px; margin-left: 2px; } .brand .caret { margin-left: 0; } }
+
+.live { display: flex; gap: 10px; align-items: center; margin: 8px 0 2px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--free) 14%, transparent); }
+.live i { font-size: 22px; color: var(--free); }
+.live span { display: grid; gap: 2px; }
+.live small { color: var(--muted); font-size: 12.5px; }
+.livetag { color: var(--free); font-weight: 700; }
