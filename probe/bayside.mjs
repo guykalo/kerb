@@ -1,0 +1,11 @@
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { fetchBayside, buildBayside } from '../scripts/lib/bayside.mjs';
+import { fetchLikelyFree, buildLikelyFree, LIKELY_FREE_COUNCILS } from '../scripts/lib/likely-free.mjs';
+mkdirSync('out', { recursive: true });
+const rules = []; const reg = { add(s) { rules.push(s); return rules.length - 1; } };
+const raw = await fetchBayside();
+const b = buildBayside(raw, reg);
+const lf = buildLikelyFree(await fetchLikelyFree(LIKELY_FREE_COUNCILS.filter((c) => c.lga === 'BAYSIDE')), { existing: b.features });
+const names = {}; for (const f of b.features) names[f.properties.pa] = (names[f.properties.pa] || new Set()).add(f.properties.s);
+writeFileSync('out/bayside.json', JSON.stringify({ permit: b.features.length, rules, areas: Object.fromEntries(Object.entries(names).map(([k, v]) => [k, [...v]])), likely: lf.features.length, likelyStreets: [...new Set(lf.features.map((f) => f.properties.s))], sample: lf.features.slice(0, 3) }, null, 1));
+writeFileSync('out/bayside-map.geojson', JSON.stringify({ type: 'FeatureCollection', features: [...b.features, ...lf.features] }));

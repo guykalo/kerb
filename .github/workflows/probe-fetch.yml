@@ -10,12 +10,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
       - run: |
           echo skip
       - run: |
-          mkdir -p out
-          curl -sSL "https://data.gov.au/data/dataset/9304b79f-866f-40a1-afea-53ccded06ecd/resource/2d715933-43fc-47fa-8a6c-92422e8ab81d/download/city-of-port-phillip-parking-machines.geojson" -o out/pp-machines.geojson || true
-          curl -sS -w "%{http_code}" "https://vicdata.vicroads.vic.gov.au/server/rest/services/Hosted/Clearways/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=3&f=json&outSR=4326" -o out/vic-clearways-sample.json > out/vic.status 2>&1 || true
+          npm ci
+          node probe/bayside.mjs 2>&1 | tail -20
           ls -la out
       - run: |
           cd out && git init -q -b probe-fetch-out
