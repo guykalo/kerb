@@ -113,7 +113,7 @@ function distM(a, b) {
 /* ---------- map ---------- */
 const ATTRIB = {
   syd: 'Kerb data: <a href="https://data.cityofsydney.nsw.gov.au/" target="_blank" rel="noopener">City of Sydney</a>, NSW councils, Transport for NSW, © OpenStreetMap contributors',
-  mel: 'Kerb data: <a href="https://data.melbourne.vic.gov.au/" target="_blank" rel="noopener">City of Melbourne</a> (CC BY)',
+  mel: 'Kerb data: <a href="https://data.melbourne.vic.gov.au/" target="_blank" rel="noopener">City of Melbourne</a> (CC BY), © OpenStreetMap contributors',
   bne: 'Kerb data: <a href="https://data.brisbane.qld.gov.au/" target="_blank" rel="noopener">Brisbane City Council</a>, © OpenStreetMap contributors',
   per: 'Kerb data: <a href="https://geohub-perth.opendata.arcgis.com/" target="_blank" rel="noopener">City of Perth</a> (CC BY), © OpenStreetMap contributors',
 };
@@ -550,7 +550,7 @@ const FOOT = {
   per: 'Rules come from the City of Perth\'s open data: the restriction on every on-street parking bay, and the City of Perth Parking car parks.',
 };
 const COVER = {
-  mel: 'In Melbourne, Kerb covers the City of Melbourne\'s on-street parking (CBD, Southbank, Docklands, Carlton, North Melbourne, East Melbourne) from the council\'s parking zones, meter rates and live bay sensors.',
+  mel: 'In Melbourne, Kerb covers the City of Melbourne\'s on-street parking (CBD, Southbank, Docklands, Carlton, North Melbourne, East Melbourne) from the council\'s parking zones, meter rates and live bay sensors, plus streets volunteers have mapped in OpenStreetMap around St Kilda, Chapel Street, Fitzroy, Collingwood, Richmond and Brunswick.',
   bne: 'In Brisbane, Kerb covers every Brisbane City Council parking meter (CBD, Spring Hill, Fortitude Valley, South Brisbane, West End, Woolloongabba, Newstead, Milton…) plus no stopping lines, bus and taxi zones and clearways in the inner suburbs.',
   per: 'In Perth, Kerb covers every City of Perth on-street parking bay (CBD, Northbridge, East Perth, West Perth, Crawley) and the City of Perth car parks.',
 };

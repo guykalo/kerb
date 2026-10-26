@@ -143,6 +143,11 @@ export function plainNow(props, rules, day, h) {
   if (s.kind === 'unknown' && props.lk) return `No resident permit scheme on this street, so it's usually unrestricted parking. The council doesn't publish its signs, so check for any time limits.`;
   if (s.kind === 'unknown' && s.partial) {
     const cw = /^clearway/i.test(s.set.text || '');
+    if (!rulesFor(s.set, day).length && s.set.rules.some((r) => r[4] !== 0)) {
+      // A CBD meter that only runs some days: on the other days the kerb is usually a bus lane or clearway.
+      const on = [...new Set(s.set.rules.flatMap((r) => r[1]))].sort();
+      return `The meter here only runs ${fmtDays(on)}. On other days kerbs like this are usually a clearway, bus lane or loading zone, which the council doesn't publish, so check the sign before you park.`;
+    }
     return `${cw ? 'No clearway right now' : 'The published signs here don\'t cover this time'}${s.until < 24 ? ` (next one starts at ${fmtTime(s.until)})` : ''}. Other signs on this kerb aren't published, so check them before you park. Published: ${s.set.text}.`;
   }
   if (s.kind === 'unknown') return props.pa

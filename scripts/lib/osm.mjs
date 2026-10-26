@@ -12,6 +12,7 @@ export const OSM_AREAS = {
   parramatta: [150.975, -33.84, 151.045, -33.785],
   'olympic-park': [151.04, -33.865, 151.09, -33.82],
   homebush: [151.06, -33.885, 151.105, -33.855],
+  airport: [151.135, -33.965, 151.215, -33.918], // Mascot, Wolli Creek, Tempe, Botany
 };
 
 export async function fetchOsmParking(areas = OSM_AREAS) {

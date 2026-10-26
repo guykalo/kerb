@@ -2,6 +2,17 @@
 // sensor in 6,300 of them with its parking zone, the sign plates of each zone, and the Pay Stay (meter) zones
 // with their real hourly rates by day and time. Sensors report live, so the app can show free bays right now.
 import { getJSON, log, R5, kx, KY, titleCase, joinDays } from './common.mjs';
+import { fetchOsmParking, buildOsmParking } from '../osm.mjs';
+
+// Going-out suburbs outside the City of Melbourne: street parking mapped in OpenStreetMap (ODbL) by volunteers.
+export const MEL_OSM = {
+  'st-kilda': [144.965, -37.875, 145.0, -37.85],
+  'chapel-st': [144.98, -37.865, 145.005, -37.83],
+  'fitzroy-collingwood': [144.97, -37.81, 145.0, -37.79],
+  brunswick: [144.95, -37.78, 144.975, -37.755],
+  richmond: [144.99, -37.83, 145.01, -37.81],
+  carlton: [144.96, -37.805, 144.975, -37.79],
+};
 
 const MEL = 'https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets';
 export const MEL_SENSORS = `${MEL}/on-street-parking-bay-sensors/exports/json?select=kerbsideid,status_description,status_timestamp`;
@@ -16,8 +27,10 @@ export async function fetchMelbourne() {
   const zoneSegs = await all('parking-zones-linked-to-street-segments');
   const pay = await all('pay-stay-parking-restrictions');
   const paySegs = await all('pay-stay-zones-linked-to-street-segments');
+  let osm = { ways: [] };
+  try { osm = await fetchOsmParking(MEL_OSM); } catch (e) { log(`  melbourne osm: ${e.message}`); }
   log(`  melbourne: ${bays.length} bays, ${sensors.length} sensors, ${plates.length} sign plates, ${pay.length} pay stay rates`);
-  return { bays, sensors, plates, zoneSegs, pay, paySegs, fetchedAt: new Date().toISOString() };
+  return { bays, sensors, plates, zoneSegs, pay, paySegs, osm, fetchedAt: new Date().toISOString() };
 }
 
 const DAYS = { 'Mon-Fri': [1, 2, 3, 4, 5], 'Sat-Sun': [0, 6], Sat: [6], Sun: [0], 'Mon-Sat': [1, 2, 3, 4, 5, 6], 'Mon-Sun': [0, 1, 2, 3, 4, 5, 6], 'Mon-Thu': [1, 2, 3, 4], Fri: [5], MF: [1, 2, 3, 4, 5], SS: [0, 6] };
@@ -129,6 +142,20 @@ export function buildMelbourne(raw, reg) {
         features.push({ type: 'Feature', properties: { s: name || 'Street parking', b: 'Melbourne', sd: Math.abs(off) > 2 ? `${sdName} side` : '', k: key, z: 1, pa: '', f15: 0, n: run.length, src: 'mel', ...(kb.length ? { kb } : {}) }, geometry: { type: 'LineString', coordinates: [at(a), at(b)] } });
       }
     }
+  }
+  // OpenStreetMap kerbs in the suburbs, except where the council's own bays already cover the street.
+  if (raw.osm?.ways?.length) {
+    const near = new Set();
+    for (const f of features) for (const c of f.geometry.coordinates) near.add(`${Math.round(c[0] * 2000)}:${Math.round(c[1] * 2000)}`);
+    const o = buildOsmParking(raw.osm, reg);
+    let added = 0;
+    for (const f of o.features) {
+      const c = f.geometry.coordinates[Math.floor(f.geometry.coordinates.length / 2)];
+      if (near.has(`${Math.round(c[0] * 2000)}:${Math.round(c[1] * 2000)}`)) continue;
+      f.properties.b = 'Melbourne';
+      features.push(f); added++;
+    }
+    log(`  melbourne osm: ${added} kerb sides from OpenStreetMap`);
   }
   const bays = raw.sensors.map((s) => [String(s[0]), s[2], s[3]]);
   log(`  melbourne: ${features.length} kerb runs; bays placed by sensor zone ${stats.sensorZone}, by the side's zone ${stats.sideZone}, by Pay Stay ${stats.payStay}, by single zone ${stats.oneZone}, unknown ${stats.unknown}`);
