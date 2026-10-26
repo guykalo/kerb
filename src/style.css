@@ -81,13 +81,14 @@ button { cursor: pointer; }
 .dock { flex: none; display: flex; flex-direction: column; gap: 11px; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); }
 
 /* 1. The answer so far, as one sentence. In the lowered sheet it's the only thing showing. */
-.ask { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: transparent; padding: 2px 0 0; text-align: left; cursor: default; }
-.panel.min .ask { cursor: pointer; }
+.ask { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: transparent; padding: 2px 0 0; text-align: left; cursor: pointer; }
+.setup { display: none; flex-direction: column; gap: 11px; }
+.dock.editing .setup { display: flex; }
 .ask-icon { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); font-size: 19px; }
 .ask-text { font-size: 17.5px; line-height: 1.25; font-weight: 500; text-wrap: balance; }
 .ask-text b { font-weight: 800; }
-.ask-edit { display: none; margin-left: auto; flex: none; padding: 7px 12px; border-radius: 999px; background: var(--surface-2); color: var(--accent); font-weight: 700; font-size: 14px; }
-.panel.min .ask-edit { display: inline-block; }
+.ask-edit { margin-left: auto; flex: none; padding: 9px 14px; border-radius: 999px; background: var(--surface-2); color: var(--accent); font-weight: 700; font-size: 15px; }
+.dock.editing .ask-edit { background: var(--accent); color: var(--accent-ink); }
 
 /* 2 and 3. Plain questions with big, labelled answers. */
 .q { display: flex; flex-direction: column; gap: 6px; }
@@ -148,6 +149,8 @@ button { cursor: pointer; }
 
 /* ---------- detail ---------- */
 .detail { padding: 6px 16px 22px; display: flex; flex-direction: column; gap: 16px; }
+.dhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: -6px; }
+.dclose { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--surface-2); color: var(--fg); display: grid; place-items: center; font-size: 19px; }
 .back { align-self: flex-start; border: 0; background: transparent; color: var(--accent); font-weight: 650; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
 .detail h2 { margin: 0; font-size: 26px; line-height: 1.05; font-weight: 800; font-stretch: 112%; letter-spacing: -0.015em; text-wrap: balance; }
 .detail .where { color: var(--muted); font-size: 13.5px; margin-top: 4px; }
@@ -253,6 +256,9 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
   .panel { top: 72px; bottom: 16px; left: 16px; right: auto; width: 408px; height: auto; border-radius: 20px; transform: none !important; box-shadow: var(--shadow); border: 1px solid var(--line); overflow: hidden; }
   .handle { display: none; }
   .dock { padding-top: 16px; }
+  .setup { display: flex; }
+  .ask { cursor: default; }
+  .ask-edit { display: none; }
   .legend { left: 432px; right: auto; bottom: 16px; padding: 0; flex-wrap: wrap; overflow: visible; }
   .fullbtn { display: none; }
   .satbtn { bottom: 16px; right: 16px; }

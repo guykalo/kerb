@@ -51,7 +51,7 @@ const NEAR_M = 650; // list shows kerbs within this distance of the map centre
 const WALK_M_PER_MIN = 80;
 
 /* ---------- state ---------- */
-const S = { day: 1, hour: 9, stay: 2, night: false, sel: null, hidden: new Set(), open: false, dest: null, walk: 10 };
+const S = { day: 1, hour: 9, stay: 2, night: false, edit: false, sel: null, hidden: new Set(), open: false, dest: null, walk: 10 };
 // Overnight: from the arrival time until 8am the next morning.
 const nightStay = (h) => Math.max(1, h < 8 ? 8 - h : 32 - h);
 function sydneyNow() { // "now" in the city on the map
@@ -96,6 +96,8 @@ async function loadData() {
   [KERBS, RULES, METERS, CARPARKS] = await Promise.all(['kerbs.json', 'rules.json', 'meters.json', 'carparks.json'].map((n) => get(n, META.builtAt)));
   let x0 = 180, y0 = 90, x1 = -180, y1 = -90;
   for (const f of KERBS.features) {
+    // Older builds tagged the CBD with the council's "Not within a Parking Permit Scheme Area" polygon as a permit area.
+    if (CITY_ID === 'syd' && (f.properties.pa === 'Area CBD' || /not within a parking permit/i.test(f.properties.b || ''))) { f.properties.pa = ''; if (/not within/i.test(f.properties.b || '')) f.properties.b = ''; }
     const c = f.geometry.coordinates;
     const a = c[0], b = c[c.length - 1];
     mids.set(f.properties.id, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
@@ -484,15 +486,25 @@ $('#staySeg').querySelectorAll('button').forEach((b) => (b.onclick = () => {
 const timeIn = $('#time');
 timeIn.addEventListener('input', () => { S.hour = +timeIn.value; setNight(); update(true); });
 timeIn.addEventListener('change', () => update());
-// Tapping the sentence when the sheet is lowered brings the questions back.
-$('#ask').addEventListener('click', () => { if (sheet === 'min') setSheet('peek'); });
+// Tapping the sentence (or its Change button) unfolds the questions; Done folds them away again.
+// On phones they start folded so the map gets the screen; on desktop they're always shown.
+function setEdit(on) {
+  S.edit = on;
+  $('#dock').classList.toggle('editing', on);
+  $('#ask').setAttribute('aria-expanded', String(on));
+  syncControls();
+  setPeek();
+  if (on && sheet === 'min') setSheet('peek');
+  if (on) drawRibbon();
+}
+$('#ask').addEventListener('click', () => setEdit(!S.edit));
 
 function askHTML() {
   const end = S.hour + S.stay, nextDay = end >= 24;
   const how = S.night ? 'overnight' : stayWords(true).replace(/^an hour$/, '1 hour');
   const when = isNow() ? 'now' : `${S.day === today.day ? 'today' : S.day === (today.day + 1) % 7 ? 'tomorrow' : DAYS[S.day]} ${fmtTime(S.hour)}`;
   const until = `${fmtTime(end % 24)}${nextDay ? ` ${S.day === today.day ? 'tomorrow' : DAYS[(S.day + 1) % 7]}` : ''}`;
-  return `<span class="ask-icon"><i class="ph-fill ph-car-simple"></i></span><span class="ask-text">Parking <b>${how}</b>, from <b>${when}</b> until <b>${until}</b></span><span class="ask-edit">Change</span>`;
+  return `<span class="ask-icon"><i class="ph-fill ph-car-simple"></i></span><span class="ask-text">Parking <b>${how}</b>, from <b>${when}</b> until <b>${until}</b></span><span class="ask-edit">${S.edit ? 'Done' : 'Change'}</span>`;
 }
 function syncControls() {
   $('#staySeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(S.night ? b.dataset.v === 'night' : +b.dataset.v === S.stay)));
@@ -735,6 +747,12 @@ function setDest(d) {
   } else q.value = '';
   update();
 }
+// One tap back to the plain map: drop the street or car park, the destination, and lower the sheet.
+function closeAll() {
+  S.sel = null;
+  if (!isDesk()) setSheet('peek');
+  if (S.dest) setDest(null); else update();
+}
 function destBar() {
   if (!S.dest) return;
   const el = document.createElement('div'); el.className = 'dest';
@@ -954,7 +972,7 @@ function renderDetail() {
     const lv = busyLevel(busy(p, RULES, S.day, S.hour));
     const v = verdictText(p, c);
     d.innerHTML = `
-      <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
+      <div class="dhead"><button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button><button class="dclose" type="button" aria-label="Close and show the whole map"><i class="ph ph-x"></i></button></div>
       <div><h2>${p.s}</h2><div class="where">${[p.sd, p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} ${p.k >= 0 ? 'paid ' : ''}spaces` : ''].filter(Boolean).join(', ')}</div></div>
       ${liveCount(p) ? `<div class="live"><i class="ph-fill ph-broadcast" aria-hidden="true"></i><span><b>${liveText(liveCount(p))}</b><small>Live from the council's in-ground sensors, ${Math.max(1, Math.round((Date.now() - LIVE_AT) / 60000))} min ago</small></span></div>` : ''}
       <div class="verdict"><div><small>${spanText(stayTxt)}</small>${v.head}</div>
@@ -973,7 +991,7 @@ function renderDetail() {
   } else {
     const price = carParkPrice(cp);
     d.innerHTML = `
-      <button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button>
+      <div class="dhead"><button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button><button class="dclose" type="button" aria-label="Close and show the whole map"><i class="ph ph-x"></i></button></div>
       <div><h2>${cp.name}</h2><div class="where">${[cp.address, cp.entry ? `Entry from ${cp.entry}` : '', cp.spots ? `${cp.spots} spaces` : ''].filter(Boolean).join('. ')}.</div></div>
       ${cp.kind === 'parkride' ? prDetail(cp) : price && !price.none ? `<div class="verdict"><div><small>${spanText(stayTxt)}</small>${price.k}</div><span class="big" style="color:var(--${price.p === 0 ? 'free' : 'fg'})">${money(price.p)}</span></div>`
         : price?.none ? maxStayHTML(cp, price, stayTxt)
@@ -996,6 +1014,7 @@ function renderDetail() {
   body.dataset.mode = `detail:${S.sel}`;
   if (f) loadSignPhotos(f, d.querySelector('#signPhotos'));
   d.querySelector('.back').onclick = () => { S.sel = null; update(); };
+  d.querySelector('.dclose').onclick = closeAll;
   const id = S.sel;
   d.querySelector('[data-act=save]').onclick = (e) => { toggleSaved(id); const on = isSaved(id); e.currentTarget.setAttribute('aria-pressed', String(on)); e.currentTarget.innerHTML = starInner(on); };
   d.querySelector('[data-act=share]').onclick = () => shareSel(f, cp);
@@ -1089,12 +1108,13 @@ async function fetchSignPhotos(f) {
 
 function select(id, fly) {
   S.sel = id;
-  if (id != null) setOpen(true);
+  // Like Google Maps: a tapped street opens as a card at the bottom, with the map still in view. Swipe up for more.
+  if (id != null && !isDesk()) { if (S.edit) setEdit(false); setSheet('peek'); }
   if (fly && id != null) {
     const at = typeof id === 'number' ? mids.get(id) : CARPARKS.find((c) => c.id === id)?.at;
     if (at) {
       const desk = innerWidth >= 900;
-      map.easeTo({ center: at, zoom: Math.max(map.getZoom(), 16.5), padding: desk ? { left: 430, top: 0, right: 0, bottom: 0 } : { bottom: innerHeight * 0.55, top: 60, left: 0, right: 0 }, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 600 });
+      map.easeTo({ center: at, zoom: Math.max(map.getZoom(), 16.5), padding: desk ? { left: 430, top: 0, right: 0, bottom: 0 } : { bottom: Math.min(innerHeight * 0.55, px('--vis') + 30), top: 70, left: 0, right: 0 }, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 600 });
     }
   }
   update();
@@ -1142,7 +1162,11 @@ function setPeek() {
   sizeSheet();
   const dock = $('#dock').getBoundingClientRect().height;
   const row = $('.dock-row').getBoundingClientRect().height;
-  root.style.setProperty('--peek', `${Math.round(dock + 22 + 64)}px`);
+  // A street or car park card shows down to its answer (the price or "no parking"); the list shows its first line.
+  let extra = 64;
+  const v = body.dataset.mode?.startsWith('detail') && body.querySelector('.detail .verdict, .detail .plain');
+  if (v) extra = Math.min(300, Math.round(v.getBoundingClientRect().bottom - body.getBoundingClientRect().top + body.scrollTop + 14));
+  root.style.setProperty('--peek', `${Math.round(dock + 22 + extra)}px`);
   root.style.setProperty('--min', `${Math.round(row + 22 + 12)}px`);
   setSheet(sheet);
 }
@@ -1367,7 +1391,13 @@ function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = fal
 
 /* ---------- update loop ---------- */
 let raf = 0;
-function renderBody() { S.sel != null ? renderDetail() : renderList(); }
+let lastMode = '';
+function renderBody() {
+  try { S.sel != null ? renderDetail() : renderList(); } finally {
+    const m = body.dataset.mode || '';
+    if (m !== lastMode) { lastMode = m; if (!isDesk()) setPeek(); }
+  }
+}
 function update(light) {
   syncControls();
   if (raf) cancelAnimationFrame(raf);
@@ -1400,12 +1430,18 @@ map.on('click', (e) => {
   if (map.getLayer('cp-pill') && map.queryRenderedFeatures(e.point, { layers: ['cp-cluster', 'cp-pill', 'cp-sel'] }).length) return;
   const hits = map.queryRenderedFeatures([[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]], { layers: ['kerb-line', 'kerb-short', 'kerb-faint'].filter((l) => map.getLayer(l)) });
   if (hits.length) select(hits[0].properties.id, false);
-  else if (S.sel != null) { S.sel = null; update(); }
+  else if (S.sel != null) { S.sel = null; if (!isDesk()) setSheet('peek'); update(); }
 });
 for (const l of ['kerb-line', 'kerb-short', 'kerb-faint']) {
   map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer'));
   map.on('mouseleave', l, () => (map.getCanvas().style.cursor = ''));
 }
+// Touching the map means you want the map: lower a raised sheet and fold the questions away.
+map.on('dragstart', () => {
+  if (isDesk()) return;
+  if (S.edit) setEdit(false);
+  if (sheet === 'open') setSheet('peek');
+});
 let moveTimer = null;
 map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
 

@@ -41,8 +41,10 @@
 
       <div class="dock" id="dock">
         <!-- 1. What you're looking for, in one sentence (also all that shows when the sheet is lowered) -->
-        <button class="dock-row ask" id="ask" type="button" aria-live="polite"></button>
+        <button class="dock-row ask" id="ask" type="button" aria-controls="setup" aria-expanded="false"></button>
 
+        <!-- The questions: folded away on phones until you tap Change, so the map stays big -->
+        <div class="setup" id="setup">
         <!-- 2. How long -->
         <div class="q">
           <div class="qlabel" id="stayLabel">How long are you staying?</div>
@@ -71,6 +73,7 @@
           <div class="staybox" id="stayBox" aria-hidden="true"></div>
           <input id="time" type="range" min="0" max="23.75" step="0.25" aria-label="Arrival time">
           <div class="ticks" aria-hidden="true"><span>12am</span><span>6am</span><span>noon</span><span>6pm</span><span>12am</span></div>
+        </div>
         </div>
       </div>
 

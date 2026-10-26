@@ -27,7 +27,8 @@ export function buildData(raw) {
     .map((f) => ({ zone: f.attributes.ID, ...withBox(polyOf(f)) }));
   const zoneAt = (p) => (zones.find((z) => inBox(p, z.box) && inRings(p, z.rings)) || {}).zone || 0;
 
-  const permitAreas = permits.map((f) => ({ label: f.attributes.Label_2, name: f.attributes.Label, ...withBox(polyOf(f)) }));
+  // The council's permit layer also has a polygon for the CBD labelled "Not within a Parking Permit Scheme Area": that's no scheme.
+  const permitAreas = permits.filter((f) => !/not within/i.test(f.attributes.Label || '')).map((f) => ({ label: f.attributes.Label_2, name: f.attributes.Label, ...withBox(polyOf(f)) }));
   const permitAt = (p) => permitAreas.find((a) => inBox(p, a.box) && inRings(p, a.rings)) || null;
 
   const free15Areas = free15.map((f) => ({ street: norm(f.attributes.Street), section: f.attributes.Section, ...withBox(polyOf(f)) }));
