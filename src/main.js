@@ -1016,7 +1016,7 @@ function fineHTML(p, set, c) {
   const add = (label, codes, now) => { const a = fineAmt(codes); if (a && !seen.has(label)) { seen.add(label); rows.push({ label, a, now }); } };
   const nowNote = c && c.ok === false ? String(c.why || '') : '';
   for (const r of mergeOvernight(set?.rules || [])) {
-    if (r[6]) { const note = r[7] || 'No parking'; const hit = FINE_FOR.find(([re]) => re.test(note)); if (hit) add(`${note.replace(/\s*\(.*$/, '')}, ${r[2] === 0 && r[3] === 24 ? 'all day' : `${fmtTime(r[2])}-${fmtTime(r[3])}`} ${fmtDays(r[1])}`, [hit[1]], nowNote.startsWith(note)); }
+    if (r[6]) { const note = r[7] || 'No parking'; const hit = FINE_FOR.find(([re]) => re.test(note)); if (hit) add(`${note.replace(/\s*\(.*$/, '')}, ${r[2] === 0 && r[3] === 24 ? 'all day' : `${fmtTime(r[2])}-${fmtTime(r[3])}`} ${fmtDays(r[1]).replace(/^Every day$/, 'every day')}`, [hit[1]], nowNote.startsWith(note)); }
   }
   if (set?.rules.some((r) => r[0] > 0 && r[0] < 24)) add('Staying longer than the sign allows', [92362, 92363, 92352, 92353], /limit/i.test(nowNote));
   if (set?.rules.some((r) => r[4] !== 0)) add('Not paying the meter', [97244, 97245]);
