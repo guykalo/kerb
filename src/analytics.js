@@ -1,7 +1,7 @@
 // Visitor counter: Cloudflare Web Analytics (free, no cookies, no personal data).
-// The token comes from the VITE_CF_BEACON_TOKEN GitHub secret at build time; with no token, nothing loads.
+// Token for guykalo.github.io (can be overridden by the VITE_CF_BEACON_TOKEN GitHub secret).
 // It isn't a secret: Cloudflare puts it in every page that uses it.
-const TOKEN = import.meta.env.VITE_CF_BEACON_TOKEN || '';
+const TOKEN = import.meta.env.VITE_CF_BEACON_TOKEN || 'cbe8c4a4347d484b98ce488515903f7c';
 
 export function initAnalytics() {
   if (!TOKEN || location.hostname === 'localhost') return;
