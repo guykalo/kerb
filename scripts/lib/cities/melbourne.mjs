@@ -111,7 +111,7 @@ export function buildMelbourne(raw, reg) {
         if (!rules || !rules.length) { stats.unknown += run.length; continue; }
         stats[how] += run.length;
         const text = run[0].zone != null ? (platesByZone.get(run[0].zone) || []).map((p) => `${p.restriction_display} ${p.restriction_days} ${String(p.time_restrictions_start).slice(0, 5)}-${String(p.time_restrictions_finish).slice(0, 5)}`).join('; ') : '';
-        const key = reg.add({ rules, q: 0, g: 'free', u: 0, src: `City of Melbourne parking zones${rules.some((r) => r[4] > 0) ? ' and Pay Stay rates' : ''} (open data, CC BY)`, text });
+        const key = reg.add({ rules, q: 0, g: 'edges', u: 0, src: `City of Melbourne parking zones${rules.some((r) => r[4] > 0) ? ' and Pay Stay rates' : ''} (open data, CC BY)`, text });
         // A line through the run's bays, a car length past each end.
         const a = run[0].along - 3, b = run[run.length - 1].along + 3, off = run.reduce((s, q) => s + q.off, 0) / run.length;
         const at = (t) => R5([cx + (t * ux - off * uy) / k, cy + (t * uy + off * ux) / KY]);

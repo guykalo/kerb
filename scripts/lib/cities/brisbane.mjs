@@ -60,7 +60,7 @@ export function buildBrisbane(raw, reg) {
     if (!near || !rules.length) { skipped++; continue; }
     const len = Math.max(12, Math.min(70, (+m.veh_bays || 2) * 6.2));
     const text = [`${m.max_stay_hrs ? `${m.max_stay_hrs}P ` : ''}Ticket ${m.operational_day || ''} ${m.operational_time || ''}`.trim(), m.restrictions && m.restrictions !== 'NONE' ? m.restrictions : ''].filter(Boolean).join('; ');
-    const k = reg.add({ rules, q, g: partial ? 'unknown' : 'free', u: 0, src: `${src}: parking meters${m.tar_zone ? ` (${m.tar_zone}${m.max_cap_chg ? `, daily cap $${m.max_cap_chg}` : ''})` : ''}`, text });
+    const k = reg.add({ rules, q, g: partial ? 'unknown' : 'edges', u: 0, src: `${src}: parking meters${m.tar_zone ? ` (${m.tar_zone}${m.max_cap_chg ? `, daily cap $${m.max_cap_chg}` : ''})` : ''}`, text });
     features.push({ type: 'Feature', properties: { s: titleCase(m.street), b: titleCase(m.suburb), sd: sideName(p, near), k, z: /BRISBANE CITY|SPRING HILL|FORTITUDE|SOUTH BRISBANE/.test(m.suburb) ? 1 : 2, pa: '', f15: q, n: +m.veh_bays || 0, src: 'bne' }, geometry: { type: 'LineString', coordinates: pieceAlong(p, near.dir, len) } });
   }
   const NOTE = { 'No Stopping': 'No stopping', 'Bus Bay': 'Bus Zone', 'Taxi Rank': 'Taxi Zone', 'Accessible Parking': 'Mobility Parking', 'Motorcycle Parking': 'Motorcycles only' };

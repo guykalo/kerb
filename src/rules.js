@@ -58,6 +58,15 @@ export function stateAt(props, rules, day, h) {
     const next = today.filter((r) => r[2] > h).map((r) => r[2]);
     return { kind: 'unknown', until: next.length ? Math.min(...next) : 24, partial: true, set };
   }
+  if (set.g === 'edges') {
+    // Only part of the sign is known (a council decision, a meter zone): before the first time on it and after the
+    // last there's no limit, but a gap in the middle of the day is usually something else (a clearway), so check.
+    const before = today.some((r) => r[3] <= h), after = today.some((r) => r[2] > h);
+    const next = today.filter((r) => r[2] > h).map((r) => r[2]);
+    if (before && after) return { kind: 'unknown', until: Math.min(...next), partial: true, set };
+    if (!today.length && ![1, 2, 3, 4, 5].every((d) => rulesFor(set, d).length) && set.rules.length) return { kind: 'unknown', until: 24, partial: true, set };
+    return { kind: 'free', until: next.length ? Math.min(...next) : 24, why: 'outside-sign', set };
+  }
   if (set.g === 'free') {
     // Signed rules: outside the times on the sign there's no limit.
     const next = today.filter((r) => r[2] > h).map((r) => r[2]);

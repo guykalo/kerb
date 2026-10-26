@@ -365,7 +365,7 @@ export function buildManual(raw, reg) {
   for (const e of raw.spec.streets) {
     const srcText = raw.spec.sources[e.src] ? raw.spec.sources[e.src].split(': http')[0] : e.src;
     // A permit street with no published sign times has no rule set: it shows as a permit area, never as a rule.
-    const k = e.rules == null ? -1 : reg.add({ rules: e.rules, q: 0, g: 'free', u: e.rules.length ? 0 : 1, src: e.date ? `${srcText}, ${e.date}` : srcText, text: e.text || '' });
+    const k = e.rules == null ? -1 : reg.add({ rules: e.rules, q: 0, g: e.rules.length ? 'edges' : 'free', u: e.rules.length ? 0 : 1, src: e.date ? `${srcText}, ${e.date}` : srcText, text: e.text || '' });
     const centre = e.near || e.area;
     const paths = pathsNear(e.street, centre, e.radius ? e.radius + 300 : e.a ? 2500 : 1500);
     let A = null, B = null;
