@@ -130,7 +130,7 @@ async function openSnap(file, getWhere, fromKerb) {
   el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Read a parking sign');
   el.innerHTML = `<div class="snap-card"><div class="snap-top"><b>Snap the sign</b><button type="button" class="snap-x" aria-label="Close"><i class="ph ph-x"></i></button></div>
     <div class="snap-body"><img class="snap-img" alt="Your photo of the sign"><div class="snap-verdict" hidden></div><div class="snap-where" hidden></div><p class="snap-status">Opening the photo…</p><div class="snap-panels"></div></div>
-    <div class="snap-actions"><button type="button" class="snap-save" disabled>Save to this kerb</button></div></div>`;
+    <div class="snap-actions">${SHARE_URL ? `<label class="snap-share"><input type="checkbox"${SHARE_ON() ? ' checked' : ''}> Share with other drivers (just the sign wording, no photo)</label>` : ''}<button type="button" class="snap-save" disabled>Save to this kerb</button></div></div>`;
   document.body.appendChild(el);
   const $ = (s) => el.querySelector(s);
   const close = () => el.remove();
@@ -146,8 +146,8 @@ async function openSnap(file, getWhere, fromKerb) {
     panels = readSign(read.text).panels;
   } catch (e) { $('.snap-status').textContent = `${e.message}. You can still type in what the sign says.`; }
   $('.snap-status').innerHTML = panels.length
-    ? `Here's what Kerb read${read?.by === 'ai' ? '' : ' (on your phone)'}. <b>Check it against the sign</b> and fix anything that's wrong.`
-    : "Kerb couldn't read this one. Set what the sign says below. Tip: get closer so the sign fills most of the photo.";
+    ? `Here's what Streety read${read?.by === 'ai' ? '' : ' (on your phone)'}. <b>Check it against the sign</b> and fix anything that's wrong.`
+    : "Streety couldn't read this one. Set what the sign says below. Tip: get closer so the sign fills most of the photo.";
   if (!panels.length) panels = [{ kind: 'limit', hours: 2, head: '2P', times: [[8, 18, [1, 2, 3, 4, 5]]] }];
 
   const render = () => {
@@ -205,7 +205,7 @@ async function openSnap(file, getWhere, fromKerb) {
     whereBox.hidden = false;
     whereBox.innerHTML = place
       ? `<i class="ph ph-map-pin" aria-hidden="true"></i><span>On <b>${place.street}</b>${place.side ? `, ${place.side.toLowerCase()}` : ''}${place.d != null ? `, ${place.d} m from you` : ''}</span><button type="button" class="snap-pick">Change</button>`
-      : `<i class="ph ph-map-pin" aria-hidden="true"></i><span>Kerb couldn't tell where you are.</span><button type="button" class="snap-pick">Pick the kerb</button>`;
+      : `<i class="ph ph-map-pin" aria-hidden="true"></i><span>Streety couldn't tell where you are.</span><button type="button" class="snap-pick">Pick the kerb</button>`;
     whereBox.querySelector('.snap-pick').onclick = pick;
   };
   const locate = async () => {
@@ -241,7 +241,9 @@ async function openSnap(file, getWhere, fromKerb) {
     if (!saveSnaps(list.slice(0, 60))) saveSnaps(list.slice(0, 20).map((s) => ({ ...s, thumb: '' })));
     C.applySnaps();
     let shared = false;
-    if (SHARE_URL) { try { const { thumb, ...data } = snap; shared = (await fetch(SHARE_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) })).ok; } catch { /* stays on the phone */ } }
+    const shareBox = document.querySelector('.snap-share input');
+    if (shareBox) { try { localStorage.setItem('streety-share', shareBox.checked ? '1' : '0'); } catch { /* private mode */ } }
+    if (SHARE_URL && (!shareBox || shareBox.checked)) { try { const { thumb, ...data } = snap; data.city = C.city; shared = (await fetch(SHARE_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) })).ok; } catch { /* stays on the phone */ } }
     close();
     C.toast(shared ? 'Saved. Thanks, other drivers will see it after tonight\'s update.' : 'Saved on this phone. The kerb now shows what the sign says.');
     const id = snap.ids[0] ?? C.snapKerbId(snap.id);
@@ -256,6 +258,10 @@ const fmtSpan = ([f, t, d]) => {
 
 // Turn saved photos into kerbs on this phone's map: existing kerbs get the photo's rules, and kerbs drawn
 // from the base map are added as new pieces. Returns the ids of the new pieces by snap id.
+// Sign readings other drivers shared (from Streety's server), applied under this phone's own readings.
+let SHARED = [];
+export function setSharedSnaps(list) { SHARED = Array.isArray(list) ? list.filter((s) => s && Array.isArray(s.rules) && s.rules.length) : []; }
+export const SHARE_ON = () => { try { return localStorage.getItem('streety-share') !== '0'; } catch { return true; } };
 export function snapsToKerbs(K, RULES, byId, mids) {
   const made = new Map();
   let next = 9000000;
@@ -263,8 +269,10 @@ export function snapsToKerbs(K, RULES, byId, mids) {
   if (RULES.base == null) RULES.base = RULES.length; else RULES.length = RULES.base;
   K.features = K.features.filter((f) => { if (f.properties.id >= 9000000) { byId.delete(f.properties.id); mids.delete(f.properties.id); return false; } return true; });
   for (const f of K.features) if (f.properties.snap) { f.properties.k = f.properties.k0; delete f.properties.snap; }
-  for (const s of loadSnaps().slice().reverse()) {
-    const k = RULES.push({ rules: s.rules, q: 0, text: s.text, src: `Your sign photo, ${s.date}` }) - 1;
+  const mine = loadSnaps();
+  const all = [...SHARED.filter((x) => !mine.some((m) => m.ids?.some((i) => x.ids?.includes(i)))).map((x) => ({ ...x, shared: true })), ...mine.slice().reverse()];
+  for (const s of all) {
+    const k = RULES.push({ rules: s.rules, q: 0, text: s.text, src: s.shared ? `A Streety driver's reading of the sign, ${s.date}` : `Your sign photo, ${s.date}` }) - 1;
     if (s.ids?.length) { for (const id of s.ids) { const f = byId.get(id); if (f) { if (!f.properties.snap) f.properties.k0 = f.properties.k; f.properties.k = k; f.properties.snap = 1; } } continue; }
     if (!s.line) continue;
     const id = next++;
@@ -311,7 +319,7 @@ async function openBoard(file, cp, ctx) {
   $('.snap-img').src = img.src;
   let got = { bands: [], early: null, night: null }, text = '';
   try { const r = await readPhoto(img, (m) => ($('.snap-status').textContent = m.replace('sign', 'price board'))); text = r.text; got = readBoard(text); } catch (e) { $('.snap-status').textContent = e.message; }
-  $('.snap-status').innerHTML = got.bands.length ? 'Here\'s what Kerb read. <b>Check each price against the board</b> and fix anything wrong.' : "Kerb couldn't read the prices. Type them in from the board below.";
+  $('.snap-status').innerHTML = got.bands.length ? 'Here\'s what Streety read. <b>Check each price against the board</b> and fix anything wrong.' : "Streety couldn't read the prices. Type them in from the board below.";
   const rows = got.bands.length ? got.bands : [[1, 0], [2, 0], [3, 0], [24, 0]];
   const render = () => {
     $('.snap-panels').innerHTML = `<div class="sp">${rows.map(([h, p], i) => `<div class="sp-row" data-i="${i}"><span>Up to</span><select class="b-h" aria-label="Hours">${[0.5, 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 24].map((x) => `<option value="${x}"${x === h ? ' selected' : ''}>${x === 24 ? 'all day' : x < 1 ? '30 min' : `${x} hr${x > 1 ? 's' : ''}`}</option>`).join('')}</select><span>$</span><input class="b-p" inputmode="decimal" value="${p || ''}" aria-label="Price" style="width:80px"><button type="button" class="sp-tdel" aria-label="Remove"><i class="ph ph-x"></i></button></div>`).join('')}

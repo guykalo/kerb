@@ -19,7 +19,7 @@ concurrency:
 env:
   # Where the live app is. Its data files are the fallback when a council server is down.
   SITE: https://guykalo.github.io/kerb
-  CF_PROJECT: kerb-sydney
+  CF_PROJECT: streety
 
 jobs:
   build:
@@ -105,12 +105,22 @@ jobs:
         run: |
           mkdir -p public/data
           for f in meta kerbs rules meters carparks; do curl -fsSL "$SITE/data/$f.json" -o "public/data/$f.json"; done
+      # Streety's small server (reports and shared sign readings), once the Cloudflare token is in the repo secrets.
+      - name: Deploy the Streety server
+        id: worker
+        if: env.CF_TOKEN != ''
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/deploy-worker.mjs
       - name: Build app
         run: npm run build
         env:
           VITE_MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
           VITE_SIGN_READ_URL: ${{ secrets.VITE_SIGN_READ_URL }}
-          VITE_SNAP_SHARE_URL: ${{ secrets.VITE_SNAP_SHARE_URL }}
+          VITE_SNAP_SHARE_URL: ${{ secrets.VITE_SNAP_SHARE_URL || (steps.worker.outputs.url && format('{0}/snap', steps.worker.outputs.url)) || '' }}
+          VITE_REPORT_URL: ${{ secrets.VITE_REPORT_URL || (steps.worker.outputs.url && format('{0}/report', steps.worker.outputs.url)) || '' }}
           VITE_CF_BEACON_TOKEN: ${{ secrets.VITE_CF_BEACON_TOKEN }}
       - name: Deploy to Cloudflare Pages
         if: env.CF_TOKEN != ''

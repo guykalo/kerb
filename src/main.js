@@ -9,13 +9,13 @@ import {
   busy, busyLevel, BUSY_WORD, BANDS, band,
 } from './rules.js';
 import { parsePart } from '../scripts/lib/parse-rules.mjs';
-import { initSnap, snapsToKerbs, initBoard, loadBoards } from './snap.js';
+import { initSnap, snapsToKerbs, initBoard, loadBoards, setSharedSnaps } from './snap.js';
 import { initAnalytics } from './analytics.js';
 
 initAnalytics();
 
 const $ = (s) => document.querySelector(s);
-// Cities Kerb covers. Sydney's data lives in data/, the others in data/<id>/. One city is loaded at a time.
+// Cities Streety covers. Sydney's data lives in data/, the others in data/<id>/. One city is loaded at a time.
 const CITIES = {
   syd: { name: 'Sydney', center: [151.2075, -33.8722], zoom: 15.2, tz: 'Australia/Sydney', data: './data/', box: [149, -35.5, 153, -32], search: '150.5,-34.3,151.45,-33.4' },
   mel: { name: 'Melbourne', center: [144.9631, -37.8136], zoom: 15.4, tz: 'Australia/Melbourne', data: './data/mel/', box: [144.3, -38.6, 145.8, -37.3], search: '144.6,-38.1,145.3,-37.6', live: true },
@@ -40,7 +40,7 @@ const CITY_ID = (() => {
 const CITY = CITIES[CITY_ID];
 try { localStorage.setItem('kerb-city', CITY_ID); } catch { /* storage unavailable */ }
 document.documentElement.dataset.city = CITY_ID;
-document.title = `Kerb · ${CITY.name} parking`;
+document.title = `Streety · ${CITY.name} parking`;
 function goToCity(id, at) {
   try { localStorage.setItem('kerb-city', id); } catch { /* storage unavailable */ }
   location.href = `${location.pathname}?city=${id}${at ? `#at=${at[1].toFixed(5)},${at[0].toFixed(5)}` : ''}`;
@@ -115,10 +115,10 @@ function distM(a, b) {
 
 /* ---------- map ---------- */
 const ATTRIB = {
-  syd: 'Kerb data: <a href="https://data.cityofsydney.nsw.gov.au/" target="_blank" rel="noopener">City of Sydney</a>, NSW councils, Transport for NSW, © OpenStreetMap contributors',
-  mel: 'Kerb data: <a href="https://data.melbourne.vic.gov.au/" target="_blank" rel="noopener">City of Melbourne</a> (CC BY), © OpenStreetMap contributors',
-  bne: 'Kerb data: <a href="https://data.brisbane.qld.gov.au/" target="_blank" rel="noopener">Brisbane City Council</a>, © OpenStreetMap contributors',
-  per: 'Kerb data: <a href="https://geohub-perth.opendata.arcgis.com/" target="_blank" rel="noopener">City of Perth</a> (CC BY), © OpenStreetMap contributors',
+  syd: 'Streety data: <a href="https://data.cityofsydney.nsw.gov.au/" target="_blank" rel="noopener">City of Sydney</a>, NSW councils, Transport for NSW, © OpenStreetMap contributors',
+  mel: 'Streety data: <a href="https://data.melbourne.vic.gov.au/" target="_blank" rel="noopener">City of Melbourne</a> (CC BY), © OpenStreetMap contributors',
+  bne: 'Streety data: <a href="https://data.brisbane.qld.gov.au/" target="_blank" rel="noopener">Brisbane City Council</a>, © OpenStreetMap contributors',
+  per: 'Streety data: <a href="https://geohub-perth.opendata.arcgis.com/" target="_blank" rel="noopener">City of Perth</a> (CC BY), © OpenStreetMap contributors',
 };
 const map = new maplibregl.Map({
   fadeDuration: 260,
@@ -383,7 +383,7 @@ function carParkPrice(cp, day = S.day, h = S.hour, stay = S.stay) {
   return { none: true, why: short ? 'long' : 'time' };
 }
 const hm = (h) => fmtTime(h % 24);
-// Kerb's own estimate for car parks whose rates we can't publish: the spread of what car parks nearby that do
+// Streety's own estimate for car parks whose rates we can't publish: the spread of what car parks nearby that do
 // publish their rates (councils, venues) charge for the same arrival time and stay. Never shown as a real price.
 const NRMA_DAY = 'about $77 to $81 a day (NRMA, 2025)';
 // Street meter rates near a point: the council's own $/hr, used to tell a CBD-core car park from a fringe one.
@@ -410,7 +410,7 @@ function meterRateNear(pt) {
   }
   return sw ? sr / sw : null;
 }
-// Kerb's own estimate for a car park whose owner doesn't let us publish rates. It blends what the nearest
+// Streety's own estimate for a car park whose owner doesn't let us publish rates. It blends what the nearest
 // car parks with published rates charge for the same stay (closer ones count more), scaled by how the
 // council's street meter rates here compare with the meters around each of those car parks.
 function estimateFor(cp) {
@@ -584,9 +584,9 @@ const FOOT = {
   per: 'Rules come from the City of Perth\'s open data: the restriction on every on-street parking bay, and the City of Perth Parking car parks.',
 };
 const COVER = {
-  mel: 'In Melbourne, Kerb covers the City of Melbourne\'s on-street parking (CBD, Southbank, Docklands, Carlton, North Melbourne, East Melbourne) from the council\'s parking zones, meter rates and live bay sensors, plus streets volunteers have mapped in OpenStreetMap around St Kilda, Chapel Street, Fitzroy, Collingwood, Richmond and Brunswick.',
-  bne: 'In Brisbane, Kerb covers every Brisbane City Council parking meter (CBD, Spring Hill, Fortitude Valley, South Brisbane, West End, Woolloongabba, Newstead, Milton…) plus no stopping lines, bus and taxi zones and clearways in the inner suburbs.',
-  per: 'In Perth, Kerb covers every City of Perth on-street parking bay (CBD, Northbridge, East Perth, West Perth, Crawley) and the City of Perth car parks.',
+  mel: 'In Melbourne, Streety covers the City of Melbourne\'s on-street parking (CBD, Southbank, Docklands, Carlton, North Melbourne, East Melbourne) from the council\'s parking zones, meter rates and live bay sensors, plus streets volunteers have mapped in OpenStreetMap around St Kilda, Chapel Street, Fitzroy, Collingwood, Richmond and Brunswick.',
+  bne: 'In Brisbane, Streety covers every Brisbane City Council parking meter (CBD, Spring Hill, Fortitude Valley, South Brisbane, West End, Woolloongabba, Newstead, Milton…) plus no stopping lines, bus and taxi zones and clearways in the inner suburbs.',
+  per: 'In Perth, Streety covers every City of Perth on-street parking bay (CBD, Northbridge, East Perth, West Perth, Crawley) and the City of Perth car parks.',
 };
 function renderList() {
   const keepScroll = body.dataset.mode === 'list' ? body.scrollTop : 0;
@@ -601,7 +601,7 @@ function renderList() {
   const inCoverage = KERBS.features.some((f) => { const m = mids.get(f.properties.id); return Math.abs(m[0] - centre[0]) < 0.015 && Math.abs(m[1] - centre[1]) < 0.012; });
   if (!inCoverage) {
     drawDest(S.dest ? { free: [], paid: [], likely: [] } : null);
-    body.insertAdjacentHTML('beforeend', CITY_ID !== 'syd' ? `<div class="empty"><strong>Not covered yet</strong>${COVER[CITY_ID]}</div>` : `<div class="empty"><strong>Not covered yet</strong>Kerb covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington, Coogee, Randwick, Maroubra), Manly, Chatswood, and the Inner West's meters in Balmain, Rozelle and Leichhardt. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`);
+    body.insertAdjacentHTML('beforeend', CITY_ID !== 'syd' ? `<div class="empty"><strong>Not covered yet</strong>${COVER[CITY_ID]}</div>` : `<div class="empty"><strong>Not covered yet</strong>Streety covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington, Coogee, Randwick, Maroubra), Manly, Chatswood, and the Inner West's meters in Balmain, Rozelle and Leichhardt. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`);
     carParkRows();
     return;
   }
@@ -653,7 +653,7 @@ function renderList() {
   const foot = document.createElement('div'); foot.className = 'foot';
   const upd = META ? new Date(META.fetchedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', timeZone: CITY.tz }) : '';
   foot.innerHTML = CITY_ID !== 'syd' ? `${FOOT[CITY_ID]}${upd ? ` Refreshed nightly, last on ${upd}.` : ''} Councils don't publish every sign, so always read the sign before you park.` : `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey, Woollahra's resident permit areas, Randwick's resident permit kerbs, Randwick's and Inner West's published parking maps and meter lists, and street sign surveys for Manly (2020) and Chatswood, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
-  foot.insertAdjacentHTML('beforeend', ' <a href="./parking/">Parking by area</a>.');
+  foot.insertAdjacentHTML('beforeend', ' <a href="./parking/">Parking by area</a> · <a href="./terms.html">Terms</a> · <a href="./privacy.html">Privacy</a>');
   body.appendChild(foot);
 }
 
@@ -661,7 +661,7 @@ function renderList() {
 const usual = (p) => (p.pa && META?.permitPatterns ? META.permitPatterns[String(p.pa).replace(/^(permit\s*)?area\s*/i, '').trim().toUpperCase()] : null);
 function usualHTML(p) {
   const u = usual(p);
-  return u ? `<div class="verdict est"><div><small>Usually, in ${p.pa}</small>${u.sign}, permit holders excepted</div></div><p class="plain">${u.n} of the council's ${u.of} recent sign decisions in ${p.pa} say this, so it's the likely sign here. Kerb hasn't seen this kerb's own sign, so check before you leave the car.</p>` : '';
+  return u ? `<div class="verdict est"><div><small>Usually, in ${p.pa}</small>${u.sign}, permit holders excepted</div></div><p class="plain">${u.n} of the council's ${u.of} recent sign decisions in ${p.pa} say this, so it's the likely sign here. Streety hasn't seen this kerb's own sign, so check before you leave the car.</p>` : '';
 }
 function optRow(o) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'opt' + (o.c.ok ? '' : ' no');
@@ -692,14 +692,14 @@ function cpRow(cp, d) {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
   const pr = cp.kind === 'parkride', v = pr ? occAt(cp, S.day, S.hour) : null;
   const est = !price && !pr ? estimateFor(cp) : null;
-  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? (price.why === 'long' ? 'Price for this stay not published' : 'No rate for this time') : price ? price.k : est ? `Kerb's estimate ${money(est.low)}-${money(est.high)}, not their real rates${cp.operator ? `. Run by ${cp.operator}` : ''}` : `Run by ${cp.operator}. Rates not published`;
+  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? (price.why === 'long' ? 'Price for this stay not published' : 'No rate for this time') : price ? price.k : est ? `Streety's estimate ${money(est.low)}-${money(est.high)}, not their real rates${cp.operator ? `. Run by ${cp.operator}` : ''}` : `Run by ${cp.operator}. Rates not published`;
   b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price free">Free</span>` : price && !price.none ? `<span class="price${price.p === 0 ? ' free' : ''}">${money(price.p)}</span>` : est ? `<span class="price est">~${money(est.mid)}</span>` : ''}<span class="walk">${est ? 'estimate · ' : ''}${walkText(d)}</span></span>`;
   b.onclick = () => select(cp.id, true);
   return b;
 }
 
 /* ---------- saved places (kept on this phone only) ---------- */
-// Kerb ids change when the data is rebuilt, so a saved kerb is found again by street, side and position.
+// Streety ids change when the data is rebuilt, so a saved kerb is found again by street, side and position.
 const savedKey = (id) => (typeof id === 'number' ? (() => { const p = byId.get(id).properties, m = mids.get(id); return `k|${p.s}|${p.sd || ''}|${m[0].toFixed(4)},${m[1].toFixed(4)}`; })() : `c|${id}`);
 function resolveSaved(it) {
   if (it.key.startsWith('c|')) { const cp = CARPARKS.find((c) => c.id === it.key.slice(2)); return cp ? { cp } : null; }
@@ -779,7 +779,7 @@ function compareLine(free, paid, centre, nearM) {
   body.appendChild(el);
 }
 
-// What a kerb costs for the chosen stay, including kerbs Kerb only knows as a permit area or "probably free".
+// What a kerb costs for the chosen stay, including kerbs Streety only knows as a permit area or "probably free".
 function kerbCost(p) {
   if (p.k >= 0) return costFor(p, RULES, S.day, S.hour, S.stay);
   if (p.lk) return { ok: true, cost: 0, likely: true };
@@ -819,7 +819,7 @@ function setSessionMarker() {
 }
 function icsFor(s) {
   const z = (ms) => new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-  const txt = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Kerb//Sydney parking//EN', 'BEGIN:VEVENT', `UID:kerb-${s.start}@kerb`, `DTSTAMP:${z(Date.now())}`,
+  const txt = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Streety//Sydney parking//EN', 'BEGIN:VEVENT', `UID:kerb-${s.start}@kerb`, `DTSTAMP:${z(Date.now())}`,
     `DTSTART:${z(s.until - 10 * 60e3)}`, `DTEND:${z(s.until)}`, `SUMMARY:Move the car (${s.name})`,
     `DESCRIPTION:${s.legal ? `Parking on ${s.name} ends at ${clockAt(s.until)}.` : `Your planned stay on ${s.name} ends at ${clockAt(s.until)}. Check the sign for the real limit.`}`,
     `GEO:${s.at[1]};${s.at[0]}`, 'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Move the car', 'TRIGGER:-PT5M', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
@@ -834,7 +834,7 @@ function sessionCard() {
   const el = document.createElement('div'); el.className = 'session';
   const sameDay = dayAt(s.until) === dayAt(Date.now());
   el.innerHTML = `<div class="st"><span><small class="note">Your car</small><br><b>${s.name}</b>${s.side ? `<span class="note">, ${s.side.toLowerCase()}</span>` : ''}</span><span class="left${left < 15 * 60e3 ? ' urgent' : ''}">${leftTxt}</span></div>
-    <div class="note">${s.legal ? `Move by ${clockAt(s.until)}${sameDay ? '' : ` ${dayAt(s.until)}`}, when the sign's limit or a restriction starts.` : s.planned ? `Your planned stay ends at ${clockAt(s.until)}. Kerb doesn't have the signs here, so check the sign.` : 'No limit for the rest of the day.'}</div>
+    <div class="note">${s.legal ? `Move by ${clockAt(s.until)}${sameDay ? '' : ` ${dayAt(s.until)}`}, when the sign's limit or a restriction starts.` : s.planned ? `Your planned stay ends at ${clockAt(s.until)}. Streety doesn't have the signs here, so check the sign.` : 'No limit for the rest of the day.'}</div>
     <div class="acts">
       <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${s.at[1]},${s.at[0]}&travelmode=walking" target="_blank" rel="noopener"><i class="ph ph-person-simple-walk"></i>Walk back</a>
       ${s.legal || s.planned ? `<a class="cta" href="${icsFor(s)}" download="kerb-move-the-car.ics"><i class="ph ph-bell-ringing"></i>Remind me</a>` : ''}
@@ -862,7 +862,7 @@ function parkedPill() {
     const msg = `Move the car: ${mins} min left on ${s.name}.`;
     toast(msg);
     try { navigator.vibrate?.([200, 100, 200]); } catch { /* not supported */ }
-    try { if ('Notification' in window && Notification.permission === 'granted') new Notification('Kerb', { body: msg, tag: 'kerb-move', icon: './icon-192.png' }); } catch { /* not allowed */ }
+    try { if ('Notification' in window && Notification.permission === 'granted') new Notification('Streety', { body: msg, tag: 'kerb-move', icon: './icon-192.png' }); } catch { /* not allowed */ }
   }
 }
 setInterval(() => { parkedPill(); if (S.sel == null && store.get('kerb-parked', null)) renderList(); }, 30e3);
@@ -982,7 +982,7 @@ function busyHTML(p) {
 }
 
 function estHTML(cp, e, stayTxt) {
-  return `<div class="verdict est"><div><small>${spanText(stayTxt)}</small>Kerb's estimate</div><span class="big">~${money(e.mid)}</span></div>
+  return `<div class="verdict est"><div><small>${spanText(stayTxt)}</small>Streety's estimate</div><span class="big">~${money(e.mid)}</span></div>
       <p class="plain">Probably ${money(e.low)} to ${money(e.high)}. ${cp.operator ? `${cp.operator} doesn't let us publish its rates, so this` : 'This'} is an estimate from what car parks nearby charge for the same time (${e.from.join(', ')}), adjusted for how the council's street meters here compare with theirs${e.meter ? ` (about ${money(e.meter)}/hr here)` : ''}.${S.stay >= 5 || S.night ? ` For a full day, Sydney car parks average ${NRMA_DAY}.` : ''}</p>
       <p class="note">Not the real price. Busy CBD car parks often charge more, and early bird or online deals can be cheaper. The board at the entrance is what you'll pay.</p>`;
 }
@@ -996,6 +996,59 @@ function prDetail(cp) {
       ${cp.occ ? `<h3 class="h3">How full it gets on ${DAYS_LONG[S.day]}s</h3>${occHTML(cp)}
       <p class="plain">${now}${full != null && (v == null || v < 95) ? ` It's usually full by ${fmtTime(full)}.` : ''}</p>
       <p class="note">From Transport for NSW's car park counters over the past week. Public holidays and school holidays will be quieter.</p>` : ''}`;
+}
+
+/* ---------- report a wrong sign or price: sent from inside the app, no email ---------- */
+// Reports go to Streety's server when it's switched on (VITE_REPORT_URL). Until then they wait on the phone and
+// send themselves the next time the app opens with reporting on.
+const REPORT_URL = import.meta.env.VITE_REPORT_URL || '';
+const REPORT_Q = 'streety-reports';
+async function flushReports() {
+  if (!REPORT_URL) return 0;
+  let q = store.get(REPORT_Q, []), sent = 0;
+  for (const r of [...q]) {
+    try { const ok = (await fetch(REPORT_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(r) })).ok; if (!ok) break; q = q.filter((x) => x !== r); sent++; } catch { break; }
+  }
+  store.set(REPORT_Q, q);
+  return sent;
+}
+setTimeout(flushReports, 4000);
+const shrinkPhoto = (file) => new Promise((ok) => {
+  const img = new Image();
+  img.onload = () => { const k = Math.min(1, 1280 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(img.src); ok(c.toDataURL('image/jpeg', 0.8)); };
+  img.onerror = () => ok(null);
+  img.src = URL.createObjectURL(file);
+});
+function openReport(t) {
+  const kinds = t.carpark
+    ? [['price', 'The prices are wrong'], ['closed', "It's closed or gone"], ['place', "It's in the wrong place"], ['other', 'Something else']]
+    : [['sign', 'The sign says something else'], ['nopark', "You can't park here"], ['price', 'The price is wrong'], ['name', 'Wrong street name'], ['other', 'Something else']];
+  const el = document.createElement('div'); el.className = 'snap'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Report a problem');
+  el.innerHTML = `<div class="snap-card"><div class="snap-top"><b>${t.carpark ? 'Report a problem' : 'Report a wrong sign'}</b><button type="button" class="snap-x" aria-label="Close"><i class="ph ph-x"></i></button></div>
+    <div class="snap-body">
+      <p class="snap-status">${t.title}. What's wrong?</p>
+      <div class="rep-kinds" role="radiogroup">${kinds.map(([k, n], i) => `<button type="button" role="radio" data-k="${k}" aria-checked="${i === 0}">${n}</button>`).join('')}</div>
+      <label class="rep-field"><span>What does the ${t.carpark ? 'board' : 'sign'} say? (optional)</span><textarea rows="3" maxlength="1000" placeholder="${t.carpark ? 'e.g. 1 hour $12, all day $35' : 'e.g. 2P 8am-6pm Mon-Fri, permit holders excepted'}"></textarea></label>
+      <label class="rep-photo"><i class="ph ph-camera" aria-hidden="true"></i><span>Add a photo of the ${t.carpark ? 'price board' : 'sign'} (optional)</span><input type="file" accept="image/*" capture="environment" hidden></label>
+      <img class="rep-preview" alt="" hidden>
+      <p class="note">We use reports to fix the map for everyone. No name or account needed.</p>
+    </div>
+    <div class="snap-actions"><button type="button" class="snap-save">Send</button></div></div>`;
+  document.body.appendChild(el);
+  let kind = kinds[0][0], photo = null;
+  const close = () => el.remove();
+  el.querySelector('.snap-x').onclick = close;
+  el.onclick = (e) => { if (e.target === el) close(); };
+  el.querySelectorAll('[data-k]').forEach((b) => (b.onclick = () => { kind = b.dataset.k; el.querySelectorAll('[data-k]').forEach((x) => x.setAttribute('aria-checked', String(x === b))); }));
+  const fi = el.querySelector('input[type=file]'), pv = el.querySelector('.rep-preview');
+  fi.onchange = async () => { const f = fi.files?.[0]; if (!f) return; photo = await shrinkPhoto(f); if (photo) { pv.src = photo; pv.hidden = false; el.querySelector('.rep-photo span').textContent = 'Photo added. Tap to change it'; } };
+  el.querySelector('.snap-save').onclick = async () => {
+    const r = { kind, note: el.querySelector('textarea').value.trim(), photo, city: CITY_ID, target: t.carpark ? 'carpark' : 'kerb', id: t.id, title: t.title, at: t.at, published: t.published || '', app: 'streety-web', time: new Date().toISOString() };
+    store.set(REPORT_Q, [...store.get(REPORT_Q, []), r]);
+    const sent = await flushReports();
+    close();
+    toast(sent ? 'Thanks! Your report was sent.' : "Thanks! Saved on your phone. It'll send by itself once reports are switched on.");
+  };
 }
 
 /* ---------- fines (NSW): what a mistake here costs, and how hard this council's rangers enforce ---------- */
@@ -1055,9 +1108,10 @@ function renderDetail() {
       <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
       <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
       <p class="note">Source: ${set.src ? `${set.src}${/survey|committee|map|photo|decision/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
-      ` : `${usualHTML(p)}<p class="note">${p.lk ? `Based on ${p.lks || 'Woollahra Council\'s resident permit areas'}: streets outside a permit scheme are usually unrestricted, but the council doesn't publish its signs.` : p.ps ? `Permit area from the ${p.ps}. The council doesn't publish the sign times, so visitors should check the sign for the time limit.` : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>
-      <button type="button" class="snapcta" id="snapHere"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>Snap the sign here</b><small>Kerb reads it, tells you if you can park, and fills in this kerb.</small></span></button>`}
+      ` : `${usualHTML(p)}<p class="note">${p.lk ? `Based on ${p.lks || 'Woollahra Council\'s resident permit areas'}: streets outside a permit scheme are usually unrestricted, but the council doesn't publish its signs.` : p.ps ? `Permit area from the ${p.ps}. The council doesn't publish the sign times, so visitors should check the sign for the time limit.` : 'Streety only shows rules the council publishes. This side of the street has no published signs yet.'}</p>
+      <button type="button" class="snapcta" id="snapHere"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>Snap the sign here</b><small>Streety reads it, tells you if you can park, and fills in this kerb.</small></span></button>`}
       ${streetViewHTML(p, mids.get(p.id))}
+      <button type="button" class="reportcta" id="reportBtn"><i class="ph ph-flag" aria-hidden="true"></i>Report a wrong sign</button>
       <div class="photos" id="signPhotos" hidden></div>
       ${actionsHTML(mids.get(p.id), p.id)}`;
   } else {
@@ -1070,7 +1124,7 @@ function renderDetail() {
         : estimateFor(cp) ? estHTML(cp, estimateFor(cp), stayTxt)
         : `<p class="plain">${cp.operator ? `Run by ${cp.operator}. ` : ''}The rates aren't published anywhere we can use yet, so check the board at the entrance before you go in.</p>`}
       ${cp.rates?.length ? `<h3 class="h3">Rates${cp.fromPhoto ? ` <small class="muted">from your photo, ${cp.fromPhoto}</small>` : ''}</h3>${rateBoard(cp)}` : ''}
-      ${cp.kind === 'parkride' ? '' : `<button type="button" class="snapcta" data-snapboard="${cp.id}"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>${cp.rates?.length ? 'Prices changed? Snap the board' : 'Snap the price board'}</b><small>At the entrance? Photograph the prices and Kerb fills them in.</small></span></button>`}
+      ${cp.kind === 'parkride' ? '' : `<button type="button" class="snapcta" data-snapboard="${cp.id}"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>${cp.rates?.length ? 'Prices changed? Snap the board' : 'Snap the price board'}</b><small>At the entrance? Photograph the prices and Streety fills them in.</small></span></button>`}
       ${price?.none ? `<p class="plain">${price.why === 'long' ? 'Longer stays aren\'t allowed or aren\'t published, so check the board at the entrance.' : 'It may be closed then, or the rate isn\'t published. Check the board at the entrance.'}</p>` : ''}
       ${cp.hours ? `<p class="plain">Open ${cp.hours}.</p>` : ''}
       ${cp.note ? `<p class="plain">${cp.note}</p>` : ''}
@@ -1078,6 +1132,7 @@ function renderDetail() {
       ${cp.url && !cp.rates?.length ? `<a class="cta" href="${cp.url}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i>Rates on ${cp.operator || 'the operator'}'s website</a>` : ''}
       ${/2016/.test(cp.source || '') ? '<p class="note">From Transport for NSW\'s 2016 list of CBD car parks, so the operator or hours may have changed.</p>' : ''}
       ${cp.checked ? `<p class="note">Rates checked ${new Date(cp.checked).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}${cp.rateSource ? ` on <a href="${cp.rateSource}" target="_blank" rel="noopener">the ${cp.operator || 'owner'}'s website</a>` : ''}. Rates change, so the board at the entrance always wins.</p>` : ''}
+      <button type="button" class="reportcta" id="reportBtn"><i class="ph ph-flag" aria-hidden="true"></i>Report a problem with this car park</button>
       ${actionsHTML(cp.at, cp.id)}`;
   }
   body.appendChild(d);
@@ -1091,11 +1146,15 @@ function renderDetail() {
   d.querySelector('[data-act=save]').onclick = (e) => { toggleSaved(id); const on = isSaved(id); e.currentTarget.setAttribute('aria-pressed', String(on)); e.currentTarget.innerHTML = starInner(on); };
   d.querySelector('[data-act=share]').onclick = () => shareSel(f, cp);
   const pk = d.querySelector('[data-act=park]'); if (pk) pk.onclick = () => parkedNow(f);
+  const rb = d.querySelector('#reportBtn');
+  if (rb) rb.onclick = () => (f
+    ? openReport({ id: f.properties.id, title: `${f.properties.s}${f.properties.sd ? `, ${f.properties.sd.toLowerCase()}` : ''}`, at: mids.get(f.properties.id), published: f.properties.k >= 0 ? RULES[f.properties.k]?.text || '' : '' })
+    : openReport({ carpark: true, id: cp.id, title: cp.name, at: cp.at }));
 }
 
 const starInner = (on) => `<i class="ph${on ? '-fill' : ''} ph-star"></i>${on ? 'Saved' : 'Save'}`;
 // A link out to Google Street View at this kerb, facing the kerb, so drivers can read the sign themselves.
-// It's only a link (Google Maps URLs need no key and cost nothing); Kerb never copies anything from Street View.
+// It's only a link (Google Maps URLs need no key and cost nothing); Streety never copies anything from Street View.
 const SIDE_BEARING = { North: 0, 'North-east': 45, East: 90, 'South-east': 135, South: 180, 'South-west': 225, West: 270, 'North-west': 315 };
 function streetViewHTML(p, at) {
   if (!at) return '';
@@ -1133,7 +1192,7 @@ async function shareSel(f, cp) {
   }
   const url = `${location.origin}${location.pathname}#at=${at[1].toFixed(5)},${at[0].toFixed(5)}`;
   try {
-    if (navigator.share) await navigator.share({ title: 'Kerb', text, url });
+    if (navigator.share) await navigator.share({ title: 'Streety', text, url });
     else { await navigator.clipboard.writeText(`${text} ${url}`); toast('Link copied'); }
   } catch (e) { if (e.name !== 'AbortError') toast("Couldn't share. Try again."); }
 }
@@ -1201,7 +1260,7 @@ function renderLegend() {
   chip('perm', cpOn, `<i class="ph ph-local-parking" aria-hidden="true"></i>Car parks${cpOn ? '' : ' off'}`, 'Show or hide car parks', () => { cpOn ? S.hidden.add('carpark') : S.hidden.delete('carpark'); renderLegend(); drawCarParks(); renderBody(); });
   const carBits = [BEN.vehicle === 'moto' ? 'Motorbike' : BEN.vehicle === 'ev' ? 'Electric' : '', BEN.permit ? `Permit ${BEN.permit.replace(/^.*Area\s*/i, '')}` : '', BEN.mps ? 'Mobility' : ''].filter(Boolean);
   chip('perm', carBits.length > 0, `<i class="ph ph-${BEN.vehicle === 'moto' ? 'motorcycle' : 'car-profile'}" aria-hidden="true"></i>${carBits.length ? carBits.join(' · ') : 'My car'}`, 'My car: vehicle, resident permit, mobility permit', () => toggleCar());
-  chip('perm', !!DRIVE, `<i class="ph ph-steering-wheel" aria-hidden="true"></i>${DRIVE ? 'Driving' : 'Drive'}`, 'Drive mode: Kerb follows you and says where to park', () => (DRIVE ? stopDrive() : startDrive()));
+  chip('perm', !!DRIVE, `<i class="ph ph-steering-wheel" aria-hidden="true"></i>${DRIVE ? 'Driving' : 'Drive'}`, 'Drive mode: Streety follows you and says where to park', () => (DRIVE ? stopDrive() : startDrive()));
   chip('keybtn', false, '<i class="ph ph-swatches" aria-hidden="true"></i>Key', 'What the colours mean', () => toggleKey());
 }
 // My car: the answers change to fit the driver (motorbike bays, EV bays, their own permit area, mobility permit).
@@ -1219,7 +1278,7 @@ function toggleCar(force) {
     <div class="seg" role="radiogroup" aria-label="Vehicle">${veh.map(([k, n, ic]) => `<button type="button" role="radio" data-veh="${k}" aria-checked="${BEN.vehicle === k}"><i class="ph ph-${ic}"></i>${n}</button>`).join('')}</div>
     ${areas.length ? `<label class="kp-field"><span>Resident parking permit</span><select id="permitSel"><option value="">None</option>${areas.map((a) => `<option${a === BEN.permit ? ' selected' : ''}>${a}</option>`).join('')}</select></label>` : ''}
     ${CITY_ID === 'syd' ? `<label class="kp-row"><i class="ph ph-wheelchair" style="background:none;width:auto;height:auto;font-size:18px"></i><span>NSW mobility parking permit</span><input type="checkbox" id="mpsBox"${BEN.mps ? ' checked' : ''}></label>` : ''}
-    <p class="kp-note">Kerb then shows motorbike or EV bays as yours, your permit area without visitor time limits, and mobility permit concessions. Saved on this phone only.</p>`;
+    <p class="kp-note">Streety then shows motorbike or EV bays as yours, your permit area without visitor time limits, and mobility permit concessions. Saved on this phone only.</p>`;
   pop.querySelector('.kp-top button').onclick = () => pop.remove();
   pop.querySelectorAll('[data-veh]').forEach((b) => (b.onclick = () => { BEN.vehicle = b.dataset.veh; saveCar(); pop.querySelectorAll('[data-veh]').forEach((x) => x.setAttribute('aria-checked', String(x === b))); renderLegend(); update(); }));
   const sel = pop.querySelector('#permitSel'); if (sel) sel.onchange = () => { BEN.permit = sel.value; saveCar(); renderLegend(); update(); };
@@ -1381,7 +1440,7 @@ map.on('webglcontextlost', () => toast('The map paused. It will come back in a m
 map.on('webglcontextrestored', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); destLayers(); recolour(); } if (S.sat) setSat(true); });
 
 /* ---------- search ---------- */
-// Suggestions start at the second letter: streets and car parks Kerb knows appear instantly,
+// Suggestions start at the second letter: streets and car parks Streety knows appear instantly,
 // then places from Photon (OpenStreetMap) fill in a moment later.
 const q = $('#q'), results = $('#results');
 let searchTimer = null, searchCtl = null, localIdx = null;
@@ -1497,7 +1556,7 @@ $('#locate').onclick = () => {
   if (!navigator.geolocation) return toast("This browser can't share your location.");
   navigator.geolocation.getCurrentPosition((pos) => {
     const at = [pos.coords.longitude, pos.coords.latitude];
-    { const other = !inBox(at, CITY.box) && Object.keys(CITIES).find((k) => inBox(at, CITIES[k].box)); if (other) { toast(`Opening Kerb for ${CITIES[other].name}…`); goToCity(other, at); return; } }
+    { const other = !inBox(at, CITY.box) && Object.keys(CITIES).find((k) => inBox(at, CITIES[k].box)); if (other) { toast(`Opening Streety for ${CITIES[other].name}…`); goToCity(other, at); return; } }
     if (!meMarker) { const el = document.createElement('div'); el.style.cssText = `width:16px;height:16px;border-radius:50%;background:${C().accent};border:3px solid #fff;box-shadow:0 0 0 6px color-mix(in srgb, ${C().accent} 25%, transparent)`; meMarker = new maplibregl.Marker({ element: el }); }
     meMarker.setLngLat(at).addTo(map);
     map.flyTo({ center: at, zoom: 16.2, duration: 900 });
@@ -1565,7 +1624,7 @@ function onDrivePos(pos) {
   opts.sort((a, b) => a.score - b.score);
   const best = opts[0];
   const main = DRIVE.hud.querySelector('.dh-main');
-  if (!best) { main.innerHTML = `<b>Nothing that fits ${stayWords(true)} right here</b><small>Keep driving: Kerb is watching ${DRIVE.heading == null ? 'around you' : 'the streets ahead'}.</small>`; return; }
+  if (!best) { main.innerHTML = `<b>Nothing that fits ${stayWords(true)} right here</b><small>Keep driving: Streety is watching ${DRIVE.heading == null ? 'around you' : 'the streets ahead'}.</small>`; return; }
   const what = best.c.cost === 0 ? 'Free' : `${money(best.c.cost)}`;
   const m100 = Math.max(20, Math.round(best.d / 10) * 10);
   main.innerHTML = `<b>${what} · ${best.p.s}</b><small>${m100} m ahead${best.side ? ` on your ${best.side}` : ''} · ${stayWords(true)}</small>`;
@@ -1698,6 +1757,7 @@ initSnap({
   pickKerb: (cb) => { pickMode = cb; },
   selected: () => (typeof S.sel === 'number' ? S.sel : null),
   applySnaps,
+  city: CITY_ID,
   snapKerbId: (sid) => snapMade.get(sid),
 });
 // Price boards photographed on this phone become that car park's rates (marked as from your photo).
@@ -1714,6 +1774,9 @@ function applyBoards() {
 initBoard({ carPark: (id) => CARPARKS.find((c) => c.id === id), applyBoards, toast });
 dataReady.then(() => {
   applySnaps();
+  // Sign readings other drivers shared, straight onto the streets (no photos), when the server is on.
+  { const u = (import.meta.env.VITE_SNAP_SHARE_URL || '').replace(/\/snap$/, '/snaps');
+    if (u) fetch(u).then((r) => (r.ok ? r.json() : [])).then((list) => { setSharedSnaps(list.filter((x) => Array.isArray(x.at) && inBox(x.at, CITY.box))); applySnaps(); }).catch(() => {}); }
   applyBoards();
   setSessionMarker();
   if (LINK && KERBS) {

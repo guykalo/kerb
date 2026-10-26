@@ -449,3 +449,18 @@ button.brand { font: inherit; cursor: pointer; position: relative; }
 .parkedpill.urgent { background: var(--restricted); color: #fff; }
 .parkedpill.urgent i { color: #fff; }
 .driving .parkedpill { display: none; }
+
+/* Report a wrong sign */
+.reportcta { all: unset; cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 4px 0; padding: 10px 2px; color: var(--muted); font-size: 14px; font-weight: 600; }
+.reportcta i { font-size: 18px; }
+.rep-kinds { display: grid; gap: 6px; margin: 4px 0 12px; }
+.rep-kinds button { all: unset; cursor: pointer; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); font-size: 15px; }
+.rep-kinds button[aria-checked="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.rep-field { display: grid; gap: 6px; font-size: 14px; color: var(--muted); }
+.rep-field textarea { font: inherit; font-size: 16px; color: var(--fg); background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px; resize: vertical; }
+.rep-photo { display: flex; align-items: center; gap: 10px; margin: 12px 0 6px; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 12px; cursor: pointer; font-size: 15px; }
+.rep-photo i { font-size: 22px; color: var(--accent); }
+.rep-preview { display: block; width: 100%; max-height: 28dvh; object-fit: contain; border-radius: 12px; background: #000; margin-bottom: 6px; }
+
+.snap-share { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--muted); margin: 0 0 10px; }
+.snap-share input { margin-top: 3px; }

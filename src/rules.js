@@ -1,5 +1,5 @@
 // Parking rule evaluation. A rule is [hours allowed, days[], from, to, $/hr, publicHolidays].
-// Kerb props: k = rule set index (-1 = no meter data), z = meter area (1 CBD, 2 inner), pa = permit area, f15 = free 15-minute zone.
+// Streety props: k = rule set index (-1 = no meter data), z = meter area (1 CBD, 2 inner), pa = permit area, f15 = free 15-minute zone.
 
 export const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export const DAYS_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -59,7 +59,7 @@ export function stateAt(props, rules, day, h) {
   }
   if (set.u) return { kind: 'free', until: 24, why: 'unrestricted', set };
   if (set.g === 'unknown') {
-    // Only some times are published (a clearway): outside them Kerb doesn't know, so it never says free.
+    // Only some times are published (a clearway): outside them Streety doesn't know, so it never says free.
     const next = today.filter((r) => r[2] > h).map((r) => r[2]);
     return { kind: 'unknown', until: next.length ? Math.min(...next) : 24, partial: true, set };
   }
@@ -107,7 +107,7 @@ export const BEN = {
   _mps: false,
   get mps() { return this._mps; },
   set mps(v) { this._mps = !!v; globalThis.__kerbMps = !!v; },
-  // "My car": vehicle ('car' | 'moto' | 'ev') and a resident parking permit area (as Kerb names it, e.g. "Area 22").
+  // "My car": vehicle ('car' | 'moto' | 'ev') and a resident parking permit area (as Streety names it, e.g. "Area 22").
   vehicle: 'car',
   permit: '',
 };

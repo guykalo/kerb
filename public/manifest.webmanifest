@@ -1,6 +1,6 @@
 {
-  "name": "Kerb · Sydney parking",
-  "short_name": "Kerb",
+  "name": "Streety · Sydney parking",
+  "short_name": "Streety",
   "description": "Free streets, meter prices, time limits and car parks across Sydney.",
   "start_url": "./",
   "scope": "./",

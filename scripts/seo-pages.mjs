@@ -1,6 +1,6 @@
 // Static "Parking in <suburb>" pages for search engines, built after the app from the published data:
 // dist/parking/<city>/<suburb>/index.html, plus dist/parking/index.html, sitemap.xml and robots.txt.
-// Every number comes from Kerb's data and says where it's from; nothing is estimated here.
+// Every number comes from Streety's data and says where it's from; nothing is estimated here.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 
@@ -37,8 +37,8 @@ h1{font-size:30px;line-height:1.15;margin:8px 0 4px}h2{font-size:19px;margin:28p
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0}.stat{background:var(--card);border-radius:12px;padding:10px 12px}.stat b{display:block;font-size:22px}
 table{width:100%;border-collapse:collapse;font-size:15px}td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600}
 .free{color:var(--free);font-weight:700}.paid{color:var(--paid);font-weight:700}small,.note{color:var(--muted)}a{color:#0b6bcb}ul.links{columns:2;padding-left:18px}</style></head>
-<body><main><a href="${'../'.repeat(path.split('/').length - 1)}">Kerb</a> · <a href="${'../'.repeat(path.split('/').length - 2)}">All areas</a>${body}
-<p class="note">Kerb reads councils' open data and published fee lists. The sign on the street always wins: check it before you leave the car.</p></main></body></html>`;
+<body><main><a href="${'../'.repeat(path.split('/').length - 1)}">Streety</a> · <a href="${'../'.repeat(path.split('/').length - 2)}">All areas</a>${body}
+<p class="note">Streety reads councils' open data and published fee lists. The sign on the street always wins: check it before you leave the car.</p></main></body></html>`;
 
 let any = false;
 for (const [cid, [cname, dir]] of Object.entries(CITIES)) {
@@ -79,8 +79,8 @@ for (const [cid, [cname, dir]] of Object.entries(CITIES)) {
       .map((cp) => ({ cp, p: twoHours(cp) })).sort((x, y) => (x.p ?? 1e9) - (y.p ?? 1e9)).slice(0, 8);
     const path = `parking/${cid}/${slug(a.name)}/`;
     const min = rates.length ? Math.min(...rates) : null, max = rates.length ? Math.max(...rates) : null;
-    const title = `Parking in ${a.name}${a.name === cname ? '' : `, ${cname}`}: free streets, meter rates and car parks | Kerb`;
-    const desc = `Where to park in ${a.name}: ${meters ? `${meters} metered stretches${min != null ? ` (${money(min)} to ${money(max)} an hour)` : ''}, ` : ''}${freeLimit ? `${freeLimit} free time-limited stretches, ` : ''}${near.length ? `${near.length} car parks nearby, ` : ''}from council open data. Check any street at any time on Kerb's live map.`;
+    const title = `Parking in ${a.name}${a.name === cname ? '' : `, ${cname}`}: free streets, meter rates and car parks | Streety`;
+    const desc = `Where to park in ${a.name}: ${meters ? `${meters} metered stretches${min != null ? ` (${money(min)} to ${money(max)} an hour)` : ''}, ` : ''}${freeLimit ? `${freeLimit} free time-limited stretches, ` : ''}${near.length ? `${near.length} car parks nearby, ` : ''}from council open data. Check any street at any time on Streety's live map.`;
     // What a driver can do on each street: the parking signs on it (free with a limit, or paid), most common first.
     const fmt = (h) => { const H = Math.floor(h), m = Math.round((h - H) * 60); return `${H % 12 || 12}${m ? ':' + String(m).padStart(2, '0') : ''}${H < 12 || H === 24 ? 'am' : 'pm'}`; };
     const D = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -115,7 +115,7 @@ if (!any) { console.log('seo pages: no data in public/data, skipped'); process.e
 // Index of all areas, sitemap, robots.
 const byCity = Object.entries(CITIES).map(([cid, [cname]]) => [cname, pages.filter((p) => p.cid === cid).sort((a, b) => a.name.localeCompare(b.name))]).filter(([, l]) => l.length);
 await mkdir('dist/parking', { recursive: true });
-await writeFile('dist/parking/index.html', page('Parking by area: Sydney, Melbourne, Brisbane, Perth | Kerb', 'Free streets, meter rates and car park prices by suburb, from council open data.',
+await writeFile('dist/parking/index.html', page('Parking by area: Sydney, Melbourne, Brisbane, Perth | Streety', 'Free streets, meter rates and car park prices by suburb, from council open data.',
   `<h1>Parking by area</h1>${byCity.map(([c, l]) => `<h2>${esc(c)}</h2><ul class="links">${l.map((p) => `<li><a href="${p.path.replace('parking/', '')}">${esc(p.name)}</a></li>`).join('')}</ul>`).join('')}`, 'parking/'));
 const today = new Date().toISOString().slice(0, 10);
 await writeFile('dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n<url><loc>${SITE}</loc><lastmod>${today}</lastmod></url>\n<url><loc>${SITE}parking/</loc><lastmod>${today}</lastmod></url>\n${pages.map((p) => `<url><loc>${SITE}${p.path}</loc><lastmod>${today}</lastmod></url>`).join('\n')}\n</urlset>\n`);

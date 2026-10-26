@@ -4,3 +4,4 @@ data/raw/
 public/data/
 data/decisions-cos.json
 data/published/
+server/wrangler.deploy.toml
