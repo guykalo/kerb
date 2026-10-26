@@ -32,7 +32,7 @@ export const LIKELY_FREE_COUNCILS = [
   { lga: 'STRATHFIELD', label: "Strathfield Council's resident parking scheme maps" },
   { lga: 'RANDWICK', label: "Randwick Council's resident parking zone map" },
   // Only the suburbs around the airport (Mascot, Botany, Eastlakes, Pagewood, Daceyville, Wolli Creek, Arncliffe).
-  { lga: 'BAYSIDE', label: "Bayside Council's resident parking scheme map", box: [151.135, -33.962, 151.235, -33.915] },
+  { lga: 'BAYSIDE', label: "Bayside Council's resident parking scheme map", box: [151.142, -33.952, 151.235, -33.915] },
 ];
 
 export async function fetchLikelyFree(councils = LIKELY_FREE_COUNCILS) {
