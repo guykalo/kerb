@@ -44,7 +44,7 @@ jobs:
           full=true
           if [ "${{ github.event_name }}" = "push" ]; then
             base="${{ github.event.before }}"; git cat-file -e "$base" 2>/dev/null || base=HEAD~1
-            if git diff --name-only "$base" HEAD 2>/dev/null | grep -qE '^(scripts/|data/|package(-lock)?\.json)'; then full=true; else full=false; fi
+            if git diff --name-only "$base" HEAD 2>/dev/null | grep -vE '^scripts/(audit|audit-browser|seo-pages)\.mjs$' | grep -qE '^(scripts/|data/|package(-lock)?\.json)'; then full=true; else full=false; fi
           fi
           echo "full=$full" >> "$GITHUB_OUTPUT"
           echo "Full data refresh: $full"
