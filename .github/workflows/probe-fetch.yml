@@ -17,18 +17,20 @@ jobs:
       - run: |
           mkdir -p out && cd out
           pip install -q openpyxl pandas >/dev/null 2>&1 || true
-          curl -sSL "https://www.revenue.nsw.gov.au/help-centre/resources-library/statistics/penalty-notice-data-2023-2024-dfosf-001-2023.xlsx" -o pn.xlsx || true
+          curl -sSL "https://www.revenue.nsw.gov.au/help-centre/resources-library/statistics/parking-offences-dsf011.xlsx" -o dsf011.xlsx || true
+          for y in 2024-2025 2025-2026 2026-2027; do for suf in dfosf-001-2024 dfosf-001-2025 dfosf-001-2026 dfosf-001; do curl -sSL -o "pn-$y-$suf.xlsx" -w "$y $suf %{http_code} %{size_download}\n" "https://www.revenue.nsw.gov.au/help-centre/resources-library/statistics/penalty-notice-data-$y-$suf.xlsx" >> pn-tries.txt; done; done
+          find . -name 'pn-*.xlsx' -size -20k -delete
           curl -sSL "https://data.nsw.gov.au/data/api/3/action/package_show?id=penalty-notice-data-set" -o pn-pkg.json || true
           curl -sSL "https://www.cityofsydney.nsw.gov.au/-/media/corporate/files/publications/council-governance-administration/parking-penalty-notice-report/website-report---the-council-of-the-city-of-sydney---1-january-2026-to-30-june-2026.xlsx?download=true" -o cos-fines.xlsx || true
           curl -sSL "https://data.gov.au/data/api/3/action/package_show?id=a5ee3bca-98d8-42d9-a319-782029bd4336" -o top500-pkg.json || true
           python3 - <<'PY' > xlsx-summary.txt 2>&1
           import pandas as pd
-          for f in ['pn.xlsx','cos-fines.xlsx']:
+          for f in ['dsf011.xlsx']:
               try:
                   x = pd.ExcelFile(f)
                   print('=====', f, x.sheet_names)
                   for sh in x.sheet_names[:4]:
-                      d = pd.read_excel(f, sheet_name=sh, header=None, nrows=40)
+                      d = pd.read_excel(f, sheet_name=sh, header=None, nrows=60)
                       print('---', sh, d.shape); print(d.to_string(max_colwidth=40)[:6000])
               except Exception as e: print(f, 'ERR', e)
           PY
