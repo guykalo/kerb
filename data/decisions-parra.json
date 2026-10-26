@@ -1,0 +1,82 @@
+[
+ {
+  "street": "Good Street",
+  "suburb": "Granville",
+  "side": [
+   "both"
+  ],
+  "from": "Cowper Street",
+  "to": "Bridge Street",
+  "sign": "2P 8.30am-6pm Mon-Fri 8.30am-12.30pm Sat",
+  "date": "28/06/2021",
+  "ref": "2105 A5"
+ },
+ {
+  "street": "Burroway Road",
+  "suburb": "Wentworth Point",
+  "side": [
+   "both"
+  ],
+  "from": "Waterways Street",
+  "to": "Wentworth Place",
+  "sign": "No Parking 8am-9.30am 2.30pm-4pm Mon-Fri ; 2P",
+  "date": "11/12/2017",
+  "ref": "1711 A11"
+ },
+ {
+  "street": "Phillip Street",
+  "suburb": "Parramatta",
+  "side": [
+   "both"
+  ],
+  "from": "Smith Street",
+  "to": "Erby Place",
+  "sign": "1/2P Ticket 8am-6pm Mon-Fri ; 2P Ticket 6pm-8pm Mon-Fri ; 2P Ticket 8am-8pm Sat",
+  "date": "24/04/2023",
+  "ref": "2303 A2"
+ },
+ {
+  "street": "Macquarie Street",
+  "suburb": "Parramatta",
+  "side": [
+   "both"
+  ],
+  "from": "O'Connell Street",
+  "to": "Church Street",
+  "sign": "1/2P Ticket 8am-6pm Mon-Fri ; 2P Ticket 6pm-8pm Mon-Fri ; 2P Ticket 8am-8pm Sat",
+  "date": "24/04/2023",
+  "ref": "2303 A2"
+ },
+ {
+  "street": "Charles Street",
+  "suburb": "Parramatta",
+  "side": [
+   "both"
+  ],
+  "from": "Union Street",
+  "to": "George Street",
+  "sign": "1/2P Ticket 8am-6pm Mon-Fri ; 2P Ticket 6pm-8pm Mon-Fri ; 2P Ticket 8am-8pm Sat",
+  "date": "24/04/2023",
+  "ref": "2303 A2"
+ },
+ {
+  "street": "Hunter Street",
+  "suburb": "Parramatta",
+  "side": [
+   "both"
+  ],
+  "a": {
+   "x": "O'Connell Street",
+   "m": 0,
+   "dir": "west"
+  },
+  "b": {
+   "x": "O'Connell Street",
+   "m": 11,
+   "dir": "west"
+  },
+  "sign": "P15 8am-8pm Mon-Sat",
+  "date": "24/04/2023",
+  "ref": "2303 A2"
+ }
+]

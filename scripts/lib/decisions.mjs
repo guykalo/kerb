@@ -48,7 +48,7 @@ export function minutesToEntries(list, src = 'iwdec') {
     const unrestricted = /^unrestricted$/i.test(e.sign || '');
     const rules = unrestricted ? [] : readSign(e.sign || '').rules;
     if (!unrestricted && !rules.length) { skipped.sign++; continue; }
-    if (/TICKET|METER/i.test(e.sign || '')) continue; // paid kerbs come from the meter list
+    if (/TICKET|METER/i.test(e.sign || '') && src === 'iwdec') continue; // Inner West paid kerbs come from its meter list
     const side = (e.side || []).map((x) => String(x).toLowerCase());
     out.push({ street: e.street, suburb: e.suburb, area, side: side.length ? side : ['both'], ...(e.a && e.b ? { a: e.a, b: e.b } : { from: e.from, to: e.to }), rules, text: unrestricted ? 'Unrestricted' : e.sign, src, date: e.date, ref: e.ref });
   }

@@ -214,14 +214,15 @@ export function buildData(raw) {
     regions[name] = { kerbs: out.features.length, carParks: out.carparks.length, ...(out.warnings?.length ? { warnings: out.warnings } : {}) };
   }
 
-  // Where OpenStreetMap has this side's actual rules, drop the permit-area-only line drawn from a street guide.
+  // Where OpenStreetMap has this side's rules (mapped on the street, often more recent than council papers),
+  // drop the permit-area-only line from a street guide and older Parramatta committee decisions.
   if (regions.osm?.kerbs) {
     const CELL = 0.0005, grid = new Map();
     const cell = (c) => `${Math.floor(c[0] / CELL)}:${Math.floor(c[1] / CELL)}`;
     for (const f of kerbGeo.features) if (f.properties.src === 'osm') for (const c of f.geometry.coordinates) { const key = cell(c); if (!grid.has(key)) grid.set(key, []); grid.get(key).push(c); }
     const covered = (c) => { const [x, y] = [Math.floor(c[0] / CELL), Math.floor(c[1] / CELL)]; for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) for (const q of grid.get(`${x + i}:${y + j}`) || []) if (Math.hypot((q[0] - c[0]) * 92500, (q[1] - c[1]) * 111000) < 9) return true; return false; };
     const before = kerbGeo.features.length;
-    kerbGeo.features = kerbGeo.features.filter((f) => !(f.properties.src === 'man' && f.properties.k < 0 && covered(f.geometry.coordinates[Math.floor(f.geometry.coordinates.length / 2)])));
+    kerbGeo.features = kerbGeo.features.filter((f) => !(f.properties.src === 'man' && (f.properties.k < 0 || /^City of Parramatta/.test(ruleSets[f.properties.k]?.src || '')) && covered(f.geometry.coordinates[Math.floor(f.geometry.coordinates.length / 2)])));
     regions.osm.replacedPermitLines = before - kerbGeo.features.length;
   }
 
