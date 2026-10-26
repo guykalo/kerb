@@ -11,11 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          npm i --no-save playwright@1.47 && npx playwright install --with-deps chromium >/dev/null
-          node probe/pages.mjs || true
+          echo skip
       - run: |
           q='[out:json][timeout:60];nwr[amenity=parking](-33.965,151.15,-33.915,151.2);out center tags;'
-          curl -fsSL --data-urlencode "data=$q" https://overpass-api.de/api/interpreter -o out/airport-parking.json || true
+          curl -sS -A "Kerb parking map (github.com/guykalo/kerb)" --data-urlencode "data=$q" https://overpass-api.de/api/interpreter -o out/airport-parking.json || curl -sS -A "Kerb" --data-urlencode "data=$q" https://overpass.private.coffee/api/interpreter -o out/airport-parking.json; ls -la out
       - run: |
           cd out && git init -q -b probe-fetch-out
           git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
