@@ -441,3 +441,11 @@ button.brand { font: inherit; cursor: pointer; position: relative; }
 .drivehud small { font-size: 14px; opacity: .8; }
 .drivehud .dh-stop { all: unset; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--surface) 18%, transparent); font-size: 20px; }
 .driving .snapbtn, .driving .satbtn { display: none; }
+
+/* Parked countdown pill */
+.parkedpill { all: unset; cursor: pointer; position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); top: calc(env(safe-area-inset-top, 0px) + 72px); display: flex; align-items: center; gap: 8px; max-width: calc(100% - 120px); padding: 8px 14px; border-radius: 999px; background: var(--surface); color: var(--fg); box-shadow: var(--shadow); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.parkedpill span { overflow: hidden; text-overflow: ellipsis; }
+.parkedpill i { color: var(--accent); font-size: 18px; }
+.parkedpill.urgent { background: var(--restricted); color: #fff; }
+.parkedpill.urgent i { color: #fff; }
+.driving .parkedpill { display: none; }

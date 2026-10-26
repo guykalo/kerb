@@ -798,9 +798,13 @@ function parkedNow(f) {
     if (legal === 0) { toast("You can't park here right now. Check the sign."); return; }
   }
   const hours = legal == null ? S.stay : legal;
-  const sess = { at: mids.get(p.id), name: p.s, side: p.sd || '', start: Date.now(), until: Date.now() + hours * 3600e3, legal: legal != null && legal < 24, planned: legal == null };
+  // The rules are checked in quarter hours from the start of this quarter, so the limit counts from there too
+  // (parked at 12:13 with no stopping from 7am: move by 7:00, not 7:13).
+  const d0 = new Date(), intoQuarter = legal != null ? ((d0.getMinutes() % 15) * 60 + d0.getSeconds()) * 1e3 : 0;
+  const sess = { at: mids.get(p.id), name: p.s, side: p.sd || '', start: Date.now(), until: Date.now() + hours * 3600e3 - intoQuarter, legal: legal != null && legal < 24, planned: legal == null };
   store.set('kerb-parked', sess);
-  setSessionMarker(); toast(legal != null && legal < 24 ? `Saved. Move by ${clockAt(sess.until)}.` : 'Saved where you parked.');
+  setSessionMarker(); parkedPill(); toast(legal != null && legal < 24 ? `Saved. Move by ${clockAt(sess.until)}.` : 'Saved where you parked.');
+  try { if (sess.legal && 'Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch { /* not supported */ }
   S.sel = null; update();
 }
 const clockAt = (ms) => new Date(ms).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', timeZone: CITY.tz }).replace(' ', '').toLowerCase();
@@ -836,10 +840,33 @@ function sessionCard() {
       ${s.legal || s.planned ? `<a class="cta" href="${icsFor(s)}" download="kerb-move-the-car.ics"><i class="ph ph-bell-ringing"></i>Remind me</a>` : ''}
       <button class="cta" type="button" data-act="done"><i class="ph ph-check"></i>I've left</button>
     </div>`;
-  el.querySelector('[data-act=done]').onclick = () => { store.set('kerb-parked', null); setSessionMarker(); renderList(); };
+  el.querySelector('[data-act=done]').onclick = () => { store.set('kerb-parked', null); setSessionMarker(); parkedPill(); renderList(); };
   body.appendChild(el);
 }
-setInterval(() => { if (S.sel == null && store.get('kerb-parked', null)) renderList(); }, 60e3);
+// A small countdown on the map while you're parked, and a heads-up 10 minutes before you have to move.
+function parkedPill() {
+  const s = store.get('kerb-parked', null);
+  let pill = $('#parkedPill');
+  if (!s) { pill?.remove(); return; }
+  if (!pill) {
+    pill = document.createElement('button'); pill.type = 'button'; pill.id = 'parkedPill'; pill.className = 'parkedpill';
+    pill.onclick = () => { S.sel = null; update(); setSheet('peek'); if (s.at) map.easeTo({ center: s.at, zoom: Math.max(map.getZoom(), 16) }); };
+    $('#app').appendChild(pill);
+  }
+  const left = s.until - Date.now(), mins = Math.round(left / 60e3);
+  const txt = !(s.legal || s.planned) ? 'Parked' : left <= 0 ? 'Time is up' : mins >= 60 ? `${Math.floor(mins / 60)}h ${String(mins % 60).padStart(2, '0')}m left` : `${mins} min left`;
+  pill.classList.toggle('urgent', (s.legal || s.planned) && left < 15 * 60e3);
+  pill.innerHTML = `<i class="ph-fill ph-car-simple" aria-hidden="true"></i><span><b>${txt}</b> · ${s.name}</span>`;
+  if ((s.legal || s.planned) && left > 0 && left < 10 * 60e3 && !s.warned) {
+    s.warned = true; store.set('kerb-parked', s);
+    const msg = `Move the car: ${mins} min left on ${s.name}.`;
+    toast(msg);
+    try { navigator.vibrate?.([200, 100, 200]); } catch { /* not supported */ }
+    try { if ('Notification' in window && Notification.permission === 'granted') new Notification('Kerb', { body: msg, tag: 'kerb-move', icon: './icon-192.png' }); } catch { /* not allowed */ }
+  }
+}
+setInterval(() => { parkedPill(); if (S.sel == null && store.get('kerb-parked', null)) renderList(); }, 30e3);
+setTimeout(parkedPill, 1500);
 
 /* ---------- detail ---------- */
 // Plates come straight from the meter's own sign text, so they read like the real sign.
