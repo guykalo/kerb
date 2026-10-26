@@ -80,6 +80,22 @@ const titleCase = (s) => String(s || '').toLowerCase().replace(/\b[a-z]/g, (c) =
 const LEFT = { N: [[-1, 0]], S: [[1, 0]], E: [[0, 1]], W: [[0, -1]], 'N-S': [[-1, 0], [1, 0]], 'E-W': [[0, 1], [0, -1]] };
 const SIDE_NAME = { '-1,0': 'West side', '1,0': 'East side', '0,1': 'North side', '0,-1': 'South side' };
 
+// Drop points that sit within `tol` metres of the line between their neighbours (Douglas-Peucker).
+function simplify(pts, tol = 3) {
+  if (pts.length < 3) return pts;
+  const kx = Math.cos((pts[0][1] * Math.PI) / 180) * 111320, ky = 110540;
+  const keep = new Uint8Array(pts.length); keep[0] = keep[pts.length - 1] = 1;
+  const stack = [[0, pts.length - 1]];
+  while (stack.length) {
+    const [a, b] = stack.pop();
+    const ax = pts[a][0] * kx, ay = pts[a][1] * ky, bx = pts[b][0] * kx, by = pts[b][1] * ky, L = Math.hypot(bx - ax, by - ay) || 1;
+    let best = 0, bi = -1;
+    for (let i = a + 1; i < b; i++) { const d = Math.abs((bx - ax) * (ay - pts[i][1] * ky) - (ax - pts[i][0] * kx) * (by - ay)) / L; if (d > best) { best = d; bi = i; } }
+    if (best > tol) { keep[bi] = 1; stack.push([a, bi], [bi, b]); }
+  }
+  return pts.filter((_, i) => keep[i]);
+}
+
 // `existing` is every kerb already on the map: clearway lines are only drawn where none of those is within 15 m.
 export function buildClearways(raw, reg, { existing = [] } = {}) {
   const CELL = 0.0005, grid = new Map(), cell = (c) => `${Math.floor(c[0] / CELL)}:${Math.floor(c[1] / CELL)}`;
@@ -95,7 +111,7 @@ export function buildClearways(raw, reg, { existing = [] } = {}) {
       // Shift ~6 m towards the kerb, then keep only the runs Kerb has nothing else for.
       const pts = line.map(([lon, lat]) => round([lon + (vx * 6) / (Math.cos((lat * Math.PI) / 180) * 111320), lat + (vy * 6) / 110540]));
       let run = [];
-      const flush = () => { if (run.length > 1 && dist(run[0], run[run.length - 1]) > 20) features.push({ type: 'Feature', properties: { s: titleCase(cw.street), b: titleCase(cw.suburb), sd: SIDE_NAME[`${vx},${vy}`], k, z: 2, pa: '', f15: 0, n: 0, src: 'cw' }, geometry: { type: 'LineString', coordinates: run } }); run = []; };
+      const flush = () => { if (run.length > 1 && dist(run[0], run[run.length - 1]) > 20) features.push({ type: 'Feature', properties: { s: titleCase(cw.street), b: titleCase(cw.suburb), sd: SIDE_NAME[`${vx},${vy}`], k, z: 2, pa: '', f15: 0, n: 0, src: 'cw' }, geometry: { type: 'LineString', coordinates: simplify(run) } }); run = []; };
       for (const p of pts) { if (near(p)) flush(); else run.push(p); }
       flush();
     }
