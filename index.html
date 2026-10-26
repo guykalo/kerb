@@ -30,7 +30,7 @@
       <form class="search" id="searchForm" role="search" autocomplete="off">
         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
         <label class="sr" for="q">Search a street or place</label>
-        <input id="q" type="search" placeholder="Search a street" enterkeyhint="search">
+        <input id="q" type="search" placeholder="Where to?" enterkeyhint="search">
         <ul class="results" id="results" role="listbox" hidden></ul>
       </form>
       <button class="iconbtn" id="locate" type="button" aria-label="Show my location"><i class="ph ph-crosshair"></i></button>
@@ -40,24 +40,38 @@
       <button class="handle" id="handle" type="button" aria-label="Expand or collapse the options"><span></span></button>
 
       <div class="dock" id="dock">
-        <div class="dock-row">
-          <div class="when">
-            <label for="time" class="sr">Arrival time</label>
-            <output id="timeOut" for="time"></output>
-            <span id="dayOut" class="dayout"></span>
-          </div>
-          <div class="stay" role="group" aria-label="How long you're staying" id="staySeg">
-            <button type="button" data-v="0.25">15m</button><button type="button" data-v="1">1h</button><button type="button" data-v="2">2h</button><button type="button" data-v="3">3h</button><button type="button" data-v="4">4h</button><button type="button" data-v="8">8h</button><button type="button" data-v="night" title="Overnight, until 8am">Night</button>
+        <!-- 1. What you're looking for, in one sentence (also all that shows when the sheet is lowered) -->
+        <button class="dock-row ask" id="ask" type="button" aria-live="polite"></button>
+
+        <!-- 2. How long -->
+        <div class="q">
+          <div class="qlabel" id="stayLabel">How long are you staying?</div>
+          <div class="stay" role="group" aria-labelledby="stayLabel" id="staySeg">
+            <button type="button" data-v="0.25" aria-label="15 minutes"><b>15</b><small>min</small></button><button type="button" data-v="1" aria-label="1 hour"><b>1</b><small>hour</small></button><button type="button" data-v="2" aria-label="2 hours"><b>2</b><small>hours</small></button><button type="button" data-v="3" aria-label="3 hours"><b>3</b><small>hours</small></button><button type="button" data-v="4" aria-label="4 hours"><b>4</b><small>hours</small></button><button type="button" data-v="8" aria-label="8 hours"><b>8</b><small>hours</small></button><button type="button" data-v="night" aria-label="Overnight, until 8am"><b><i class="ph-fill ph-moon"></i></b><small>night</small></button>
           </div>
         </div>
-        <div class="ribbon-cap"><span id="ribbonTitle">Streets on screen</span><span class="mini-key"><i class="k-free"></i>Free<i class="k-meter"></i>Meter<i class="k-no"></i>No parking</span></div>
+
+        <!-- 3. When you get there -->
+        <div class="q">
+          <div class="qlabel" id="arriveLabel">When do you arrive?</div>
+          <div class="arrive" role="group" aria-labelledby="arriveLabel">
+            <label class="daypick"><span class="sr">Day</span><select id="daySel"></select><i class="ph ph-caret-down" aria-hidden="true"></i></label>
+            <div class="clock">
+              <button type="button" class="step" id="timeDown" aria-label="30 minutes earlier"><i class="ph ph-minus"></i></button>
+              <output id="timeOut" for="time"></output>
+              <button type="button" class="step" id="timeUp" aria-label="30 minutes later"><i class="ph ph-plus"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. The day at a glance: drag along it to change the arrival time -->
+        <div class="ribbon-cap"><span id="ribbonTitle">Parking on this map today</span><span class="mini-key"><i class="k-free"></i>Free<i class="k-meter"></i>Paid<i class="k-no"></i>No</span></div>
         <div class="ribbon" id="ribbon">
           <canvas id="ribbonCanvas" aria-hidden="true"></canvas>
           <div class="staybox" id="stayBox" aria-hidden="true"></div>
           <input id="time" type="range" min="0" max="23.75" step="0.25" aria-label="Arrival time">
           <div class="ticks" aria-hidden="true"><span>12am</span><span>6am</span><span>noon</span><span>6pm</span><span>12am</span></div>
         </div>
-        <div class="days" role="group" aria-label="Day" id="daySeg"></div>
       </div>
 
       <div class="body" id="body"></div>

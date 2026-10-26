@@ -78,36 +78,51 @@ button { cursor: pointer; }
 .panel.dragging { user-select: none; }
 .handle span { width: 40px; height: 5px; border-radius: 3px; background: var(--line); }
 
-.dock { flex: none; display: flex; flex-direction: column; gap: 10px; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); }
-.dock-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.when { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.when output { font-weight: 750; font-size: 30px; line-height: 1; font-stretch: 112%; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.dayout { color: var(--muted); font-weight: 600; font-size: 12.5px; white-space: nowrap; line-height: 1; }
-.stay { display: flex; background: var(--surface-2); border-radius: 999px; padding: 3px; gap: 1px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
-.stay::-webkit-scrollbar { display: none; }
-.stay button { flex: none; border: 0; background: transparent; border-radius: 999px; padding: 6px 6.5px; font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.stay button[aria-pressed="true"] { background: var(--fg); color: var(--surface); }
+.dock { flex: none; display: flex; flex-direction: column; gap: 11px; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); }
+
+/* 1. The answer so far, as one sentence. In the lowered sheet it's the only thing showing. */
+.ask { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: transparent; padding: 2px 0 0; text-align: left; cursor: default; }
+.panel.min .ask { cursor: pointer; }
+.ask-icon { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); font-size: 19px; }
+.ask-text { font-size: 17.5px; line-height: 1.25; font-weight: 500; text-wrap: balance; }
+.ask-text b { font-weight: 800; }
+.ask-edit { display: none; margin-left: auto; flex: none; padding: 7px 12px; border-radius: 999px; background: var(--surface-2); color: var(--accent); font-weight: 700; font-size: 14px; }
+.panel.min .ask-edit { display: inline-block; }
+
+/* 2 and 3. Plain questions with big, labelled answers. */
+.q { display: flex; flex-direction: column; gap: 6px; }
+.qlabel { font-size: 13.5px; font-weight: 700; color: var(--muted); }
+.stay { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.stay button { min-width: 0; height: 50px; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-variant-numeric: tabular-nums; }
+.stay button b { font-size: 20px; font-weight: 800; line-height: 1; font-stretch: 105%; }
+.stay button b i { font-size: 19px; display: block; }
+.stay button small { font-size: 11.5px; font-weight: 600; color: var(--muted); line-height: 1.1; }
+.stay button[aria-pressed="true"] { background: var(--fg); border-color: var(--fg); color: var(--surface); }
+.stay button[aria-pressed="true"] small { color: inherit; opacity: .8; }
+.arrive { display: flex; gap: 8px; align-items: stretch; }
+.daypick { position: relative; flex: 1; min-width: 0; display: flex; }
+.daypick select { -webkit-appearance: none; appearance: none; width: 100%; height: 48px; padding: 0 34px 0 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--fg); font: inherit; font-size: 16.5px; font-weight: 700; cursor: pointer; text-overflow: ellipsis; }
+.daypick i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--muted); font-size: 16px; }
+.clock { flex: none; display: flex; align-items: center; height: 48px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.clock output { min-width: 86px; text-align: center; font-size: 21px; font-weight: 800; font-stretch: 105%; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.clock .step { width: 44px; height: 100%; border: 0; background: transparent; display: grid; place-items: center; font-size: 18px; color: var(--accent); border-radius: 13px; }
+.clock .step:active { background: var(--surface-2); }
 
 /* The ribbon: a 24-hour strip of what the kerbs in view do across the day, with the arrival time as a needle. */
-.ribbon { position: relative; height: 54px; }
+.ribbon { position: relative; height: 52px; }
 .ribbon canvas { position: absolute; left: 0; right: 0; top: 0; width: 100%; height: 34px; border-radius: 10px; }
 .ribbon input[type=range] { z-index: 1; position: absolute; inset: 0 0 auto 0; width: 100%; height: 34px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; cursor: ew-resize; }
 .ribbon input[type=range]::-webkit-slider-runnable-track { height: 34px; background: transparent; }
 .ribbon input[type=range]::-moz-range-track { height: 34px; background: transparent; }
 .ribbon input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 6px; height: 42px; margin-top: -4px; border-radius: 3px; background: var(--fg); box-shadow: 0 0 0 3px var(--surface); }
 .ribbon input[type=range]::-moz-range-thumb { width: 6px; height: 42px; border: 0; border-radius: 3px; background: var(--fg); box-shadow: 0 0 0 3px var(--surface); }
-.ribbon-cap { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12.5px; margin-bottom: -4px; }
-.ribbon-cap #ribbonTitle { font-weight: 650; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mini-key { display: flex; align-items: center; gap: 4px; color: var(--muted); white-space: nowrap; font-size: 11.5px; }
-.mini-key i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-left: 6px; }
+.ribbon-cap { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13.5px; margin-bottom: -6px; color: var(--muted); }
+.ribbon-cap #ribbonTitle { font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini-key { display: flex; align-items: center; gap: 4px; color: var(--muted); white-space: nowrap; font-size: 12.5px; font-weight: 600; }
+.mini-key i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-left: 6px; }
 .k-free { background: var(--free); } .k-meter { background: var(--paid); } .k-no { background: var(--restricted); }
 .staybox { position: absolute; top: -3px; height: 40px; border: 2px solid var(--fg); border-radius: 8px; pointer-events: none; box-shadow: 0 0 0 1px var(--surface) inset; }
-.ticks { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.days button { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 5px 0; font-weight: 600; font-size: 13px; }
-.days button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
-.days button.today { position: relative; }
-.days button.today::after { content: ""; position: absolute; left: 50%; bottom: 2px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: currentColor; opacity: .6; }
+.ticks { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 
@@ -366,3 +381,26 @@ button.brand { font: inherit; cursor: pointer; position: relative; }
 .live span { display: grid; gap: 2px; }
 .live small { color: var(--muted); font-size: 12.5px; }
 .livetag { color: var(--free); font-weight: 700; }
+
+/* Small or short phones: keep every control on screen and the map still visible. */
+@media (max-width: 360px) {
+  .ask-text { font-size: 16px; }
+  .stay { gap: 3px; }
+  .stay button small { font-size: 10.5px; }
+  .clock output { min-width: 70px; font-size: 19px; }
+  .clock .step { width: 34px; }
+  .daypick select { font-size: 15px; padding: 0 26px 0 10px; }
+  .daypick i { right: 9px; }
+  .mini-key { font-size: 11.5px; }
+}
+@media (max-height: 700px) and (max-width: 899px) {
+  .dock { gap: 8px; }
+  .stay button { height: 44px; }
+  .stay button b { font-size: 18px; }
+  .daypick select, .clock { height: 44px; }
+  .ask-icon { width: 30px; height: 30px; font-size: 16px; }
+}
+@media (max-height: 640px) and (max-width: 899px) {
+  .satbtn { display: none; }
+  .snapbtn { bottom: calc(var(--vis, 250px) + 56px); width: 44px; height: 44px; }
+}

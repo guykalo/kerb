@@ -455,14 +455,26 @@ function rateBoard(cp) {
 }
 
 /* ---------- controls ---------- */
-const daySeg = $('#daySeg');
-[1, 2, 3, 4, 5, 6, 0].forEach((d) => {
-  const b = document.createElement('button');
-  b.type = 'button'; b.dataset.v = d; b.textContent = DAYS[d];
-  if (d === today.day) { b.classList.add('today'); b.title = 'Today'; }
-  b.onclick = () => { S.day = d; update(); };
-  daySeg.appendChild(b);
-});
+// The dock asks two plain questions (how long, when) and repeats the answer as one sentence on top.
+const isNow = () => S.day === today.day && Math.abs(S.hour - today.hour) < 0.01;
+const dayName = (d) => (d === today.day ? 'Today' : d === (today.day + 1) % 7 ? 'Tomorrow' : DAYS_LONG[d]);
+const daySel = $('#daySel');
+daySel.innerHTML = `<option value="now">Now</option>${[0, 1, 2, 3, 4, 5, 6].map((i) => { const d = (today.day + i) % 7; return `<option value="${d}">${dayName(d)}</option>`; }).join('')}`;
+const setNight = () => { if (S.night) S.stay = nightStay(S.hour); };
+daySel.onchange = () => {
+  if (daySel.value === 'now') { Object.assign(today, sydneyNow()); Object.assign(S, today); }
+  else S.day = +daySel.value;
+  setNight(); update();
+};
+// -/+ move the arrival by half an hour, rolling over midnight into the next or previous day.
+function stepTime(dir) {
+  let h = dir > 0 ? Math.floor(S.hour * 2 + 1e-6) / 2 + 0.5 : Math.ceil(S.hour * 2 - 1e-6) / 2 - 0.5;
+  if (h >= 24) { h -= 24; S.day = (S.day + 1) % 7; }
+  if (h < 0) { h += 24; S.day = (S.day + 6) % 7; }
+  S.hour = h; setNight(); update();
+}
+$('#timeDown').onclick = () => stepTime(-1);
+$('#timeUp').onclick = () => stepTime(1);
 $('#staySeg').querySelectorAll('button').forEach((b) => (b.onclick = () => {
   S.night = b.dataset.v === 'night';
   S.stay = S.night ? nightStay(S.hour) : +b.dataset.v;
@@ -470,16 +482,24 @@ $('#staySeg').querySelectorAll('button').forEach((b) => (b.onclick = () => {
   update();
 }));
 const timeIn = $('#time');
-timeIn.addEventListener('input', () => { S.hour = +timeIn.value; if (S.night) S.stay = nightStay(S.hour); update(true); });
+timeIn.addEventListener('input', () => { S.hour = +timeIn.value; setNight(); update(true); });
 timeIn.addEventListener('change', () => update());
+// Tapping the sentence when the sheet is lowered brings the questions back.
+$('#ask').addEventListener('click', () => { if (sheet === 'min') setSheet('peek'); });
 
+function askHTML() {
+  const end = S.hour + S.stay, nextDay = end >= 24;
+  const how = S.night ? 'overnight' : stayWords(true).replace(/^an hour$/, '1 hour');
+  const when = isNow() ? 'now' : `${S.day === today.day ? 'today' : S.day === (today.day + 1) % 7 ? 'tomorrow' : DAYS[S.day]} ${fmtTime(S.hour)}`;
+  const until = `${fmtTime(end % 24)}${nextDay ? ` ${S.day === today.day ? 'tomorrow' : DAYS[(S.day + 1) % 7]}` : ''}`;
+  return `<span class="ask-icon"><i class="ph-fill ph-car-simple"></i></span><span class="ask-text">Parking <b>${how}</b>, from <b>${when}</b> until <b>${until}</b></span><span class="ask-edit">Change</span>`;
+}
 function syncControls() {
-  daySeg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.v === S.day)));
   $('#staySeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(S.night ? b.dataset.v === 'night' : +b.dataset.v === S.stay)));
   timeIn.value = S.hour;
   $('#timeOut').textContent = fmtClock(S.hour);
-  const isNow = S.day === today.day && Math.abs(S.hour - today.hour) < 0.01;
-  $('#dayOut').textContent = isNow ? 'now' : DAYS[S.day];
+  daySel.value = isNow() ? 'now' : String(S.day);
+  $('#ask').innerHTML = askHTML();
   const box = $('#stayBox');
   box.style.left = `${(S.hour / 24) * 100}%`;
   box.style.width = `${(Math.min(S.stay, 24 - S.hour) / 24) * 100}%`;
@@ -501,7 +521,8 @@ function drawRibbon() {
   const colFor = { free: c.free, limit: c.free, meter: c.paid, restricted: c.restricted };
   const W = r.width / 96;
   const selKerb = typeof S.sel === 'number' ? byId.get(S.sel) : null;
-  $('#ribbonTitle').textContent = selKerb ? `${selKerb.properties.s}, ${DAYS_LONG[S.day]}` : `Streets on screen, ${DAYS_LONG[S.day]}`;
+  const dayWord = S.day === today.day || S.day === (today.day + 1) % 7 ? dayName(S.day).toLowerCase() : DAYS[S.day];
+  $('#ribbonTitle').textContent = selKerb ? `${selKerb.properties.s}, ${dayWord}` : `Parking on this map, ${dayWord}`;
   if (selKerb) {
     for (const seg of dayTimeline(selKerb.properties, RULES, S.day)) {
       if (!colFor[seg.kind]) continue;
@@ -1169,7 +1190,7 @@ function setOpen(v) { setSheet(v ? 'open' : 'peek'); }
   const grab = [$('#handle'), $('#dock')];
   for (const el of grab) {
     el.addEventListener('pointerdown', (e) => {
-      if (isDesk() || (el.id === 'dock' && e.target.closest('button, input, .stay, .ribbon'))) return;
+      if (isDesk() || (el.id === 'dock' && e.target.closest('button, input, select, .stay, .arrive, .ribbon'))) return;
       begin(e.clientY); el.setPointerCapture?.(e.pointerId);
     });
     el.addEventListener('pointermove', (e) => { if (move(e.clientY)) e.preventDefault(); });
