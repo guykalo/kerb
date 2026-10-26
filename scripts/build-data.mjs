@@ -19,7 +19,10 @@ raw.extraCarParks = JSON.parse(await readFile('data/carparks.json', 'utf8').catc
 
 const out = buildData(raw);
 await mkdir(OUT, { recursive: true });
-for (const k of ['kerbs', 'rules', 'meters', 'carparks']) await writeFile(`${OUT}/${k}.json`, JSON.stringify(out[k]));
+// Leave out empty and default properties ('' / 0 / false; z unless it's 1 or 3): the app treats missing the same,
+// and it takes megabytes off the file phones download.
+const slim = (fc) => ({ ...fc, features: fc.features.map((f) => { const p = {}; for (const [k, v] of Object.entries(f.properties)) if (k === 'k' || k === 'id' || k === 's' || (k === 'z' ? v === 1 || v === 3 : v !== '' && v !== 0 && v !== false && v != null)) p[k] = v; return { type: 'Feature', properties: p, geometry: f.geometry }; }) });
+for (const k of ['kerbs', 'rules', 'meters', 'carparks']) await writeFile(`${OUT}/${k}.json`, JSON.stringify(k === 'kerbs' ? slim(out[k]) : out[k]));
 await writeFile(`${OUT}/meta.json`, JSON.stringify(out.meta, null, 2));
 console.log(JSON.stringify({ ...out.meta, sources: undefined }, null, 2));
 if (out.meta.unparsed.length) console.warn('Sign text the parser could not read:', out.meta.unparsed.map((u) => u[0]));

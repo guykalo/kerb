@@ -34,7 +34,7 @@ for (const [id, c] of Object.entries(CITIES)) {
     out.features.forEach((f, i) => { f.properties.id = i + 1; });
     const dir = `public/data/${id}`;
     await mkdir(dir, { recursive: true });
-    await writeFile(`${dir}/kerbs.json`, JSON.stringify({ type: 'FeatureCollection', features: out.features }));
+    await writeFile(`${dir}/kerbs.json`, JSON.stringify({ type: 'FeatureCollection', features: out.features.map((f) => { const p = {}; for (const [k, v] of Object.entries(f.properties)) if (k === 'k' || k === 'id' || k === 's' || (k === 'z' ? v === 1 || v === 3 : v !== '' && v !== 0 && v !== false && v != null)) p[k] = v; return { type: 'Feature', properties: p, geometry: f.geometry }; }) }));
     await writeFile(`${dir}/rules.json`, JSON.stringify(rules));
     await writeFile(`${dir}/meters.json`, '[]');
     await writeFile(`${dir}/carparks.json`, JSON.stringify(out.carparks || []));
