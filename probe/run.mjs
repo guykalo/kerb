@@ -17,9 +17,10 @@ while ([...listPages].some((p) => !done.has(p))) {
   try {
     const h = await (await get(p)).text();
     for (const m of h.matchAll(/href="([^"]*Council-Meetings\/[^"#?]+)"/g)) { const u = abs(m[1]); if (!/Council-Meetings-Live|Council-Meetings\/?$/i.test(u)) meetingPages.add(u); }
-    for (const m of h.matchAll(/href="([^"]*Council-Meetings\?[^"]*page[^"]*)"/gi)) listPages.add(abs(m[1]));
+    if (done.size === 1) await writeFile('out/list-page.html', h);
+    for (const m of h.matchAll(/href="([^"]*(?:Council-Meetings|dlv_)[^"]*(?:page|pageindex|dlv_)[^"]*)"/gi)) listPages.add(abs(m[1]));
   } catch (e) { say('list failed', p, e.message); }
-  if (done.size > 40) break;
+  if (done.size > 60) break;
 }
 say('list pages', done.size, 'meetings', meetingPages.size);
 // 2. Agenda / minutes PDFs from each meeting page.
@@ -41,8 +42,9 @@ for (const [u, info] of pdfs) {
     execFileSync('pdftotext', ['-layout', 'tmp/a.pdf', 'tmp/a.txt']);
     const t = await readFile('tmp/a.txt', 'utf8');
     const pages = t.split('\f');
-    const hit = pages.map((p, i) => [i, p]).filter(([, p]) => /Local Transport Forum|Traffic Committee|Local Traffic/i.test(p) && /park|stopping|\dP\b|loading|zone/i.test(p));
-    for (const [i] of hit) items.push({ meeting: info.meeting, doc: u, page: i + 1, text: pages.slice(i, i + 2).join('\n').replace(/[ \t]+/g, ' ').slice(0, 9000) });
+    // Only the forum's own minutes (attached to the agenda): pages headed "LOCAL TRANSPORT FORUM - <date>" / "TRAFFIC COMMITTEE".
+    const hit = pages.map((p, i) => [i, p]).filter(([, p]) => /(LOCAL TRANSPORT FORUM|TRAFFIC COMMITTEE)\s*[-–]\s*\d/i.test(p.slice(0, 400)));
+    if (hit.length) items.push({ meeting: info.meeting, doc: u, pages: hit.map(([i]) => i + 1), text: hit.map(([, p]) => p).join('\n').replace(/[ \t]+/g, ' ') });
     say(info.meeting, u.split('/').pop(), 'pages', pages.length, 'hits', hit.length);
   } catch (e) { say('pdf failed', u, e.message); }
 }
