@@ -40,7 +40,7 @@ for (const u of urls) {
   const m = /Open\/\d{4}\/\d\d\/(OC|SP)_(\d{8})_AGN_(\d+)(_AT)?(_SUP)?(_WEB)?\.(htm|PDF)$/i.exec(u);
   if (!m || m[5]) continue;
   const key = `${m[1]}_${m[2]}`;
-  const rank = (m[6] ? 4 : 0) + (/htm/i.test(m[7]) ? 2 : 0) + (m[4] ? 1 : 0);
+  const rank = m[6] ? 0 : (/htm/i.test(m[7]) ? 4 : 2) + (m[4] ? 1 : 0); // the _WEB page is only a frame
   if (!meetings.has(key) || meetings.get(key).rank < rank) meetings.set(key, { u, rank, date: m[2] });
 }
 say('meetings', meetings.size);
@@ -55,17 +55,16 @@ for (const [key, { u, date }] of [...meetings].sort()) {
     if (/\.pdf$/i.test(u)) { await writeFile('tmp/a.pdf', Buffer.from(await r.arrayBuffer())); execFileSync('pdftotext', ['-layout', 'tmp/a.pdf', 'tmp/a.txt']); t = await readFile('tmp/a.txt', 'utf8'); }
     else t = text(await r.text());
   } catch (e) { say('doc failed', u, e.message); continue; }
-  // Traffic Committee items: "ITEM 2311 A1 - 28 CAMBRIDGE STREET, EPPING - ..." up to the next item.
+  // Windows of text around every Traffic Committee mention and traffic item heading, merged.
   const flat = t.replace(/\r/g, '');
-  const heads = [...flat.matchAll(/ITEM\s+(\d{4})\s+([AB]\d+)\s*[-–]\s*([^\n]{5,200})/g)];
+  const wins = [];
+  for (const m of flat.matchAll(/Traffic Committee|Traffic Engineering Advisory|ITEM\s+\d{4}\s+[AB]\d+/gi)) wins.push([Math.max(0, m.index - 300), Math.min(flat.length, m.index + 7000)]);
+  wins.sort((x, y) => x[0] - y[0]);
+  const merged = [];
+  for (const w of wins) { const last = merged[merged.length - 1]; if (last && w[0] <= last[1]) last[1] = Math.max(last[1], w[1]); else merged.push([...w]); }
   const got = new Map();
-  for (let h = 0; h < heads.length; h++) {
-    const id = `${heads[h][1]} ${heads[h][2]}`;
-    const body = flat.slice(heads[h].index, heads[h + 1] ? heads[h + 1].index : heads[h].index + 8000).slice(0, 8000);
-    if (!/park|stopping|loading|zone|\dP\b|permit|clearway|meter/i.test(body)) continue;
-    const prev = got.get(id);
-    got.set(id, { id, title: heads[h][3].trim(), text: (prev ? prev.text + '\n---\n' : '') + body.replace(/[ \t]+/g, ' ') });
-  }
+  let segText = merged.map(([x, y]) => flat.slice(x, y)).filter((x) => /park|stopping|zone|\dP\b|permit/i.test(x)).join('\n=====\n').replace(/[ \t]+/g, ' ').slice(0, 150000);
+  if (segText) got.set('all', { id: 'all', title: '', text: segText });
   for (const v of got.values()) items.push({ meeting: key, date: `${date.slice(0, 2)}/${date.slice(2, 4)}/${date.slice(4)}`, doc: u, ...v });
   say(i, key, u.split('/').pop(), 'chars', t.length, 'items', got.size);
 }
