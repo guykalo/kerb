@@ -166,7 +166,12 @@ export function buildMelbourne(raw, reg) {
 // locations from OpenStreetMap). Only the ones Kerb could place for certain.
 const ALLD = [0, 1, 2, 3, 4, 5, 6];
 const STN_SRC = 'https://www.stonnington.vic.gov.au/Services/Parking/Car-parks-in-Stonnington';
-const OPEN_AIR = [{ kind: 'casual', days: ALLD, from: 9, to: 18, bands: [[1, 4], [2, 8], [3, 14], [4, 20], [5, 26], [6, 32], [7, 38], [8, 44], [9, 50]] }, { kind: 'free', days: ALLD, from: 18, to: 24 }];
+// $4 an hour for 2 hours, then $6 an hour, paid 9am-6pm: arrive later in the day and only the hours to 6pm are paid.
+const openAirCost = (hrs) => (hrs <= 2 ? hrs * 4 : 8 + (hrs - 2) * 6);
+const OPEN_AIR = [...Array.from({ length: 9 }, (_, i) => {
+  const H = 9 + i, paid = 18 - H;
+  return { kind: 'casual', days: ALLD, from: H, to: H + 1, bands: [...Array.from({ length: paid - 1 }, (_, k) => [k + 1, openAirCost(k + 1)]), [24, openAirCost(paid)]] };
+}), { kind: 'free', days: ALLD, from: 18, to: 24 }];
 const openAir = (id, name, address, at) => ({ id: `stn-${id}`, name, address, at, operator: 'City of Stonnington', rates: OPEN_AIR, source: STN_SRC, note: 'Council open-air car park. Pay 9am-6pm, 7 days: $4 an hour for the first 2 hours, then $6 an hour.' });
 const STONNINGTON = [
   { id: 'stn-elizabeth', name: 'Elizabeth Street Car Park', address: '9 Elizabeth Street, South Yarra', at: [144.99283, -37.84537], operator: 'City of Stonnington', source: STN_SRC,

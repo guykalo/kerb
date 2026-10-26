@@ -70,7 +70,7 @@ export function buildLikelyFree(raw, { existing = [] } = {}) {
     let n = 0;
     for (const rd of area.roads) for (const path of rd.p) {
       let run = [];
-      const flush = () => { if (run.length > 1 && dist(run[0], run[run.length - 1]) > 25) { features.push({ type: 'Feature', properties: { s: titleCase(rd.n), b: '', k: -1, z: 0, pa: '', lk: 1, lks: area.label, f15: 0, n: 0, src: 'lf' }, geometry: { type: 'LineString', coordinates: run.map((c) => round(c)) } }); n++; } run = []; };
+      const flush = () => { if (rd.n.trim() && run.length > 1 && dist(run[0], run[run.length - 1]) > 25) { features.push({ type: 'Feature', properties: { s: titleCase(rd.n), b: '', k: -1, z: 0, pa: '', lk: 1, lks: area.label, f15: 0, n: 0, src: 'lf' }, geometry: { type: 'LineString', coordinates: run.map((c) => round(c)) } }); n++; } run = []; };
       for (const p of path) { if (!inRings(p, area.rings) || (area.box && !(p[0] >= area.box[0] && p[0] <= area.box[2] && p[1] >= area.box[1] && p[1] <= area.box[3])) || busy(p) || covered(p)) flush(); else run.push(p); }
       flush();
     }
