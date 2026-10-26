@@ -27,6 +27,11 @@ for (const [name, q] of views) {
   md += `- **${name}**: ${((Date.now() - t0) / 1000).toFixed(1)} s, ${errs.length} errors, ${failed.length} failed requests${errs.length ? `\n  - ${errs.slice(0, 5).join('\n  - ')}` : ''}${failed.length ? `\n  - ${failed.slice(0, 5).join('\n  - ')}` : ''}\n`;
   await p.close();
 }
+// The area pages for search engines: index, a few areas, sitemap.
+for (const path of ['parking/', 'parking/syd/newtown/', 'parking/syd/sydney/', 'parking/bne/brisbane-city/', 'sitemap.xml']) {
+  try { const r = await fetch(BASE + path); const t = await r.text(); md += `- ${path}: ${r.status}${path.endsWith('xml') ? `, ${(t.match(/<url>/g) || []).length} pages` : `, ${(t.match(/<tr>/g) || []).length} table rows`}\n`; }
+  catch (e) { md += `- ${path}: ${e.message}\n`; }
+}
 await b.close();
 await appendFile('audit/report.md', md);
 console.log(md);
