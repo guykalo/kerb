@@ -13,7 +13,9 @@ jobs:
       - run: |
           npm i --no-save playwright@1.47 && npx playwright install --with-deps chromium >/dev/null
           mkdir -p out; node probe/check.mjs > out/check.txt 2>&1 || true
-          node probe/shots.mjs || true
+          for f in data/kerbs.json data/rules.json data/carparks.json data/fines.json assets/; do curl -s -o /dev/null -H 'Accept-Encoding: gzip, br' -w "$f %{http_code} %{size_download} bytes %{time_total}s\n" https://guykalo.github.io/kerb/$f >> out/check.txt; done
+          curl -s https://guykalo.github.io/kerb/ | grep -o 'assets/[^"]*\.js' | head -3 | while read a; do curl -s -o /dev/null -H 'Accept-Encoding: gzip, br' -w "$a %{size_download} bytes\n" https://guykalo.github.io/kerb/$a >> out/check.txt; done
+          echo skip shots
           for c in mel bne per; do curl -fsSL "https://guykalo.github.io/kerb/data/$c/meta.json" >> out/meta.txt || echo "$c missing" >> out/meta.txt; echo >> out/meta.txt; done
       - run: |
           cd out && git init -q -b probe-live-out
