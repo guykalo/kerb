@@ -1,0 +1,21 @@
+name: Probe live site (screenshots)
+on:
+  push:
+    branches: ['probe/live']
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm i --no-save playwright@1.47 && npx playwright install --with-deps chromium >/dev/null
+          node probe/shots.mjs || true
+          for c in mel bne per; do curl -fsSL "https://guykalo.github.io/kerb/data/$c/meta.json" >> out/meta.txt || echo "$c missing" >> out/meta.txt; echo >> out/meta.txt; done
+      - run: |
+          cd out && git init -q -b probe-live-out
+          git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Live shots $(date -u +%F)"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" probe-live-out
