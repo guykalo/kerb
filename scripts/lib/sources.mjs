@@ -63,6 +63,7 @@ import { fetchManly, fetchWilloughby } from './spot.mjs';
 import { fetchOsmParking } from './osm.mjs';
 import { fetchClearways } from './clearways.mjs';
 import { fetchLikelyFree } from './likely-free.mjs';
+import { fetchBayside } from './bayside.mjs';
 
 async function lastGood(name) {
   try { const { readFile } = await import('node:fs/promises'); const v = JSON.parse(await readFile(`data/raw/${name}.json`, 'utf8')); return Array.isArray(v) && v.length ? v : null; } catch { return null; }
@@ -83,7 +84,7 @@ export async function fetchAll() {
     }
   }
   // Other councils: a failure here shouldn't stop the City of Sydney data from updating.
-  for (const [name, fn] of [['waverley', fetchWaverley], ['woollahra', fetchWoollahra], ['parkride', fetchParkRide], ['manly', fetchManly], ['willoughby', fetchWilloughby], ['randwick', fetchRandwick], ['offstreet', fetchOffstreet], ['manual', fetchManual], ['osm', fetchOsmParking], ['clearways', fetchClearways], ['likelyfree', fetchLikelyFree]]) {
+  for (const [name, fn] of [['waverley', fetchWaverley], ['woollahra', fetchWoollahra], ['parkride', fetchParkRide], ['manly', fetchManly], ['willoughby', fetchWilloughby], ['randwick', fetchRandwick], ['offstreet', fetchOffstreet], ['manual', fetchManual], ['bayside', fetchBayside], ['osm', fetchOsmParking], ['clearways', fetchClearways], ['likelyfree', fetchLikelyFree]]) {
     try { raw[name] = await fn(); raw.meta.sources[name] = { ok: true }; }
     catch (e) { (globalThis.__log || console.log)(`  ${name} failed: ${e.message}`); raw.meta.sources[name] = { ok: false, error: e.message }; }
   }
