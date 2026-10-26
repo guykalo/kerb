@@ -95,7 +95,7 @@ export function sideRules(t) {
   if (t.access === 'no' || t.access === 'private') return { skip: 'not public' };
 
   // A week of quarter hours: what applies in each.
-  const Q = 96, grid = Array.from({ length: 7 }, () => Array.from({ length: Q }, () => ({ fee: null, max: null, no: null })));
+  const Q = 96, grid = Array.from({ length: 7 }, () => Array.from({ length: Q }, () => ({ fee: null, max: null, no: null, set: 0 })));
   const paint = (hours, fn) => { for (const h of hours) for (const d of h.days) for (let q = Math.round(h.from * 4); q < Math.round(h.to * 4); q++) fn(grid[d][q]); };
   const all = [{ days: [0, 1, 2, 3, 4, 5, 6], from: 0, to: 24 }];
   // Unconditional values first, conditional ones over the top. "15 minutes @ (...)" in a plain key counts as conditional.
@@ -107,9 +107,9 @@ export function sideRules(t) {
     for (const c of cond) paint(c.hours, (cell) => apply(cell, c.value));
     return true;
   };
-  let ok = read('fee', (c, v) => { c.fee = v === 'yes' ? 'yes' : v === 'no' ? 'no' : c.fee; });
-  ok = read('maxstay', (c, v) => { c.max = v === 'no' ? null : duration(v) ?? c.max; }) && ok;
-  ok = read('restriction', (c, v) => { if (RESTRICTION[v]) c.no = named || RESTRICTION[v]; }) && ok;
+  let ok = read('fee', (c, v) => { c.fee = v === 'yes' ? 'yes' : v === 'no' ? 'no' : c.fee; if (c.fee) c.set = 1; });
+  ok = read('maxstay', (c, v) => { c.max = v === 'no' ? null : duration(v) ?? c.max; if (v === 'no' || c.max) c.set = 1; }) && ok;
+  ok = read('restriction', (c, v) => { if (RESTRICTION[v]) { c.no = named || RESTRICTION[v]; c.set = 1; } else if (v === 'none') c.set = 1; }) && ok;
   if (!ok) return { skip: 'hours not read' };
   if (t.fee == null && !t['fee:conditional'] && t.maxstay == null && !t['maxstay:conditional'] && !t['restriction:conditional']) {
     // Only "there is parking here" is mapped: that's not a rule, so leave it unknown rather than call it free.
@@ -120,16 +120,18 @@ export function sideRules(t) {
   for (let d = 0; d < 7; d++) {
     let q = 0;
     while (q < Q) {
-      const c = grid[d][q], key = JSON.stringify(c);
+      const c = grid[d][q], key = JSON.stringify({ ...c, set: 0 });
       let e = q + 1;
-      while (e < Q && JSON.stringify(grid[d][e]) === key) e++;
+      while (e < Q && JSON.stringify({ ...grid[d][e], set: 0 }) === key) e++;
       const rule = c.no ? [0, 0, 0, 0, 0, 0, 1, c.no] : c.fee === 'yes' ? [c.max ?? 24, 0, 0, 0, -1, 0, 0, 'Ticket'] : c.max ? [c.max, 0, 0, 0, 0, 0, 0, ''] : null;
       if (rule) { const k = JSON.stringify([rule, q, e]); if (!runs.has(k)) runs.set(k, { rule, from: q / 4, to: e / 4, days: [] }); runs.get(k).days.push(d); }
       q = e;
     }
   }
   const rules = [...runs.values()].map((r) => { const x = [...r.rule]; x[1] = r.days; x[2] = r.from; x[3] = r.to; return x; });
-  return { rules, unrestricted: !rules.length };
+  // Times nobody mapped (e.g. only "no stopping @ (Mo-Fr 06:00-10:00)") aren't free: they're unknown.
+  const gaps = grid.some((day) => day.some((c) => !c.set));
+  return { rules, unrestricted: !rules.length && !gaps, gaps };
 }
 
 // Plain sign wording for the detail panel, e.g. "1P Ticket 8am-6pm Mon-Fri; No stopping".
@@ -186,7 +188,7 @@ export function buildOsmParking(raw, reg, { areaNotes = [] } = {}) {
       const bearing = (Math.atan2(-ny0 * sd, ex * sd) * 180) / Math.PI; // compass bearing of the side's outward normal
       const sdName = ['North', 'North-east', 'East', 'South-east', 'South', 'South-west', 'West', 'North-west'][Math.round((((bearing % 360) + 360) % 360) / 45) % 8] + ' side';
       const extra = (areaNotes.find((n) => line[mid][0] >= n.box[0] && line[mid][0] <= n.box[2] && line[mid][1] >= n.box[1] && line[mid][1] <= n.box[3]) || {}).text || '';
-      const k = reg.add({ rules: out.rules, q: 0, g: 'free', u: out.unrestricted ? 1 : 0, src: `OpenStreetMap contributors (ODbL), street parking mapped by volunteers${extra && out.rules.some((r) => r[4] < 0) ? `. ${extra}` : ''}`, text });
+      const k = reg.add({ rules: out.rules, q: 0, g: out.gaps ? 'unknown' : 'free', u: out.unrestricted ? 1 : 0, src: `OpenStreetMap contributors (ODbL), street parking mapped by volunteers${extra && out.rules.some((r) => r[4] < 0) ? `. ${extra}` : ''}`, text });
       features.push({ type: 'Feature', properties: { s: t.name || 'Unnamed street', b: '', sd: sdName, k, z: 2, pa: '', f15: 0, n: 0, src: 'osm', osm: w.id }, geometry: { type: 'LineString', coordinates: coords } });
     }
   }
