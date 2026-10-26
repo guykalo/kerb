@@ -13,16 +13,10 @@ jobs:
       - run: |
           echo skip
       - run: |
-          mkdir -p out; UA="Mozilla/5.0 (X11; Linux x86_64) Chrome/128"
-          sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils >/dev/null || true
-          curl -sS "https://vicdata.vicroads.vic.gov.au/server/rest/services/Hosted/Clearways/FeatureServer/0?f=json" -o out/vic-clearways-layer.json || true
-          curl -sS "https://vicdata.vicroads.vic.gov.au/server/rest/services/Hosted/Clearways/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=3&f=json&outSR=4326" -o out/vic-clearways-sample.json || true
-          curl -sS "https://vicdata.vicroads.vic.gov.au/server/rest/services/Hosted/Clearways/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json" -o out/vic-clearways-count.json || true
-          curl -sSL -A "$UA" "https://data.gov.au/data/api/3/action/package_show?id=9304b79f-866f-40a1-afea-53ccded06ecd" -o out/pp-machines-pkg.json || true
-          curl -sSL -A "$UA" "https://www.portphillip.vic.gov.au/media/pl0h4jho/paid-parking-fees-26-27.pdf" -o pp.pdf && pdftotext -layout pp.pdf out/pp-fees.txt || true
-          curl -sSL -A "$UA" "https://www.yarracity.vic.gov.au/sites/default/files/2026-07/City_of_Yarra_Annual_Budget_2026-27.pdf" -o yarra.pdf && pdftotext -layout -f 90 -l 100 yarra.pdf out/yarra-fees.txt || true
-          q='[out:json][timeout:90];(nwr[amenity=parking](-37.875,144.965,-37.83,145.005);nwr[amenity=parking](-37.81,144.97,-37.79,145.0););out center tags;'
-          curl -sS -A "Kerb parking map (github.com/guykalo/kerb)" --data-urlencode "data=$q" https://overpass-api.de/api/interpreter -o out/mel-suburb-parking.json || true
+          mkdir -p out
+          curl -sSL "https://data.gov.au/data/dataset/9304b79f-866f-40a1-afea-53ccded06ecd/resource/2d715933-43fc-47fa-8a6c-92422e8ab81d/download/city-of-port-phillip-parking-machines.geojson" -o out/pp-machines.geojson || true
+          curl -sS -w "%{http_code}
+" "https://vicdata.vicroads.vic.gov.au/server/rest/services/Hosted/Clearways/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=3&f=json&outSR=4326" -o out/vic-clearways-sample.json > out/vic.status 2>&1 || true
           ls -la out
       - run: |
           cd out && git init -q -b probe-fetch-out
