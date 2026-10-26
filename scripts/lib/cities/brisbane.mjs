@@ -14,8 +14,15 @@ export async function fetchBrisbane() {
   const clearways = await getJSON(`${BNE}/parking-clearways/exports/json`);
   const xs = meters.map((m) => m.longitude).filter(Boolean), ys = meters.map((m) => m.latitude).filter(Boolean);
   const roads = await osmRoads([Math.min(...xs) - 0.003, Math.min(...ys) - 0.003, Math.max(...xs) + 0.003, Math.max(...ys) + 0.003]);
+  // Where the two council car parks are, from OpenStreetMap (ODbL).
+  let cpAt = {};
+  try {
+    const q = `[out:json][timeout:60];nwr[amenity=parking][name~"King George Square|Wickham Terrace",i](-27.48,153.01,-27.455,153.035);out center tags;`;
+    const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'Kerb parking map (github.com/guykalo/kerb)' } });
+    for (const e of (await r.json()).elements) { const c = e.center || e; const k = /king george/i.test(e.tags.name) ? 'kgs' : 'wickham'; if (!cpAt[k]) cpAt[k] = [+c.lon.toFixed(5), +c.lat.toFixed(5)]; }
+  } catch (e) { log(`  brisbane car parks: ${e.message}`); }
   log(`  brisbane: ${meters.length} meters, ${lines.length} kerb markings, ${clearways.length} clearways, ${roads.length} streets`);
-  return { meters, lines, clearways, roads, fetchedAt: new Date().toISOString() };
+  return { meters, lines, clearways, roads, cpAt, fetchedAt: new Date().toISOString() };
 }
 
 const ALL = [0, 1, 2, 3, 4, 5, 6];
@@ -79,6 +86,37 @@ export function buildBrisbane(raw, reg) {
     const k = reg.add({ rules, q: 0, g: 'unknown', u: 0, src: `${src}: clearways`, text: `Clearway ${c.operational_time}` });
     for (const line of lineCoords(c.geo_shape?.geometry)) if (line.length > 1) features.push({ type: 'Feature', properties: { s: nearestOnLines(line[Math.floor(line.length / 2)], raw.roads, 40)?.road.name || 'Clearway', b: 'Brisbane', k, z: 2, pa: '', f15: 0, n: 0, src: 'bne' }, geometry: { type: 'LineString', coordinates: simplify(line.map(R5), 3) } });
   }
-  log(`  brisbane: ${features.length} kerb pieces, ${skipped} meters skipped`);
-  return { features, carparks: [] };
+  log(`  brisbane: ${features.length} kerb pieces, ${skipped} meters skipped; car parks at ${JSON.stringify(raw.cpAt || {})}`);
+  return { features, carparks: brisbaneCarParks(raw.cpAt || {}) };
+}
+
+// Brisbane City Council's two car parks, casual rates from the council's car park pages (checked 26 Oct 2026).
+const WKD = [1, 2, 3, 4, 5], WKE = [0, 6];
+const LADDER = [[0.25, 0], [1 / 3, 8], [0.5, 15], [1, 24], [1.5, 30], [2, 34], [2.5, 38], [3, 42], [3.5, 46], [4, 49]];
+function brisbaneCarParks(at) {
+  const src = 'https://www.brisbane.qld.gov.au/traffic-transport/parking-brisbane/car-parks/king-george-square-car-park';
+  const out = [];
+  if (at.kgs) out.push({
+    id: 'bne-kgs', name: 'King George Square Car Park', address: '100 Adelaide Street, Brisbane City (also 87 Roma Street)', at: at.kgs, operator: 'Brisbane City Council', source: src,
+    rates: [
+      { kind: 'casual', days: WKD, from: 0, to: 24, bands: [...LADDER, [24, 64]] },
+      { kind: 'flat', label: 'Day max', days: WKD, enter: [0, 18], exitBy: 18, price: 49 },
+      { kind: 'flat', label: 'Early bird', days: WKD, enter: [5.5, 7], exitAfter: 13, exitBy: 18, price: 28 },
+      { kind: 'casual', days: WKD, from: 16, to: 24, bands: [[4, 10], [24, 15]] },
+      { kind: 'casual', days: WKE, from: 0, to: 24, bands: [[3, 10], [8, 15], [24, 20]] },
+    ],
+    note: 'Council car park. First 15 minutes free on weekdays. Daily max $49 out before 6pm, $64 out before 5:30am. Early bird $28 (in 5:30-7am, out 1-6pm). Weekday evenings from 4pm $10 up to 4 hrs, $15 over. Weekends $10/$15/$20. Public holidays $10.',
+  });
+  if (at.wickham) out.push({
+    id: 'bne-wickham', name: 'Wickham Terrace Car Park', address: '136 Wickham Terrace, Spring Hill', at: at.wickham, operator: 'Brisbane City Council', source: 'https://www.brisbane.qld.gov.au/traffic-transport/parking-brisbane/car-parks/wickham-terrace-car-park',
+    rates: [
+      { kind: 'casual', days: WKD, from: 0, to: 24, bands: [...LADDER, [24, 55]] },
+      { kind: 'flat', label: 'Day max', days: WKD, enter: [0, 18], exitBy: 18, price: 49 },
+      { kind: 'flat', label: 'Early bird', days: WKD, enter: [5.5, 9], exitAfter: 13, exitBy: 19, price: 26 },
+      { kind: 'flat', label: 'Evening', days: WKD, enter: [16, 24], exitBy: 5.5, price: 6 },
+      { kind: 'casual', days: WKE, from: 0, to: 24, bands: [[24, 6]] },
+    ],
+    note: 'Council car park, open 24/7. First 15 minutes free on weekdays. Daily max $49 out before 6pm, $55 out before 5:30am. Early bird $26 (in 5:30-9am, out 1-7pm). Evenings $6 (in after 4pm, out before 5:30am). Weekends $6 flat. Public holidays $10.',
+  });
+  return out;
 }
