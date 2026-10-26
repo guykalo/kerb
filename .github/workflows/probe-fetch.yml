@@ -15,9 +15,12 @@ jobs:
       - run: |
           echo skip
       - run: |
-          npm ci
-          node probe/bayside.mjs 2>&1 | tail -20
-          ls -la out
+          mkdir -p out && cd out
+          curl -sSL "https://s3.ap-southeast-2.amazonaws.com/dmzweb.adelaidecitycouncil.com/OpenData/On_Street_Parking/ParkingReport.csv" -o adl-zones.csv || true
+          curl -sSL "https://s3.ap-southeast-2.amazonaws.com/dmzweb.adelaidecitycouncil.com/OpenData/On_Street_Parking/Parkingcurrent.kmz" -o adl-zones.kmz || true
+          curl -sSL "https://s3.ap-southeast-2.amazonaws.com/dmzweb.adelaidecitycouncil.com/OpenData/Parking_Machines/ParkingMachines.csv" -o adl-machines.csv || true
+          (mkdir kmz && cd kmz && unzip -o -q ../adl-zones.kmz) || true
+          ls -laR . | head -30
       - run: |
           cd out && git init -q -b probe-fetch-out
           git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
