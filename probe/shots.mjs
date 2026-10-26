@@ -2,12 +2,12 @@ import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
 await mkdir('out', { recursive: true });
 const b = await chromium.launch();
-for (const [city, extra] of [['syd', ''], ['mel', ''], ['bne', ''], ['per', '']]) {
+for (const [city, extra] of [['syd', ''], ['mel', ''], ['bne', ''], ['per', ''], ['air', '#at=-33.9268,151.1905'], ['mas', '#at=-33.9335,151.1800'], ['chp', '#at=-37.8395,144.9905'], ['fit', '#at=-37.7985,144.9785']]) {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
   const logs = [];
   p.on('console', (m) => logs.push(`${m.type()}: ${m.text()}`));
   p.on('pageerror', (e) => logs.push(`pageerror: ${e.message}`));
-  await p.goto(`https://guykalo.github.io/kerb/?city=${city}${extra}`, { waitUntil: 'load' });
+  await p.goto(`https://guykalo.github.io/kerb/${extra ? "" : "?city=" + city}${extra}`, { waitUntil: 'load' });
   await p.waitForTimeout(15000);
   await p.screenshot({ path: `out/${city}-map.png` });
   // open the panel and the first option
