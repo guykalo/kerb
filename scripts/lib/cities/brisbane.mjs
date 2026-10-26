@@ -14,13 +14,8 @@ export async function fetchBrisbane() {
   const clearways = await getJSON(`${BNE}/parking-clearways/exports/json`);
   const xs = meters.map((m) => m.longitude).filter(Boolean), ys = meters.map((m) => m.latitude).filter(Boolean);
   const roads = await osmRoads([Math.min(...xs) - 0.003, Math.min(...ys) - 0.003, Math.max(...xs) + 0.003, Math.max(...ys) + 0.003]);
-  // Where the two council car parks are, from OpenStreetMap (ODbL).
-  let cpAt = {};
-  try {
-    const q = `[out:json][timeout:60];nwr[amenity=parking][name~"King George Square|Wickham Terrace",i](-27.48,153.01,-27.455,153.035);out center tags;`;
-    const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'Kerb parking map (github.com/guykalo/kerb)' } });
-    for (const e of (await r.json()).elements) { const c = e.center || e; const k = /king george/i.test(e.tags.name) ? 'kgs' : 'wickham'; if (!cpAt[k]) cpAt[k] = [+c.lon.toFixed(5), +c.lat.toFixed(5)]; }
-  } catch (e) { log(`  brisbane car parks: ${e.message}`); }
+  // Where the two council car parks are (OpenStreetMap, ODbL; looked up 26 Oct 2026).
+  const cpAt = { kgs: [153.02363, -27.46803], wickham: [153.02567, -27.46503] };
   log(`  brisbane: ${meters.length} meters, ${lines.length} kerb markings, ${clearways.length} clearways, ${roads.length} streets`);
   return { meters, lines, clearways, roads, cpAt, fetchedAt: new Date().toISOString() };
 }

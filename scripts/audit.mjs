@@ -48,7 +48,7 @@ for (const [id, city] of Object.entries(CITIES)) {
     if (c.some((q) => q[0] < city.box[0] || q[0] > city.box[2] || q[1] < city.box[1] || q[1] > city.box[3])) add('kerb outside the city', { id: p.id, s: p.s, at: c[0] });
     const L = lineLen(c);
     if (L > 3000) add('kerb longer than 3 km', { id: p.id, s: p.s, len: Math.round(L), src: p.src });
-    if (!p.s || /^unnamed/i.test(p.s) || !p.s.trim()) add('kerb without a street name', { id: p.id, src: p.src, at: mid(c) });
+    if (!p.s || /^unnamed/i.test(p.s) || !p.s.trim()) add('kerb without a street name', { id: p.id, src: p.src, b: p.b, k: p.k, text: R[p.k]?.text?.slice(0, 60), at: mid(c) });
     if (p.k >= 0 && !R[p.k]) add('kerb points to a missing rule set', { id: p.id, k: p.k });
     names.set(p.src, (names.get(p.src) || 0) + 1);
   }
@@ -71,14 +71,31 @@ for (const [id, city] of Object.entries(CITIES)) {
     r.stats[`${label} free at Tue noon`] = free;
   }
 
-  // Overlapping kerbs that disagree right now (same spot, one says free, one says no parking)
-  const grid = new Map(), cell = (q) => `${Math.round(q[0] * 3000)}:${Math.round(q[1] * 3000)}`;
-  for (const f of K.features) if (f.properties.k >= 0) { const k = cell(mid(f.geometry.coordinates)); (grid.get(k) || grid.set(k, []).get(k)).push(f); }
-  for (const list of grid.values()) {
-    if (list.length < 2) continue;
-    const st = list.map((f) => [f, stateAt(f.properties, R, 2, 12)]);
-    const fr = st.find(([, s]) => s.kind === 'free'), no = st.find(([, s]) => s.kind === 'restricted');
-    if (fr && no && fr[0].properties.s === no[0].properties.s && (fr[0].properties.sd || '') === (no[0].properties.sd || '') && dist(mid(fr[0].geometry.coordinates), mid(no[0].geometry.coordinates)) < 8) add('same kerb both free and no parking at Tue noon', { free: [fr[0].properties.id, fr[0].properties.src, R[fr[0].properties.k]?.text?.slice(0, 80)], no: [no[0].properties.id, no[0].properties.src, R[no[0].properties.k]?.text?.slice(0, 80)], s: fr[0].properties.s });
+  // Kerbs drawn on top of each other that disagree at Tue noon (one free, one no parking): the driver sees both.
+  // Measured properly: most of the shorter line lies within 3 m of the longer one.
+  const segDist = (p, a, b) => { const kx = 111320 * Math.cos((p[1] * Math.PI) / 180), ky = 110540; const ax = (a[0] - p[0]) * kx, ay = (a[1] - p[1]) * ky, bx = (b[0] - p[0]) * kx, by = (b[1] - p[1]) * ky; const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy || 1; const t = Math.max(0, Math.min(1, -(ax * dx + ay * dy) / L)); return Math.hypot(ax + t * dx, ay + t * dy); };
+  const toLine = (p, c) => { let d = Infinity; for (let i = 1; i < c.length; i++) d = Math.min(d, segDist(p, c[i - 1], c[i])); return d; };
+  const G = 0.0004, grid = new Map(), key = (q) => `${Math.floor(q[0] / G)}:${Math.floor(q[1] / G)}`;
+  const kinds = new Map();
+  for (const f of K.features) {
+    if (f.properties.k < 0) continue;
+    const kd = stateAt(f.properties, R, 2, 12).kind;
+    if (kd !== 'free' && kd !== 'restricted') continue;
+    kinds.set(f, kd);
+    for (const q of f.geometry.coordinates) { const k = key(q); const l = grid.get(k) || grid.set(k, []).get(k); if (!l.includes(f)) l.push(f); }
+  }
+  const seen = new Set();
+  for (const [f, kd] of kinds) {
+    if (kd !== 'free') continue;
+    const cand = new Set(); for (const q of f.geometry.coordinates) for (const g of grid.get(key(q)) || []) if (kinds.get(g) === 'restricted') cand.add(g);
+    for (const g of cand) {
+      const [a, b] = lineLen(f.geometry.coordinates) < lineLen(g.geometry.coordinates) ? [f, g] : [g, f];
+      const pts = a.geometry.coordinates; let inside = 0;
+      for (const q of pts) if (toLine(q, b.geometry.coordinates) < 3) inside++;
+      if (inside / pts.length < 0.6 || seen.has(f.properties.id + ':' + g.properties.id)) continue;
+      seen.add(f.properties.id + ':' + g.properties.id);
+      add('kerbs on top of each other: one free, one no parking (Tue noon)', { s: f.properties.s, free: [f.properties.id, f.properties.src, R[f.properties.k]?.text?.slice(0, 70)], no: [g.properties.id, g.properties.src, R[g.properties.k]?.text?.slice(0, 70)], at: mid(f.geometry.coordinates) });
+    }
   }
 
   // Car parks

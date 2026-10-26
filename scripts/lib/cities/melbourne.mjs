@@ -18,7 +18,7 @@ const MEL = 'https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets
 export const MEL_SENSORS = `${MEL}/on-street-parking-bay-sensors/exports/json?select=kerbsideid,status_description,status_timestamp`;
 const all = (d, select) => getJSON(`${MEL}/${d}/exports/json${select ? `?select=${encodeURIComponent(select)}` : ''}`);
 
-export async function fetchMelbourne() {
+export async function fetchMelbourne(prev) {
   const bays = (await all('on-street-parking-bays', 'roadsegmentid,kerbsideid,roadsegmentdescription,latitude,longitude')).filter((b) => b.latitude && b.longitude)
     .map((b) => [b.roadsegmentid, b.kerbsideid, b.roadsegmentdescription, +b.longitude.toFixed(6), +b.latitude.toFixed(6)]);
   const sensors = (await all('on-street-parking-bay-sensors', 'kerbsideid,zone_number,location')).filter((s) => s.location)
@@ -28,7 +28,7 @@ export async function fetchMelbourne() {
   const pay = await all('pay-stay-parking-restrictions');
   const paySegs = await all('pay-stay-zones-linked-to-street-segments');
   let osm = { ways: [] };
-  try { osm = await fetchOsmParking(MEL_OSM); } catch (e) { log(`  melbourne osm: ${e.message}`); }
+  try { osm = await fetchOsmParking(MEL_OSM); } catch (e) { log(`  melbourne osm: ${e.message}${prev?.osm?.ways?.length ? ', using the last good copy' : ''}`); if (prev?.osm?.ways?.length) osm = prev.osm; }
   log(`  melbourne: ${bays.length} bays, ${sensors.length} sensors, ${plates.length} sign plates, ${pay.length} pay stay rates`);
   return { bays, sensors, plates, zoneSegs, pay, paySegs, osm, fetchedAt: new Date().toISOString() };
 }

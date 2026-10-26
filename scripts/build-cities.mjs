@@ -18,13 +18,14 @@ await mkdir('data/raw-cities', { recursive: true });
 for (const [id, c] of Object.entries(CITIES)) {
   if (only.length && !only.includes(id)) continue;
   console.log(`${c.name}:`);
-  let raw, stale = false;
+  let raw, stale = false, prev = null;
+  try { prev = JSON.parse(await readFile(`data/raw-cities/${id}.json`, 'utf8')); } catch { /* first run */ }
   try {
-    raw = await c.fetch();
+    raw = await c.fetch(prev);
     await writeFile(`data/raw-cities/${id}.json`, JSON.stringify(raw));
   } catch (e) {
     console.log(`  download failed (${e.message.split('\n')[0]}), using the last good copy`);
-    try { raw = JSON.parse(await readFile(`data/raw-cities/${id}.json`, 'utf8')); stale = true; } catch { console.log('  no saved copy: keeping the published data'); failed++; continue; }
+    if (prev) { raw = prev; stale = true; } else { console.log('  no saved copy: keeping the published data'); failed++; continue; }
   }
   try {
     const rules = [], idx = new Map();
