@@ -216,6 +216,50 @@ export function buildData(raw) {
     regions[name] = { kerbs: out.features.length, carParks: out.carparks.length, ...(out.warnings?.length ? { warnings: out.warnings } : {}) };
   }
 
+  // Some surveys draw an "unrestricted" line along the whole kerb and the zones (bus zone, motorbikes, car share)
+  // on top of it. Cut the unrestricted line where a zone sits, so a tap there never says "free".
+  {
+    const G = 0.0004, idx = new Map(), gk = (q) => `${Math.floor(q[0] / G)}:${Math.floor(q[1] / G)}`;
+    const isOpen = (f) => f.properties.k >= 0 && ruleSets[f.properties.k]?.u === 1;
+    for (const f of kerbGeo.features) {
+      if (f.properties.k < 0 || isOpen(f)) continue;
+      const c = f.geometry.coordinates;
+      for (let i = 1; i < c.length; i++) for (const q of [c[i - 1], c[i], [(c[i - 1][0] + c[i][0]) / 2, (c[i - 1][1] + c[i][1]) / 2]]) { const k = gk(q); const l = idx.get(k) || idx.set(k, []).get(k); l.push([c[i - 1], c[i], f.properties.s]); }
+    }
+    const blocked = (q, street) => { const x = Math.floor(q[0] / G), y = Math.floor(q[1] / G); for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) for (const [a, b, s] of idx.get(`${x + i}:${y + j}`) || []) if (s === street && distToSeg(q, a, b) < 3) return true; return false; };
+    const out = [];
+    let cut = 0;
+    for (const f of kerbGeo.features) {
+      if (!isOpen(f)) { out.push(f); continue; }
+      const pts = densify(f.geometry.coordinates, 2);
+      if (!pts.some((q) => blocked(q, f.properties.s))) { out.push(f); continue; }
+      cut++;
+      let run = [], first = true;
+      const flush = () => { if (run.length > 1 && dist(run[0], run[run.length - 1]) > 5) { out.push({ ...f, properties: { ...f.properties, id: first ? f.properties.id : nextId++ }, geometry: { type: 'LineString', coordinates: run.map((q) => round(q)) } }); first = false; } run = []; };
+      for (const q of pts) { if (blocked(q, f.properties.s)) flush(); else run.push(q); }
+      flush();
+    }
+    kerbGeo.features = out;
+    regions.unrestrictedCut = cut;
+  }
+
+  // Kerbs that came without a street name take the name of the nearest named kerb (within 15 m).
+  {
+    const G = 0.0005, idx = new Map(), gk = (q) => `${Math.floor(q[0] / G)}:${Math.floor(q[1] / G)}`;
+    const named = (f) => f.properties.s && f.properties.s.trim() && !/^unnamed|^permit street$/i.test(f.properties.s);
+    for (const f of kerbGeo.features) if (named(f)) for (const q of f.geometry.coordinates) { const k = gk(q); (idx.get(k) || idx.set(k, []).get(k)).push([q, f.properties.s]); }
+    let fixed = 0;
+    for (const f of kerbGeo.features) {
+      if (named(f)) continue;
+      const c = f.geometry.coordinates, m = c[Math.floor(c.length / 2)];
+      let best = null;
+      const x = Math.floor(m[0] / G), y = Math.floor(m[1] / G);
+      for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) for (const [q, n] of idx.get(`${x + i}:${y + j}`) || []) { const d = dist(q, m); if (d < 15 && (!best || d < best.d)) best = { d, n }; }
+      if (best) { f.properties.s = best.n; fixed++; }
+    }
+    regions.namesFilled = fixed;
+  }
+
   // Where OpenStreetMap has this side's rules (mapped on the street, often more recent than council papers),
   // drop the permit-area-only line from a street guide and older Parramatta committee decisions.
   if (regions.osm?.kerbs) {
