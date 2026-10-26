@@ -483,7 +483,7 @@ function drawRibbon() {
   const len = new Map(inView.map((f) => { const c = f.geometry.coordinates; let m = 0; for (let i = 1; i < c.length; i++) m += distM(c[i - 1], c[i]); return [f, Math.max(1, m)]; }));
   const total = [...len.values()].reduce((a, b) => a + b, 0);
   for (let q = 0; q < 96; q++) {
-    const n = { free: 0, meter: 0, restricted: 0 };
+    const n = { free: 0, meter: 0, restricted: 0, unknown: 0 };
     for (const f of inView) { const kd = stateAt(f.properties, RULES, S.day, q / 4).kind; n[kd === 'limit' ? 'free' : kd] += len.get(f); }
     let y = r.height;
     for (const k of ['free', 'meter', 'restricted']) {
@@ -536,6 +536,7 @@ function renderList() {
     const d = distM(mids.get(p.id), centre);
     if (d > nearM) continue;
     const c = p.k < 0 ? (p.lk ? { ok: true, cost: 0, likely: true } : { ok: true, cost: 0, permitOnly: true }) : costFor(p, RULES, S.day, S.hour, S.stay);
+    if (c.ok === null) continue; // only partly known (a clearway road): not a parking option
     const key = `${p.s}|${p.b}|${p.sd || ''}`;
     const score = (c.ok ? 0 : 1e6) + (c.ok ? c.cost * 40 : 0) + (c.unknownRate ? 400 : 0) + (c.likely ? 250 : 0) + (c.permitOnly ? 350 : 0) + d;
     const cur = best.get(key);
@@ -815,7 +816,7 @@ function rateStrip(set) {
 }
 function verdictText(p, c) {
   if (p.lk) return { head: 'Probably free', why: '' };
-  if (c.ok === null) return { head: 'No published rules', why: '' };
+  if (c.ok === null) return c.partial ? { head: 'Check the sign', why: plainNow(p, RULES, S.day, S.hour) } : { head: 'No published rules', why: '' };
   if (!c.ok) return { head: "You can't stay that long", why: '' };
   if (c.quarterFree) return { head: 'Free with a ticket', why: 'The first 15 minutes are free. Grab a ticket from the meter.' };
   const end = S.hour + S.stay;
@@ -840,7 +841,7 @@ function verdictText(p, c) {
 function weekHTML(p) {
   const colFor = { free: 'var(--free)', limit: 'var(--limit)', meter: 'var(--paid)', restricted: 'var(--restricted)', unknown: 'var(--unknown)' };
   const rows = [1, 2, 3, 4, 5, 6, 0].map((d) => {
-    const segs = dayTimeline(p, RULES, d).map((s) => `<i style="width:${((s.to - s.from) / 24) * 100}%;background:${colFor[s.kind]}" title="${DAYS[d]} ${fmtTime(s.from)}-${fmtTime(s.to)}: ${s.kind === 'meter' ? `${pLabel(s.rule[0])} meter` : s.kind === 'limit' ? `free ${pLabel(s.rule[0])}` : s.kind === 'free' ? 'free' : 'no parking'}"></i>`).join('');
+    const segs = dayTimeline(p, RULES, d).map((s) => `<i style="width:${((s.to - s.from) / 24) * 100}%;background:${colFor[s.kind]}" title="${DAYS[d]} ${fmtTime(s.from)}-${fmtTime(s.to)}: ${s.kind === 'meter' ? `${pLabel(s.rule[0])} meter` : s.kind === 'limit' ? `free ${pLabel(s.rule[0])}` : s.kind === 'free' ? 'free' : s.kind === 'unknown' ? 'signs not published' : 'no parking'}"></i>`).join('');
     const now = d === S.day ? `<span class="now" style="left:calc(${(S.hour / 24) * 100}% - 1px)"></span>` : '';
     return `<span class="d ${d === S.day ? 'cur' : ''}">${DAYS[d]}</span><div class="track">${segs}${now}</div>`;
   }).join('');
@@ -901,6 +902,7 @@ function renderDetail() {
       <p class="note">Source: ${set.src ? `${set.src}${/survey|committee|map|photo|decision/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
       ` : `${usualHTML(p)}<p class="note">${p.lk ? 'Based on Woollahra Council\'s resident permit areas: streets outside a permit scheme are usually unrestricted, but the council doesn\'t publish its signs.' : p.ps ? `Permit area from the ${p.ps}. The council doesn't publish the sign times, so visitors should check the sign for the time limit.` : 'Kerb only shows rules the council publishes. This side of the street has no published signs yet.'}</p>
       <button type="button" class="snapcta" id="snapHere"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>Snap the sign here</b><small>Kerb reads it, tells you if you can park, and fills in this kerb.</small></span></button>`}
+      ${streetViewHTML(p, mids.get(p.id))}
       <div class="photos" id="signPhotos" hidden></div>
       ${actionsHTML(mids.get(p.id), p.id)}`;
   } else {
@@ -936,6 +938,16 @@ function renderDetail() {
 }
 
 const starInner = (on) => `<i class="ph${on ? '-fill' : ''} ph-star"></i>${on ? 'Saved' : 'Save'}`;
+// A link out to Google Street View at this kerb, facing the kerb, so drivers can read the sign themselves.
+// It's only a link (Google Maps URLs need no key and cost nothing); Kerb never copies anything from Street View.
+const SIDE_BEARING = { North: 0, 'North-east': 45, East: 90, 'South-east': 135, South: 180, 'South-west': 225, West: 270, 'North-west': 315 };
+function streetViewHTML(p, at) {
+  if (!at) return '';
+  const [lon, lat] = at.map((v) => +v.toFixed(6));
+  const h = SIDE_BEARING[String(p.sd || '').replace(/ side$/i, '')];
+  const url = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}${h != null ? `&heading=${h}` : ''}`;
+  return `<a class="snapcta" href="${url}" target="_blank" rel="noopener"><i class="ph-fill ph-binoculars" aria-hidden="true"></i><span><b>Check the sign in Street View</b><small>Opens Google Street View at this kerb. Photos can be a few years old, so the sign on the street wins.</small></span></a>`;
+}
 function actionsHTML(at, id) {
   const [lon, lat] = at.map((v) => +v.toFixed(6)), on = isSaved(id);
   return `<div class="actions">

@@ -346,3 +346,4 @@ button.cta { font: inherit; font-weight: 650; cursor: pointer; }
 .kp-row i.dash-free { background: repeating-linear-gradient(90deg, var(--free) 0 4px, transparent 4px 7px) !important; }
 .kp-row i.dash { background: repeating-linear-gradient(90deg, var(--paid) 0 4px, transparent 4px 7px) !important; }
 .kp-row i.dash-permit { background: repeating-linear-gradient(90deg, var(--permit) 0 4px, transparent 4px 7px) !important; }
+a.snapcta { text-decoration: none; box-sizing: border-box; }

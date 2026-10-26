@@ -2,6 +2,8 @@
 import { parseSignText } from './parse-rules.mjs';
 import { densify, distToSeg, dist, inRings, bbox, round } from './geo.mjs';
 import { buildWaverley, buildWoollahra, buildRandwick, buildOffstreet, buildManual } from './regions.mjs';
+import { buildOsmParking } from './osm.mjs';
+import { buildClearways } from './clearways.mjs';
 import { buildParkRide } from './tfnsw.mjs';
 import { buildFromSigns } from './spot.mjs';
 
@@ -201,12 +203,32 @@ export function buildData(raw) {
   for (const [name, fn] of [['waverley', buildWaverley], ['woollahra', buildWoollahra],
     ['manly', fromSigns({ src: 'Transport for NSW sign survey (2020)', place: 'Manly', beach: MANLY_BEACH })],
     ['willoughby', fromSigns({ src: 'Willoughby Council sign survey', place: 'Chatswood' })],
-    ['randwick', buildRandwick], ['manual', buildManual]]) {
+    ['randwick', buildRandwick], ['manual', buildManual],
+    // OpenStreetMap street parking: Parramatta's council publishes a meter rate range but no street list.
+    ['osm', (r, rg) => buildOsmParking(r, rg, { areaNotes: [{ box: [150.95, -33.86, 151.06, -33.76], text: 'City of Parramatta meters charge $2.60 to $4.70 an hour, depending on the street' }] })]]) {
     if (!raw[name]) continue;
     const out = fn(raw[name], reg, { month });
     for (const ft of out.features) { ft.properties.id = nextId++; kerbGeo.features.push(ft); }
     carParkList.push(...out.carparks);
     regions[name] = { kerbs: out.features.length, carParks: out.carparks.length, ...(out.warnings?.length ? { warnings: out.warnings } : {}) };
+  }
+
+  // Where OpenStreetMap has this side's actual rules, drop the permit-area-only line drawn from a street guide.
+  if (regions.osm?.kerbs) {
+    const CELL = 0.0005, grid = new Map();
+    const cell = (c) => `${Math.floor(c[0] / CELL)}:${Math.floor(c[1] / CELL)}`;
+    for (const f of kerbGeo.features) if (f.properties.src === 'osm') for (const c of f.geometry.coordinates) { const key = cell(c); if (!grid.has(key)) grid.set(key, []); grid.get(key).push(c); }
+    const covered = (c) => { const [x, y] = [Math.floor(c[0] / CELL), Math.floor(c[1] / CELL)]; for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) for (const q of grid.get(`${x + i}:${y + j}`) || []) if (Math.hypot((q[0] - c[0]) * 92500, (q[1] - c[1]) * 111000) < 9) return true; return false; };
+    const before = kerbGeo.features.length;
+    kerbGeo.features = kerbGeo.features.filter((f) => !(f.properties.src === 'man' && f.properties.k < 0 && covered(f.geometry.coordinates[Math.floor(f.geometry.coordinates.length / 2)])));
+    regions.osm.replacedPermitLines = before - kerbGeo.features.length;
+  }
+
+  // Clearways last, only on kerbs nothing else covers.
+  if (raw.clearways) {
+    const out = buildClearways(raw.clearways, reg, { existing: kerbGeo.features });
+    for (const ft of out.features) { ft.properties.id = nextId++; kerbGeo.features.push(ft); }
+    regions.clearways = { kerbs: out.features.length };
   }
 
   if (raw.parkride) { const pr = buildParkRide(raw.parkride); carParkList.push(...pr); regions.parkride = { carParks: pr.length }; }

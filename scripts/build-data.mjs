@@ -14,7 +14,7 @@ if (!raw.meters) {
   try { raw.published = { kerbs: await pub('kerbs'), rules: await pub('rules'), meters: await pub('meters'), carparks: await pub('carparks') }; console.log('City of Sydney meters unavailable: reusing the live City of Sydney kerbs.'); }
   catch { throw new Error('City of Sydney meters missing and no published copy to fall back on'); }
 }
-for (const n of ['waverley', 'woollahra', 'parkride', 'manly', 'willoughby', 'randwick', 'offstreet', 'manual']) { try { raw[n] = await load(n); } catch { /* not downloaded */ } }
+for (const n of ['waverley', 'woollahra', 'parkride', 'manly', 'willoughby', 'randwick', 'offstreet', 'manual', 'osm', 'clearways']) { try { raw[n] = await load(n); } catch { /* not downloaded */ } }
 raw.extraCarParks = JSON.parse(await readFile('data/carparks.json', 'utf8').catch(() => '[]'));
 
 const out = buildData(raw);

@@ -53,6 +53,11 @@ export function stateAt(props, rules, day, h) {
     return { kind: on[4] !== 0 ? 'meter' : 'limit', rule: on, until: on[3], set }; // rate -1 = meter, rate not published
   }
   if (set.u) return { kind: 'free', until: 24, why: 'unrestricted', set };
+  if (set.g === 'unknown') {
+    // Only some times are published (a clearway): outside them Kerb doesn't know, so it never says free.
+    const next = today.filter((r) => r[2] > h).map((r) => r[2]);
+    return { kind: 'unknown', until: next.length ? Math.min(...next) : 24, partial: true, set };
+  }
   if (set.g === 'free') {
     // Signed rules: outside the times on the sign there's no limit.
     const next = today.filter((r) => r[2] > h).map((r) => r[2]);
@@ -83,11 +88,12 @@ export function costFor(props, rules, day, h, stay) {
   if (props.k < 0) return { ok: null, why: 'No published rules for this kerb yet' };
   const set = rules[props.k];
   const step = 0.25, n = Math.max(1, Math.round(stay / step));
-  let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0, waived = 0, unknownRate = false, limitUnknown = false;
+  let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0, waived = 0, unknownRate = false, limitUnknown = false, unknown = false;
   for (let i = 0; i < n; i++) {
     const t = h + i * step, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
     const s = stateAt(props, rules, d, hh);
     if (s.kind === 'restricted') return { ok: false, why: `${s.note || 'No parking'} ${s.until < 24 || hh > 0 ? `${fmtTime(hh)}-${fmtTime(s.until)}` : ''}`.trim() };
+    if (s.kind === 'unknown') unknown = true;
     if (s.kind !== 'meter' && s.kind !== 'limit') { run = 0; ref = null; continue; }
     if (s.rule !== ref) { run = 0; ref = s.rule; }
     run += step;
@@ -101,6 +107,7 @@ export function costFor(props, rules, day, h, stay) {
     paid += step;
     if (firstPaidAt == null) { firstPaidAt = t; rate = s.rule[4]; }
   }
+  if (unknown) return { ok: null, partial: true, why: 'Only some of the signs here are published' };
   // Ticket machines in free 15-minute zones give the first quarter hour free.
   const quarterFree = set.q || props.f15;
   if (quarterFree && paid > 0) cost = Math.max(0, cost - Math.min(paid, 0.25) * (cost / paid));
@@ -111,6 +118,7 @@ export function costFor(props, rules, day, h, stay) {
 export function category(props, rules, day, h, stay) {
   if (props.k < 0) return props.lk ? 'likely' : props.pa ? 'permit' : 'unknown';
   const c = costFor(props, rules, day, h, stay);
+  if (c.ok === null) return 'unknown';
   if (!c.ok) { const k = stateAt(props, rules, day, h).kind; return k === 'meter' || k === 'limit' ? 'short' : 'restricted'; }
   return c.cost === 0 && !c.unknownRate ? 'free' : 'paid';
 }
@@ -119,6 +127,7 @@ export function category(props, rules, day, h, stay) {
 export function plainNow(props, rules, day, h) {
   const s = stateAt(props, rules, day, h);
   if (s.kind === 'unknown' && props.lk) return `No resident permit scheme on this street, so it's usually unrestricted parking. The council doesn't publish its signs, so check for any time limits.`;
+  if (s.kind === 'unknown' && s.partial) return `No ${String(s.set.text || 'restriction').split(/[ ;]/)[0].toLowerCase()} right now${s.until < 24 ? ` (it starts at ${fmtTime(s.until)})` : ''}. This road's other signs aren't published, so check them before you park. Published: ${s.set.text}.`;
   if (s.kind === 'unknown') return props.pa
     ? `Resident permit ${props.pa}. The council hasn't published the signs here, so check the sign: visitors are usually time-limited.`
     : `The council hasn't published the signs for this kerb yet. Check the sign before you park.`;
