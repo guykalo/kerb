@@ -34,7 +34,7 @@ button { cursor: pointer; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .num { font-variant-numeric: tabular-nums; }
 
-.app { position: fixed; inset: 0; overflow: hidden; }
+.app { position: fixed; inset: 0; overflow: hidden; overflow: clip; } /* clip: the browser can't scroll it to show a focused card (that lifted the whole sheet) */
 .map { position: absolute; inset: 0; }
 
 /* ---------- top bar ---------- */
@@ -72,7 +72,14 @@ button { cursor: pointer; }
 }
 .panel.open { transform: translateY(0); }
 .panel.min { transform: translateY(calc(100% - var(--min, 80px))); }
-@media (prefers-reduced-motion: no-preference) { .panel { transition: transform .32s cubic-bezier(.2, .9, .25, 1); } .panel.dragging { transition: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .panel { transition: transform .32s cubic-bezier(.2, .9, .25, 1); } .panel.dragging { transition: none; }
+  /* The map buttons ride on the sheet's top edge: same timing when it settles, none while a finger drags it. */
+  .legend, .fullbtn, .satbtn, .snapbtn, .keypop { transition: bottom .32s cubic-bezier(.2, .9, .25, 1); }
+  .sheet-drag .legend, .sheet-drag .fullbtn, .sheet-drag .satbtn, .sheet-drag .snapbtn { transition: none; }
+}
+/* While the sheet is lowered, the list doesn't scroll by itself: a drag there moves the sheet. */
+.panel:not(.open) .body { overscroll-behavior: none; }
 .handle { flex: none; height: 28px; margin-bottom: -6px; border: 0; background: transparent; display: grid; place-items: center; touch-action: none; cursor: grab; }
 .dock { touch-action: pan-x; }
 .panel.dragging { user-select: none; }

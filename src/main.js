@@ -1180,30 +1180,42 @@ function setSheet(state) {
   panel.classList.toggle('open', state === 'open');
   panel.classList.toggle('min', state === 'min');
   root.style.setProperty('--vis', `${Math.round(visibleHeight(state === 'open' ? 'peek' : state))}px`);
+  // A popup that floats above the sheet (the map key) would hang in the air once the sheet covers the map.
+  if (state === 'open') document.querySelector('.keypop')?.remove();
   const fb = $('#fullBtn');
   if (fb) { fb.setAttribute('aria-pressed', String(state === 'min')); fb.innerHTML = state === 'min' ? '<i class="ph ph-arrows-in-simple"></i>' : '<i class="ph ph-arrows-out-simple"></i>'; fb.setAttribute('aria-label', state === 'min' ? 'Show the options' : 'Full screen map'); }
 }
 function setOpen(v) { setSheet(v ? 'open' : 'peek'); }
 (() => {
+  // One drag model for the handle, the dock and the list: the panel follows the finger, the map buttons ride
+  // on its top edge (never left floating), and on release it settles on the nearest of open / peek / min
+  // (or one step in the direction of a flick).
   const offFor = (state) => panel.offsetHeight - visibleHeight(state);
-  let drag = null; // { y0, t0, start, last, lastT, v, moved }
-  const begin = (y) => { drag = { y0: y, start: offFor(sheet), last: y, lastT: performance.now(), v: 0, moved: false }; };
+  let drag = null, justDragged = false;
+  const begin = (y) => {
+    drag = { y0: y, start: offFor(sheet), last: y, lastT: performance.now(), v: 0, moved: false };
+    document.querySelector('.keypop')?.remove();
+  };
   const move = (y) => {
     if (!drag) return false;
     const dy = y - drag.y0;
     if (!drag.moved && Math.abs(dy) < 6) return false;
-    if (!drag.moved) { drag.moved = true; panel.classList.add('dragging'); }
+    if (!drag.moved) { drag.moved = true; panel.classList.add('dragging'); root.classList.add('sheet-drag'); }
     const now = performance.now();
     drag.v = 0.7 * drag.v + 0.3 * ((y - drag.last) / Math.max(1, now - drag.lastT)); drag.last = y; drag.lastT = now;
-    panel.style.transform = `translateY(${Math.min(offFor('min'), Math.max(0, drag.start + dy))}px)`;
+    const off = Math.min(offFor('min'), Math.max(0, drag.start + dy));
+    panel.style.transform = `translateY(${off}px)`;
+    // Map buttons follow the sheet's top edge, but never higher than where they sit when the sheet peeks.
+    root.style.setProperty('--vis', `${Math.round(Math.min(panel.offsetHeight - off, visibleHeight('peek')))}px`);
     return true;
   };
   const finish = (y, tapToggles) => {
     if (!drag) return;
     const d = drag; drag = null;
-    panel.classList.remove('dragging'); panel.style.transform = '';
-    if (!d.moved) { if (tapToggles) setSheet(sheet === 'open' ? 'peek' : 'open'); return; }
-    const off = d.start + (y - d.y0), order = ['open', 'peek', 'min'];
+    panel.classList.remove('dragging'); root.classList.remove('sheet-drag'); panel.style.transform = '';
+    if (!d.moved) { if (tapToggles) setSheet(sheet === 'open' ? 'peek' : 'open'); else setSheet(sheet); return; }
+    justDragged = true; setTimeout(() => { justDragged = false; }, 350);
+    const off = d.start + ((y ?? d.last) - d.y0), order = ['open', 'peek', 'min'];
     let target;
     if (Math.abs(d.v) > 0.45) { // a flick goes one step in its direction
       const i = order.indexOf(sheet), j = d.v > 0 ? Math.min(2, i + 1) : Math.max(0, i - 1);
@@ -1211,31 +1223,43 @@ function setOpen(v) { setSheet(v ? 'open' : 'peek'); }
     } else target = order.map((st) => [st, Math.abs(offFor(st) - off)]).sort((a, b) => a[1] - b[1])[0][0];
     setSheet(target);
   };
-  // Handle and the non-control parts of the dock.
+  // A drag that started on a button (like the "Parking 2 hours" row) must not also count as a tap on it.
+  panel.addEventListener('click', (e) => { if (justDragged) { e.stopPropagation(); e.preventDefault(); justDragged = false; } }, true);
+  // Handle and the dock: anything but the controls you type or slide on.
   const grab = [$('#handle'), $('#dock')];
   for (const el of grab) {
     el.addEventListener('pointerdown', (e) => {
-      if (isDesk() || (el.id === 'dock' && e.target.closest('button, input, select, .stay, .arrive, .ribbon'))) return;
-      begin(e.clientY); el.setPointerCapture?.(e.pointerId);
+      if (isDesk() || e.button > 0 || (el.id === 'dock' && e.target.closest('input, select, textarea, .stay, .arrive, .ribbon, .setup'))) return;
+      begin(e.clientY);
+      try { el.setPointerCapture(e.pointerId); } catch { /* not supported */ }
     });
     el.addEventListener('pointermove', (e) => { if (move(e.clientY)) e.preventDefault(); });
     el.addEventListener('pointerup', (e) => finish(e.clientY, el.id === 'handle'));
-    el.addEventListener('pointercancel', (e) => finish(e.clientY, false));
+    // The browser took the gesture over (or the finger left): settle from the last place we saw it.
+    el.addEventListener('pointercancel', () => finish(null, false));
+    el.addEventListener('lostpointercapture', () => { if (drag) finish(null, false); });
   }
-  // Pull the list down from its top to lower the sheet (like a native bottom sheet).
+  // The list: when the sheet is lowered, dragging it moves the sheet (like a native bottom sheet); when it's
+  // open, pulling down from the top of the list lowers it, and anything else scrolls the list.
   const list = $('#body');
-  let ty = null, pulling = false;
-  list.addEventListener('touchstart', (e) => { panelTouch = true; ty = e.touches[0].clientY; pulling = false; }, { passive: true });
+  let ty = null, tx = 0, mode = null; // mode: null (undecided), 'sheet', 'scroll'
+  list.addEventListener('touchstart', (e) => { panelTouch = true; ty = e.touches[0].clientY; tx = e.touches[0].clientX; mode = null; }, { passive: true });
   list.addEventListener('touchmove', (e) => {
     if (isDesk() || ty == null) return;
-    const y = e.touches[0].clientY;
-    if (!pulling && list.scrollTop <= 0 && y - ty > 6 && sheet === 'open') { pulling = true; begin(ty); }
-    if (pulling) { move(y); e.preventDefault(); }
+    const y = e.touches[0].clientY, dy = y - ty, dx = e.touches[0].clientX - tx;
+    if (!mode) {
+      if (Math.abs(dy) < 6 && Math.abs(dx) < 6) return;
+      if (Math.abs(dx) > Math.abs(dy)) mode = 'scroll'; // sideways: a chip row or carousel
+      else if (sheet !== 'open') mode = 'sheet';
+      else mode = list.scrollTop <= 0 && dy > 0 ? 'sheet' : 'scroll';
+      if (mode === 'sheet') begin(ty);
+    }
+    if (mode === 'sheet') { move(y); e.preventDefault(); }
   }, { passive: false });
   const tEnd = (e) => {
     panelTouch = false;
-    if (pulling) finish(e.changedTouches[0].clientY, false);
-    ty = null; pulling = false;
+    if (mode === 'sheet') finish(e.changedTouches[0]?.clientY ?? null, false);
+    ty = null; mode = null;
     if (pendingList) { pendingList = false; if (S.sel == null) renderList(); }
   };
   list.addEventListener('touchend', tEnd); list.addEventListener('touchcancel', tEnd);
@@ -1245,6 +1269,9 @@ function setOpen(v) { setSheet(v ? 'open' : 'peek'); }
 let pendingList = false;
 
 /* ---------- keep the page pinned on phones (iOS can scroll or zoom the whole page after the keyboard) ---------- */
+// The app box must never scroll: when a tapped card got focus, browsers scrolled it to show the card, which
+// lifted the sheet off its place, left the map buttons hanging and made the handle stop responding.
+{ const app = $('#app'); app.addEventListener('scroll', () => { if (app.scrollTop || app.scrollLeft) { app.scrollTop = 0; app.scrollLeft = 0; } }); }
 function settle() {
   if (scrollX || scrollY) scrollTo(0, 0);
   if (innerWidth !== lastW || Math.abs(Math.min(innerHeight * 0.8, 740) - lastH) > 40) { map.resize(); setPeek(); }
