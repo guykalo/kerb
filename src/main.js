@@ -1174,6 +1174,7 @@ function renderLegend() {
   chip('perm', cpOn, `<i class="ph ph-local-parking" aria-hidden="true"></i>Car parks${cpOn ? '' : ' off'}`, 'Show or hide car parks', () => { cpOn ? S.hidden.add('carpark') : S.hidden.delete('carpark'); renderLegend(); drawCarParks(); renderBody(); });
   const carBits = [BEN.vehicle === 'moto' ? 'Motorbike' : BEN.vehicle === 'ev' ? 'Electric' : '', BEN.permit ? `Permit ${BEN.permit.replace(/^.*Area\s*/i, '')}` : '', BEN.mps ? 'Mobility' : ''].filter(Boolean);
   chip('perm', carBits.length > 0, `<i class="ph ph-${BEN.vehicle === 'moto' ? 'motorcycle' : 'car-profile'}" aria-hidden="true"></i>${carBits.length ? carBits.join(' · ') : 'My car'}`, 'My car: vehicle, resident permit, mobility permit', () => toggleCar());
+  chip('perm', !!DRIVE, `<i class="ph ph-steering-wheel" aria-hidden="true"></i>${DRIVE ? 'Driving' : 'Drive'}`, 'Drive mode: Kerb follows you and says where to park', () => (DRIVE ? stopDrive() : startDrive()));
   chip('keybtn', false, '<i class="ph ph-swatches" aria-hidden="true"></i>Key', 'What the colours mean', () => toggleKey());
 }
 // My car: the answers change to fit the driver (motorbike bays, EV bays, their own permit area, mobility permit).
@@ -1475,6 +1476,78 @@ $('#locate').onclick = () => {
     map.flyTo({ center: at, zoom: 16.2, duration: 900 });
   }, () => toast('Location is off. Allow location for this site to use it.'), { enableHighAccuracy: true, timeout: 10000 });
 };
+
+/* ---------- drive mode: the map follows you and a voice says where you can park ahead ---------- */
+// Uses the real clock. Looks for kerbs within ~350 m, ahead of you (from your heading), that fit your stay:
+// free first, then the cheapest meter. Speaks when the best one changes, at most every 25 seconds.
+let DRIVE = null;
+const bearingOf = (a, b) => { const k = Math.cos((a[1] * Math.PI) / 180); return (Math.atan2((b[0] - a[0]) * k, b[1] - a[1]) * 180) / Math.PI; };
+function say(text) {
+  try { if (!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-AU'; u.rate = 1.02; speechSynthesis.speak(u); } catch { /* no voice */ }
+}
+function startDrive() {
+  if (!navigator.geolocation) return toast("This browser can't share your location.");
+  DRIVE = { at: null, heading: null, best: null, saidAt: 0, saidKey: '', lock: null, hud: document.createElement('div') };
+  DRIVE.hud.className = 'drivehud'; DRIVE.hud.innerHTML = '<div class="dh-main"><b>Finding your location…</b><small>Drive mode</small></div><button type="button" class="dh-stop" aria-label="Stop drive mode"><i class="ph ph-x"></i></button>';
+  DRIVE.hud.querySelector('.dh-stop').onclick = stopDrive;
+  $('#app').appendChild(DRIVE.hud);
+  $('#app').classList.add('driving');
+  setSheet('min');
+  try { navigator.wakeLock?.request('screen').then((l) => { if (DRIVE) DRIVE.lock = l; else l.release(); }).catch(() => {}); } catch { /* not supported */ }
+  say("Drive mode on. I'll tell you where you can park near you.");
+  DRIVE.watch = navigator.geolocation.watchPosition(onDrivePos, (e) => {
+    // Only a refusal ends drive mode; a slow or lost GPS fix (tunnels, car parks) just waits for the next one.
+    if (e.code === 1) { toast('Location is off. Allow location for this site to use drive mode.'); stopDrive(); return; }
+    if (DRIVE) DRIVE.hud.querySelector('.dh-main').innerHTML = '<b>Waiting for GPS…</b><small>Drive mode</small>';
+  }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 30000 });
+  renderLegend();
+}
+function stopDrive() {
+  if (!DRIVE) return;
+  try { navigator.geolocation.clearWatch(DRIVE.watch); } catch { /* ignore */ }
+  try { DRIVE.lock?.release(); } catch { /* ignore */ }
+  try { speechSynthesis.cancel(); } catch { /* ignore */ }
+  DRIVE.hud.remove(); $('#app').classList.remove('driving');
+  DRIVE = null; setSheet('peek'); renderLegend();
+}
+function onDrivePos(pos) {
+  if (!DRIVE) return;
+  const at = [pos.coords.longitude, pos.coords.latitude];
+  if (DRIVE.at && distM(DRIVE.at, at) > 8) DRIVE.heading = Number.isFinite(pos.coords.heading) && pos.coords.speed > 1 ? pos.coords.heading : bearingOf(DRIVE.at, at);
+  if (!DRIVE.at || distM(DRIVE.at, at) > 8) DRIVE.at = at;
+  if (!meMarker) { const el = document.createElement('div'); el.style.cssText = `width:16px;height:16px;border-radius:50%;background:${C().accent};border:3px solid #fff;box-shadow:0 0 0 6px color-mix(in srgb, ${C().accent} 25%, transparent)`; meMarker = new maplibregl.Marker({ element: el }); }
+  meMarker.setLngLat(at).addTo(map);
+  map.easeTo({ center: at, zoom: Math.max(map.getZoom(), 16.4), duration: 800 });
+  // What's around, for a stay starting now.
+  const now = sydneyNow();
+  const opts = [];
+  for (const f of KERBS.features) {
+    const p = f.properties, m = mids.get(p.id);
+    if (!m || Math.abs(m[1] - at[1]) > 0.004 || Math.abs(m[0] - at[0]) > 0.005) continue;
+    const d = distM(at, m);
+    if (d > 350 || d < 15) continue;
+    let ahead = 0;
+    if (DRIVE.heading != null) { const diff = Math.abs(((bearingOf(at, m) - DRIVE.heading + 540) % 360) - 180); if (diff > 70) continue; ahead = diff; }
+    const c = p.k >= 0 ? costFor(p, RULES, now.day, now.hour, S.stay) : p.pa && permitMine(p.pa) ? { ok: true, cost: 0 } : null;
+    if (!c || !c.ok || c.unknownRate) continue;
+    // Which side: Australians drive on the left, so a kerb on the left is the easy one.
+    let side = '';
+    if (DRIVE.heading != null) { const rel = ((bearingOf(at, m) - DRIVE.heading + 540) % 360) - 180; side = rel < -10 ? 'left' : rel > 10 ? 'right' : ''; }
+    opts.push({ p, d, c, side, score: d + ahead * 2 + (c.cost > 0 ? 400 + c.cost * 30 : 0) + (side === 'right' ? 60 : 0) });
+  }
+  opts.sort((a, b) => a.score - b.score);
+  const best = opts[0];
+  const main = DRIVE.hud.querySelector('.dh-main');
+  if (!best) { main.innerHTML = `<b>Nothing that fits ${stayWords(true)} right here</b><small>Keep driving: Kerb is watching ${DRIVE.heading == null ? 'around you' : 'the streets ahead'}.</small>`; return; }
+  const what = best.c.cost === 0 ? 'Free' : `${money(best.c.cost)}`;
+  const m100 = Math.max(20, Math.round(best.d / 10) * 10);
+  main.innerHTML = `<b>${what} · ${best.p.s}</b><small>${m100} m ahead${best.side ? ` on your ${best.side}` : ''} · ${stayWords(true)}</small>`;
+  const key = `${best.p.s}|${best.p.sd || ''}|${what}`;
+  if (key !== DRIVE.saidKey && Date.now() - DRIVE.saidAt > 25000) {
+    DRIVE.saidKey = key; DRIVE.saidAt = Date.now();
+    say(`${best.c.cost === 0 ? 'Free parking' : `Parking for ${money(best.c.cost).replace('$', '')} dollars`} on ${best.p.s}, about ${m100} metres ahead${best.side ? ` on your ${best.side}` : ''}.`);
+  }
+}
 
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 3500); }
 
