@@ -1,0 +1,36 @@
+{
+  "city": "mel",
+  "builtAt": "2026-10-26T17:15:21.531Z",
+  "fetchedAt": "2026-10-26T17:15:21.296Z",
+  "stale": false,
+  "kerbs": 1792,
+  "ruleSets": 317,
+  "carParks": 5,
+  "bays": 6324,
+  "meters": 0,
+  "permitPatterns": {}
+}
+{
+  "city": "bne",
+  "builtAt": "2026-10-26T17:16:25.979Z",
+  "fetchedAt": "2026-10-26T17:16:25.447Z",
+  "stale": false,
+  "kerbs": 11243,
+  "ruleSets": 216,
+  "carParks": 2,
+  "bays": 0,
+  "meters": 0,
+  "permitPatterns": {}
+}
+{
+  "city": "per",
+  "builtAt": "2026-10-26T17:20:38.615Z",
+  "fetchedAt": "2026-10-26T14:10:17.913Z",
+  "stale": true,
+  "kerbs": 7553,
+  "ruleSets": 248,
+  "carParks": 32,
+  "bays": 0,
+  "meters": 0,
+  "permitPatterns": {}
+}
