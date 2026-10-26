@@ -63,7 +63,12 @@ export function stateAt(props, rules, day, h) {
     const next = today.filter((r) => r[2] > h).map((r) => r[2]);
     return { kind: 'free', until: next.length ? Math.min(...next) : 24, why: 'outside-sign', set };
   }
-  if (!today.length) return { kind: 'free', until: 24, why: 'no-meter-day', set };
+  if (!today.length) {
+    // A meter that runs every weekday but not today (usually Sunday): free today. A meter that only runs on some
+    // weekdays (e.g. Sunday-only on a street that's a bus lane on weekdays): something else is signed today.
+    if ([1, 2, 3, 4, 5].every((d) => rulesFor(set, d).length)) return { kind: 'free', until: 24, why: 'no-meter-day', set };
+    return { kind: 'unknown', until: 24, partial: true, set };
+  }
   const first = Math.min(...today.map((r) => r[2]));
   const last = Math.max(...today.map((r) => r[3]));
   if (h >= last && last >= EVENING_FROM) return { kind: 'free', until: 24, why: 'after-hours', set };
@@ -127,7 +132,10 @@ export function category(props, rules, day, h, stay) {
 export function plainNow(props, rules, day, h) {
   const s = stateAt(props, rules, day, h);
   if (s.kind === 'unknown' && props.lk) return `No resident permit scheme on this street, so it's usually unrestricted parking. The council doesn't publish its signs, so check for any time limits.`;
-  if (s.kind === 'unknown' && s.partial) return `No ${String(s.set.text || 'restriction').split(/[ ;]/)[0].toLowerCase()} right now${s.until < 24 ? ` (it starts at ${fmtTime(s.until)})` : ''}. This road's other signs aren't published, so check them before you park. Published: ${s.set.text}.`;
+  if (s.kind === 'unknown' && s.partial) {
+    const cw = /^clearway/i.test(s.set.text || '');
+    return `${cw ? 'No clearway right now' : 'The published signs here don\'t cover this time'}${s.until < 24 ? ` (next one starts at ${fmtTime(s.until)})` : ''}. Other signs on this kerb aren't published, so check them before you park. Published: ${s.set.text}.`;
+  }
   if (s.kind === 'unknown') return props.pa
     ? `Resident permit ${props.pa}. The council hasn't published the signs here, so check the sign: visitors are usually time-limited.`
     : `The council hasn't published the signs for this kerb yet. Check the sign before you park.`;
