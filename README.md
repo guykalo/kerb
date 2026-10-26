@@ -20,6 +20,8 @@ npm run dev
 ## Data sources
 
 - City of Sydney open data: parking meters, ticket parking rates, parking permit areas, free 15 minute parking, council car parks, street codes.
+- Street parking mapped in OpenStreetMap (Parramatta CBD and wherever volunteers have tagged kerbs): © OpenStreetMap contributors, Open Database License (ODbL). The OpenStreetMap-derived kerbs in `public/data/kerbs.json` (`src: "osm"`) are available under the ODbL.
+- NSW clearways: Transport for NSW Open Data, CC BY (data as of 2018).
 - Base map: OpenFreeMap, built on OpenStreetMap.
 
 Car park prices can be added by hand in `data/carparks.json` (name, `at` [lon, lat], `bands` [[hours, price]...], `earlyBird`, `night`, `weekend`, `checked`).
