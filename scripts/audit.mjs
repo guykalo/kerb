@@ -11,7 +11,8 @@ const CITIES = {
   bne: { dir: 'bne/', box: [152.5, -28, 153.6, -26.9], cores: [['Brisbane CBD', 153.0251, -27.4698, 600], ['Fortitude Valley', 153.0345, -27.4575, 300]] },
   per: { dir: 'per/', box: [115.4, -32.6, 116.4, -31.4], cores: [['Perth CBD', 115.8605, -31.9523, 600]] },
 };
-const get = async (p) => (/^https?:/.test(BASE) ? (await fetch(BASE + p)).json() : JSON.parse(await readFile(BASE + p, 'utf8')));
+const SIZES = {};
+const get = async (p) => { const t = /^https?:/.test(BASE) ? await (await fetch(BASE + p)).text() : await readFile(BASE + p, 'utf8'); SIZES[p] = t.length; return JSON.parse(t); };
 const dist = (a, b) => Math.hypot((a[0] - b[0]) * 111320 * Math.cos((a[1] * Math.PI) / 180), (a[1] - b[1]) * 110540);
 const lineLen = (c) => c.slice(1).reduce((s, p, i) => s + dist(c[i], p), 0);
 const mid = (c) => c[Math.floor(c.length / 2)];
@@ -24,7 +25,9 @@ for (const [id, city] of Object.entries(CITIES)) {
   let K, R, C, M;
   try { [K, R, C, M] = await Promise.all([get(city.dir + 'kerbs.json'), get(city.dir + 'rules.json'), get(city.dir + 'carparks.json'), get(city.dir + 'meta.json')]); }
   catch (e) { report.cities[id] = { error: e.message }; md += `## ${id}\nCould not load data: ${e.message}\n\n`; continue; }
-  r.stats = { kerbs: K.features.length, ruleSets: R.length, carParks: C.length, builtAt: M.builtAt, stale: M.stale || false };
+  const mb = (p) => (SIZES[p] / 1e6).toFixed(1);
+  if (SIZES[city.dir + 'kerbs.json'] > 8e6) add('kerbs.json over 8 MB (slow on phones)', mb(city.dir + 'kerbs.json'));
+  r.stats = { 'kerbs.json MB': mb(city.dir + 'kerbs.json'), 'rules.json MB': mb(city.dir + 'rules.json'), kerbs: K.features.length, ruleSets: R.length, carParks: C.length, builtAt: M.builtAt, stale: M.stale || false };
   if (M.builtAt && Date.now() - new Date(M.builtAt) > 36 * 3600e3) add('data older than 36 hours', M.builtAt);
 
   // Rule sets
