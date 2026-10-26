@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en-AU">
+<!--<![endif]-->
+<head>
+	<!-- Published by OpenCities, 1.38.0.0 -->
+
+    
+        
+    
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="theme-color" content="#0E5295"/>
+    <title>Council Meetings Strathfield Council</title>
+	<meta name="generator" content="OpenCities - https://granicus.com/product/opencities" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Using mobile-web-app-capable for now to enable full-screen experience on supported platforms -->
+    <!-- Note: This tag works mainly on Android Chrome. It does NOT enable full-screen mode on iOS Safari. -->
+    <!-- For iOS, the correct tag is: <meta name="apple-mobile-web-app-capable" content="yes"> -->
+    <!-- TODO: Monitor for updated meta tag standards from Apple or other browser vendors -->
+    <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="description" content="Keep up to date with the decisions of Council." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.strathfield.nsw.gov.au/Council/Council-Meetings" />
+    <meta property="og:title" content="Council Meetings" />
+    <meta property="og:description" content="Keep up to date with the decisions of Council." />
+    <meta property="og:image" content="https://www.strathfield.nsw.gov.au/files/ocwebsite/Public/HeroImage/council%20logo_1200%20x%20630px.png?w=1200" />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:title" content="Council Meetings" />
+    <meta property="twitter:description" content="Keep up to date with the decisions of Council." />
+    <meta property="twitter:image" content="https://www.strathfield.nsw.gov.au/files/ocwebsite/Public/HeroImage/council%20logo_1200%20x%20630px.png?w=1080" />
+    <meta name="Local Government" content="OC Module Interface" />
+    <meta name="Strathfield Council" content="Gina Nobrega" />
+    <link rel="canonical" href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings" />
+
+    
+    <link rel="icon" type="image/png" href="/files/ocfavicon/Public/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/files/ocfavicon/Public/favicon.svg" />
+<link rel="shortcut icon" href="/files/ocfavicon/Public/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/files/ocfavicon/Public/apple-touch-icon.png" />
+<link rel="manifest" href="/files/ocfavicon/Public/site.webmanifest" />
+    <script>
+        (function () {
+            if (window.__UNLOAD_LAZY_PATCH__) return;
+            window.__UNLOAD_LAZY_PATCH__ = true;
+
+            var supportsPageHide = ("onpagehide" in window);
+            var mappedType = supportsPageHide ? "pagehide" : "beforeunload";
+            var nativeAdd = window.addEventListener;
+            var nativeRemove = window.removeEventListener;
+            var unloadMap = null;
+            var patched = false;
+
+            function ensurePatched() {
+                if (patched) return;
+                unloadMap = new WeakMap();
+
+                window.addEventListener = function (type, listener, options) {
+                    if (type === "unload") {
+                        var wrapped = function (evt) {
+                            if (supportsPageHide && evt.persisted) return;
+                            listener.call(this, evt);
+                        };
+                        unloadMap.set(listener, wrapped);
+                        return nativeAdd.call(this, mappedType, wrapped, options);
+                    }
+                    return nativeAdd.call(this, type, listener, options);
+                };
+
+                window.removeEventListener = function (type, listener, options) {
+                    if (type === "unload") {
+                        var wrapped = unloadMap.get(listener);
+                        if (wrapped) {
+                            nativeRemove.call(this, mappedType, wrapped, options);
+                            unloadMap.delete(listener);
+                        }
+                        return;
+                    }
+                    return nativeRemove.call(this, type, listener, options);
+                };
+
+                var orig = null;
+                Object.defineProperty(window, "onunload", {
+                    configurable: true, enumerable: true,
+                    get: function () { return orig; },
+                    set: function (h) {
+                        orig = h;
+                        if (typeof h === "function") window.addEventListener("unload", h);
+                    }
+                });
+                patched = true;
+            }
+
+            window.addEventListener = function (type, listener, options) {
+                if (type === "unload") {
+                    ensurePatched();
+                    return window.addEventListener(type, listener, options);
+                }
+                return nativeAdd.call(this, type, listener, options);
+            };
+
+            window.removeEventListener = function (type, listener, options) {
+                if (type === "unload" && !patched) {
+                    return;
+                }
+                return nativeRemove.call(this, type, listener, options);
+            };
+
+            function patchTelerik() {
+                ensurePatched();
+                var ns = window.RadAjaxNamespace;
+                if (!ns || !ns.EventManager || !ns.EventManager.Add || ns.EventManager.__UnloadPatched) return;
+                var origAdd = ns.EventManager.Add;
+                ns.EventManager.Add = function (el, evtName, handler, clientId) {
+                    if (el === window && evtName === "unload") {
+                        return window.addEventListener("unload", handler);
+                    }
+                    return origAdd.call(this, el, evtName, handler, clientId);
+                };
+                ns.EventManager.__UnloadPatched = true;
+            }
+
+            if (window.RadAjaxNamespace)
+                patchTelerik();
+            else (window.requestIdleCallback || function (cb)
+            {
+                setTimeout(cb, 120);
+            })(patchTelerik);
+        })();
+    </script>
+    <!-- Preconnecting to Google Fonts servers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Defer Roboto font loading to avoid render-blocking -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const robotoLink = document.createElement('link');
+            robotoLink.rel = 'stylesheet';
+            robotoLink.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap';
+            document.head.appendChild(robotoLink);
+        });
+    </script>
+
+    <style>
+        .gm-style, .gm-style * {
+            font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Arial, sans-serif !important;
+        }
+    </style>
+
+    <script>
+        document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, "js");
+    </script>
+    
+    
+        
+            <script type="text/javascript">
+                window.__oc_flags_ImprovedBreakpointEventHandling = true;
+            </script>
+            
+        
+    
+    
+    
+        <script type="text/javascript">
+            var __metaQueryBreakpoints = {
+                'sc-size-4': '(max-width: 480px)',
+                'sc-size-3': '(min-width: 480px) and (max-width: 768px)',
+                'sc-size-2': '(min-width: 768px) and (max-width: 992px)',
+                'sc-size-1': '(min-width: 992px)'
+            }
+
+            var __ocSizePoints = [
+                { min: 0, name: 'sc-size-4' },
+                { min: 480, name: 'sc-size-3' },
+                { min: 768, name: 'sc-size-2' },
+                { min: 992, name: 'sc-size-1' }
+            ];
+
+        </script>
+    
+
+    <!-- Framework Section -->
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/files/templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/133/jquery-3.7.1.min.js?seamlessts=639257218448624927" ><\/script>')</script>
+
+    <!--Google Maps API Loader – Improved Version to avoid Warning
+    This script loads the Google Maps JavaScript API using a dynamic and async method.
+    It replaces the old static <script> tag to avoid performance warnings from Google.
+
+    Dynamically creates the <script> tag with loading = async for better performance
+    Builds the API URL with required libraries(places, geometry, marker, geocoding)
+    Uses a Promise and callback(google.maps.__ib__) to confirm when the script is ready
+
+    It Avoids Google’s warning about direct script loading
+    Improves page load speed by loading the API asynchronously-->
+
+    
+        <script>
+            (function (root) {
+                root.OpenCities = root.OpenCities || {};
+                if (!root.OpenCities.GoogleMapsLoader) {
+                    root.OpenCities.GoogleMapsLoader = {
+                        _cbs: [],
+                        _ready: false,
+                        onReady: function (cb) {
+                            if (this._ready) { try { cb(); } catch (e) { console.error(e); } }
+                            else if (typeof cb === 'function') this._cbs.push(cb);
+                        },
+                        _fire: function () {
+                            if (this._ready) return;
+                            this._ready = true;
+                            var q = this._cbs.splice(0);
+                            for (var i = 0; i < q.length; i++) {
+                                try { q[i](); } catch (e) { console.error(e); }
+                            }
+                        }
+                    };
+                }
+            })(window);
+
+            (g => {
+                var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__",
+                    m = document, b = window;
+                b = b[c] || (b[c] = {});
+                var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams,
+                    u = () => h || (h = new Promise(async (resolve, reject) => {
+                        a = m.createElement("script");
+                        e.set("libraries", [...r] + "");
+                        for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]);
+                        e.set("callback", c + ".maps." + q);
+                        a.src = "https://maps." + c + "apis.com/maps/api/js?" + e.toString();
+                        a.loading = "async";
+                        a.async = true;
+                        a.defer = true;
+                        d[q] = resolve;
+                        a.onerror = () => reject(Error(p + " could not load."));
+                        a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+                        m.head.append(a);
+                    }));
+                if (d[l]) {
+                    console.warn(p + " only loads once. Ignoring duplicate load.");
+                } else {
+                    d[l] = (f, ...n) => (r.add(f), u().then(() => d[l](f, ...n)));
+                }
+            })({
+                key: "AIzaSyCCFJ5Nfd9-BujqVR_SOa4Dwhx8a1FfkRM",
+                v: "3.65"
+            });
+
+            (async () => {
+                try {
+                    if (!google?.maps?.importLibrary) return;
+
+                    if (!window.OpenCities.__mapsLibsPromise) {
+                        window.OpenCities.__mapsLibsPromise = Promise.all([
+                            google.maps.importLibrary('maps'),
+                            google.maps.importLibrary('places'),
+                            google.maps.importLibrary('geocoding'),
+                            google.maps.importLibrary('marker'),
+                            google.maps.importLibrary('geometry')
+                        ]);
+                    }
+                    await window.OpenCities.__mapsLibsPromise;
+
+                    if (window.OpenCities?.GoogleMapsLoader) {
+                        window.OpenCities.GoogleMapsLoader._fire();
+                    }
+                } catch (err) {
+                    console.error('Google Maps failed to initialise', err);
+                }
+            })();
+        </script>
+    
+    <script src="/files/templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/133/modernizr.custom.710f3bf.js?seamlessts=639257218448624927" defer></script>
+    
+    <!--// End Framework Section -->
+    <!-- OpenCities Section -->
+    <script>
+        var OpenCities = OpenCities || {};
+        OpenCities.Paths = {
+            SiteTemplate: '/files/templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/133/',
+            ThemePath: '/files/templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/133/'
+        };
+    </script>
+    <script src='/ocapi/bb787bcb-974f-440c-b233-7920b8d75c35/en-AU/websitesettings.js'></script>
+    <script src="/files/templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/133/oc_head.js?applied=20240920060944"></script>
+    <!-- Script Combine. To enter debug mode for this browser session, enter OcScriptCombineDebug=true as a querystring -->
+<link href="/files/oc-templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/133/oc_grid.css~oc_style.css~oc_wizard_style.css~oc_main.css~oc_forms.css~oc_wizard.css~oc_wizard_menu.css~oc_main_s1.css~oc_wizard_s1.css~oc_wizard_menu_s1.css~oc_grid_s1.css~OcScriptCombine_Minify0?uniqueid=20240920060944" rel="stylesheet" type="text/css">
+    <!-- Script Combine. To enter debug mode for this browser session, enter OcScriptCombineDebug=true as a querystring -->
+<link href="/files/oc-templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/133/client_style.css~client.css~client_menu.css~client_s1.css~client_menu_s1.css~client_forms.css~OcScriptCombine_Minify0?uniqueid=20240920060944" rel="stylesheet" type="text/css">
+    <script>
+(function (BackgroundSettings, $, undefined) {
+    BackgroundSettings.initialise = function () {
+        this.Application = {"CSSSelector":".content-outer-container","EnableFade":false,"MediaType":"image"};
+    };
+} (OpenCities.BackgroundSettings = OpenCities.BackgroundSettings || {}, jQuery));
+OpenCities.BackgroundSettings.initialise();
+</script>
+    
+    <!-- Script Combine. To enter debug mode for this browser session, enter OcScriptCombineDebug=true as a querystring -->
+<link href="/files/oc-templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/133/oc_print.css~client_print.css~OcScriptCombine_Minify0?uniqueid=20240920060944" rel="stylesheet" type="text/css" media="print">
+    <!-- Script Combine. To enter debug mode for this browser session, enter OcScriptCombineDebug=true as a querystring -->
+<script src="/files/oc-templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/133/external_plugins.js~oc_form_helper.js~oc_main.js~plugins.js~oc_main_init.js~OcScriptCombine_Minify0?uniqueid=20240920060944" defer="true"></script>
+    
+    
+
+                                <script>!function(e){var n="https://s.go-mpulse.net/boomerang/";if("False"=="True")e.BOOMR_config=e.BOOMR_config||{},e.BOOMR_config.PageParams=e.BOOMR_config.PageParams||{},e.BOOMR_config.PageParams.pci=!0,n="https://s2.go-mpulse.net/boomerang/";if(window.BOOMR_API_key="UYNRY-2YMH8-7PYXA-RUTF9-QCXU8",function(){function e(){if(!r){var e=document.createElement("script");e.id="boomr-scr-as",e.src=window.BOOMR.url,e.async=!0,o.appendChild(e),r=!0}}function t(e){r=!0;var n,t,a,i,d=document,O=window;if(window.BOOMR.snippetMethod=e?"if":"i",t=function(e,n){var t=d.createElement("script");t.id=n||"boomr-if-as",t.src=window.BOOMR.url,BOOMR_lstart=(new Date).getTime(),e=e||d.body,e.appendChild(t)},!window.addEventListener&&window.attachEvent&&navigator.userAgent.match(/MSIE [67]\./))return window.BOOMR.snippetMethod="s",void t(o,"boomr-async");a=document.createElement("IFRAME"),a.src="about:blank",a.title="",a.role="presentation",a.loading="eager",i=(a.frameElement||a).style,i.width=0,i.height=0,i.border=0,i.display="none",o.appendChild(a);try{O=a.contentWindow,d=O.document.open()}catch(_){n=document.domain,a.src="javascript:var d=document.open();d.domain='"+n+"';void 0;",O=a.contentWindow,d=O.document.open()}if(n)d._boomrl=function(){this.domain=n,t()},d.write("<bo"+"dy onload='document._boomrl();'>");else if(O._boomrl=function(){t()},O.addEventListener)O.addEventListener("load",O._boomrl,!1);else if(O.attachEvent)O.attachEvent("onload",O._boomrl);d.close()}function a(e){window.BOOMR_onload=e&&e.timeStamp||(new Date).getTime()}if(!window.BOOMR||!window.BOOMR.version&&!window.BOOMR.snippetExecuted){window.BOOMR=window.BOOMR||{},window.BOOMR.snippetStart=(new Date).getTime(),window.BOOMR.snippetExecuted=!0,window.BOOMR.snippetVersion=14,window.BOOMR.url=n+"UYNRY-2YMH8-7PYXA-RUTF9-QCXU8";var i=document.currentScript||document.getElementsByTagName("script")[0],o=i.parentNode,r=!1,d=document.createElement("link");if(d.relList&&"function"==typeof d.relList.supports&&d.relList.supports("preload")&&"as"in d)window.BOOMR.snippetMethod="p",d.href=window.BOOMR.url,d.rel="preload",d.as="script",d.addEventListener("load",e),d.addEventListener("error",function(){t(!0)}),setTimeout(function(){if(!r)t(!0)},3e3),BOOMR_lstart=(new Date).getTime(),o.appendChild(d);else t(!1);if(window.addEventListener)window.addEventListener("load",a,!1);else if(window.attachEvent)window.attachEvent("onload",a)}}(),"".length>0)if(e&&"performance"in e&&e.performance&&"function"==typeof e.performance.setResourceTimingBufferSize)e.performance.setResourceTimingBufferSize();!function(){if(BOOMR=e.BOOMR||{},BOOMR.plugins=BOOMR.plugins||{},!BOOMR.plugins.AK){var n=""=="true"?1:0,t="",a="cr3womqx3lmmo2w6xd3q-f-61bf1fff7-clientnsv4-s.akamaihd.net",i="false"=="true"?2:1,o={"ak.v":"41","ak.cp":"1705713","ak.ai":parseInt("1075936",10),"ak.ol":"0","ak.cr":1,"ak.ipv":4,"ak.proto":"http/1.1","ak.rid":"a94514b","ak.r":41484,"ak.a2":n,"ak.m":"","ak.n":"essl","ak.cport":18432,"ak.gh":"23.222.0.198","ak.quicv":"","ak.tlsv":"tls1.3","ak.0rtt":"","ak.0rtt.ed":"","ak.csrc":"-","ak.acc":"bbr","ak.t":"1792981239","ak.ak":"hOBiQwZUYzCg5VSAfCLimQ==Bl78fk/oU0X7knvEBJnSXpfpjNnSKXWHokYhQ2rkXaCAHxmUmsf43LwXhnz9Olv+cmU0SEAbWfhcVw5ORYeIlizA7n6Fc82Pb5FRP/MReq75DBTdcTlqLTJvhWrznncmouESCMHmZ/s3jOVYcGRFAOSpweTbT6HbAGrm3tZWQExRqA8H+yMcBe4TVL64RWjhK8JtqP/BX8qgeWp8JOTf8X4MoNtIPBzO2ULUkcH6fqTlR7fVSVj2y6h1Dj/PKE4xJT5re4Rqa9NiFbnl3Pxroz8rCZc626OM9UzXvoIsjYygWT9+TMnwC++/WAux8QPliq6YYS0YWW3wJcJWFy8IFT2a9c02peLM/KGdutZoTeBEiNevbGvIMexq/SAOb/stqvru828uV3+71vo6m50RsqJGEmBfoqmJZF1lXis8QLE=","ak.pv":"150","ak.dpoabenc":"","ak.tf":i};if(""!==t)o["ak.ruds"]=t;var r={i:!1,av:function(n){var t="http.initiator";if(n&&(!n[t]||"spa_hard"===n[t]))o["ak.feo"]=void 0!==e.aFeoApplied?1:0,BOOMR.addVar(o)},rv:function(){var e=["ak.cport","ak.cr","ak.csrc","ak.gh","ak.ipv","ak.m","ak.n","ak.ol","ak.proto","ak.quicv","ak.tlsv","ak.0rtt","ak.0rtt.ed","ak.r","ak.acc","ak.t","ak.tf"];BOOMR.removeVar(e)}};BOOMR.plugins.AK={akVars:o,akDNSPreFetchDomain:a,init:function(){if(!r.i){var e=BOOMR.subscribe;e("before_beacon",r.av,null,null),e("onbeacon",r.rv,null,null),r.i=!0}return this},is_complete:function(){return!0}}}}()}(window);</script></head>
+<body class="body layout-modern  site-search-always-visble  content-type-oc-module-interface content-template-oc-minutes-and-agenda group-template-oc-full-width-with-default-header page-name-council-meetings page-sequence-17 page-depth-2 page-section-2 website-type-primary device-desktop " id="body-top">
+    <div id="skip-to-content-container">
+        <a href="#main-content" class="visuallyhidden focusable" id="skip-to-content-link">Skip to main content</a>
+    </div>
+    <script>
+        // OCNOW-11988 (Cursor): Proactively focus skip link when returning from browser chrome.
+        // Must run inline (not deferred oc_main.js) so focus is intercepted before NVDA speaks footer.
+        (function () {
+            var awaitingReentry = false;
+            var inertSupported = 'inert' in HTMLElement.prototype;
+
+            function isExplicitlyOutsideDocument(node) {
+                return node != null && !document.documentElement.contains(node);
+            }
+
+            function getSkipContainer() {
+                return document.getElementById('skip-to-content-container');
+            }
+
+            function getSkipLink() {
+                return document.getElementById('skip-to-content-link');
+            }
+
+            function applyGuard() {
+                awaitingReentry = true;
+                if (!inertSupported) {
+                    return;
+                }
+                var skipContainer = getSkipContainer();
+                var children = document.body.children;
+                for (var i = 0; i < children.length; i++) {
+                    if (children[i] !== skipContainer) {
+                        children[i].setAttribute('inert', '');
+                    }
+                }
+            }
+
+            function clearGuard() {
+                awaitingReentry = false;
+                if (!inertSupported) {
+                    return;
+                }
+                var children = document.body.children;
+                for (var i = 0; i < children.length; i++) {
+                    children[i].removeAttribute('inert');
+                }
+            }
+
+            function isSkipLinkElement(target) {
+                if (!target) {
+                    return false;
+                }
+                var skipContainer = getSkipContainer();
+                return target.id === 'skip-to-content-link' ||
+                    (skipContainer && skipContainer.contains(target));
+            }
+
+            function focusSkipLink() {
+                var skipLink = getSkipLink();
+                if (!skipLink) {
+                    return;
+                }
+                if (window.scrollY > 0) {
+                    window.scrollTo(0, 0);
+                }
+                skipLink.focus({ preventScroll: true });
+            }
+
+            function scheduleGuardIfDocumentLostFocus() {
+                window.setTimeout(function () {
+                    if (!document.hasFocus()) {
+                        applyGuard();
+                    }
+                }, 0);
+            }
+
+            document.addEventListener('focusout', function (e) {
+                if (isExplicitlyOutsideDocument(e.relatedTarget)) {
+                    applyGuard();
+                }
+            }, true);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Tab') {
+                    scheduleGuardIfDocumentLostFocus();
+                } else if (e.key === 'F6' || (e.key === 'l' && e.ctrlKey)) {
+                    scheduleGuardIfDocumentLostFocus();
+                }
+            }, true);
+
+            window.addEventListener('focus', function () {
+                if (!awaitingReentry) {
+                    return;
+                }
+                applyGuard();
+                focusSkipLink();
+            }, true);
+
+            document.addEventListener('focusin', function (e) {
+                var reentryFromChrome = awaitingReentry || isExplicitlyOutsideDocument(e.relatedTarget);
+                if (!reentryFromChrome) {
+                    return;
+                }
+                if (isSkipLinkElement(e.target)) {
+                    clearGuard();
+                    return;
+                }
+                applyGuard();
+                focusSkipLink();
+                clearGuard();
+            }, true);
+        })();
+    </script>
+    <form name="mainForm" method="post" action="/Council/Council-Meetings" id="mainForm">
+<div>
+<input type="hidden" name="ctl04_seamless_script_manager_TSM" id="ctl04_seamless_script_manager_TSM" value="" />
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__SEAMLESSVIEWSTATE" id="__SEAMLESSVIEWSTATE" value="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" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['mainForm'];
+if (!theForm) {
+    theForm = document.mainForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/WebResource.axd?d=pynGkmcFUV13He1Qd6_TZEwxevNHYVPiVa1Imd_CfwV7Ab8FE1aS0qMo2VVt5LKJo2QwSrlAqlF7-BPzzVxibA2&amp;t=639191193332169432" type="text/javascript"></script>
+
+
+<script src="/Telerik.Web.UI.WebResource.axd?_TSM_HiddenField_=ctl04_seamless_script_manager_TSM&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3bSystem.Web.Extensions%2c+Version%3d4.0.0.0%2c+Culture%3dneutral%2c+PublicKeyToken%3d31bf3856ad364e35%3aen-GB%3add3ac3d5-1e29-4112-8fed-529caffa8f24%3aea597d4b%3ab25378d2" type="text/javascript"></script>
+<script src="/ScriptResource.axd?d=ztfW3kfUj1kK9ZWYC4ej_YyY-llfPumdq9-NRUvh9Uam5JPIB5oZzJ19At_CwLQ5O31FJzhrxcBbfgAJUOFtlsCwTcvV8vK3u9gsUWJqmgh0Pw0YYlNx4NSp9KplnE_eT7S9eX_-PwKE2c7tRQNT04hzb2OTP6z1KWHhU4Jc8PGF8nZ6kyB3nQcnI8YgTawmmD1CJBE3-GOzNla5CiDCqFGMLX7lc0pw8SocqJVncUGV4ML4WKAG6oCiF3Aat7dRSXzCipTecSoQz6_8ge3paIj6t9K5lZIvko0VtvIf-LRJlXwMoWLOwyblUIiJ0HYy_XIYF05ue4Xr0Hi5uSGYnzdyAHVCqdaasvhSkhlS1EzKlnW_a6ebeVyv4s4VaIF-ednQeajwML4FIeYqGGhGzYw-FrCsqydzc6Eu7rJHlAyIr49xtnRz3udEIE14FUog0" type="text/javascript"></script>
+<script src="/Telerik.Web.UI.WebResource.axd?_TSM_HiddenField_=ctl04_seamless_script_manager_TSM&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3bOpenCities.CustomControls%3aen-GB%3a2c6af46a-a9e7-48e6-823a-b8e6c08bf5b8%3a8e1d32bf" type="text/javascript"></script>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl04$seamless_script_manager', 'mainForm', [], [], [], 90, '');
+//]]>
+</script>
+
+<script type="text/javascript">
+    try{
+        function SeamlessEndRequestHandler(sender, args) {
+            try {
+                var dataItems = args.get_dataItems();
+                if(dataItems.ctl04_seamless_script_manager)
+                    document.getElementById('__SEAMLESSVIEWSTATE').value = dataItems.ctl04_seamless_script_manager;
+            }
+            catch (e) { }
+        }
+
+        Sys.WebForms.PageRequestManager.getInstance().add_endRequest(SeamlessEndRequestHandler);
+    }
+    catch (e) { }
+</script>
+
+    <div class="unsupported-browser-warning js-element"></div>
+    
+    <div hidden>
+        <span id="new-window-0">opens in new tab or window </span>
+    </div>
+    <div class="overlay-container"></div>
+    
+    <div role="region" aria-label="Site announcements" class="emergency-container emergency-container-position-1"><div id="PublicEmergencyAnnouncementList" data-cookiekeydismisseditems="OC_EA_EmergencyAnnouncementList_Dismissed" data-querykeydismisseditem="OC_EA_EmergencyAnnouncementList_Dismiss">
+   <div class="oc-emergency-announcement-container">
+  <div class="oc-emergency-undismissed max-severity-10 results-2">
+    <div class="side-box message-box emergency-message-box oc-emergency-severity-10 " >
+   <h3 class="side-box-title">Fire Ants Alert</h3>
+   <div class="side-box-content">
+      <p >Council is aware of the discovery of a Fire Ants nest at the Enfield Intermodal Logistics Centre and is supporting the NSW Government’s response. The NSW Department of Primary Industries and Regional Development (DPIRD) has implemented its biosecurity response and will be providing regular updates to Council and the community.</p>
+      <a href="https://www.strathfield.nsw.gov.au/Council/News/Public-Notices/Fire-Ants-Alert"  target="_self" >Click for more info</a>
+      
+   </div>
+   
+</div>
+        
+  
+    <div class="side-box message-box emergency-message-box oc-emergency-severity-20 " >
+   <h3 class="side-box-title">Technical Issue: Invoicing</h3>
+   <div class="side-box-content">
+      <p >Please be aware the "pay an invoice" link is currently experiencing a technical issue. Please try again later. Should your matter be urgent, please contact Customer Service on 9748 9999.</p>
+      
+      
+   </div>
+   <button type="button" class="emergency-announcement-item-dismiss" aria-label="Close this announcement" data-cvid="a1008850-3d04-46ce-9c03-af8808a94987"></button>
+</div>
+        
+  </div><div class="oc-emergency-dismissed results-0"></div></div></div></div>
+    <div class="background-container">
+        <div class="page-container">
+            <!-- OC Layout Element GROUP TEMPLATE -->
+            <!--groupTemplateStart--><header><div class="print-header-outer-container print-element">
+<img src="/files/templates/00000000-0000-0000-0000-000000000000/8b5ddfad-611e-465a-a682-71b3e3ab278c/v/132/print-header.png" alt="Strathfield Council - Logo" />
+</div>
+            <div class="toolbar-outer-container">
+  <div class="toolbar-inner-container clearfix">
+    <div class="toolbar-item toolbar-language notranslate toolbar-display-dropdown"><div class="no-js-element">
+		  <ul>
+		    <li id="toolbar-language-option-en-au-noscript"><a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings?oc_lang=en-AU" class="lang-item lang-en-au" data-translate-to="en-au" lang="en-AU">English (Australia)<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li id="toolbar-language-option-zh-tw-noscript"><a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings?oc_lang=zh-TW" class="lang-item lang-zh-tw" data-translate-to="zh-tw" lang="en">Chinese (Traditional)<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li id="toolbar-language-option-ko-noscript"><a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings?oc_lang=ko" class="lang-item lang-ko" data-translate-to="ko" lang="en">Korean<span class="visuallyhidden"> Select this as your preferred language</span></a></li>
+          </ul>
+		</div>
+	<button type="button" role="combobox" aria-controls="toolbar-language-drop-down" aria-expanded="false" aria-haspopup="listbox" aria-autocomplete="none" aria-labelledby="toolbar-language-label" class="toolbar-button toolbar-button-language js-element">  
+        <span class="toolbar-language-globe-icon" aria-hidden="true"></span>
+        <span id="toolbar-language-label" class="current-language">
+            Select a language to translate to
+		</span>
+		<i aria-hidden="true"></i>
+	</button>
+	<div id="toolbar-language-drop-down" role="listbox" aria-label="Available languages" class="toolbar-drop-down toolbar-language-drop-down js-element clearfix">
+		<ul role="group">
+		    <li role="presentation"><a id="toolbar-language-option-en-au" role="option" aria-selected="true" href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings?oc_lang=en-AU" class="lang-item lang-en-au" data-translate-to="en-au" lang="en-AU">English (Australia)<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li role="presentation"><a id="toolbar-language-option-zh-tw" role="option" aria-selected="false" href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings?oc_lang=zh-TW" class="lang-item lang-zh-tw" data-translate-to="zh-tw" lang="en">Chinese (Traditional)<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li role="presentation"><a id="toolbar-language-option-ko" role="option" aria-selected="false" href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings?oc_lang=ko" class="lang-item lang-ko" data-translate-to="ko" lang="en">Korean<span class="visuallyhidden"> Select this as your preferred language</span></a></li>
+        </ul>
+	</div></div>
+  </div>
+</div>
+            <div class="header-outer-container">
+    <div class="header-container header-layout-2  clearfix">
+			<div class="header-site-logo">
+				<a href="https://www.strathfield.nsw.gov.au/Home" lang="en-AU" aria-label="Strathfield Council - Home - Logo">
+				</a>
+			</div>
+		    <div class="header-website-settings">
+                <button id="btn-mob-nav" type="button" aria-expanded="false" aria-controls="nav">
+                    <i aria-hidden="true"></i><span class="side-menu-btn-text">Menu</span>
+                </button>
+        	</div>
+			
+			<div class="header-search-control-container" id="header-search">
+				<div class="search-inner-container">
+					<div class="sc-search-panel" onkeypress="javascript:return WebForm_FireDefaultButton(event, &#39;ctl07_btnSearch&#39;)">
+	<label for="ctl07_txtSearch" id="ctl07_lblSearch" class="sc-search-label">Search</label><input name="ctl07$txtSearch" type="text" id="ctl07_txtSearch" class="sc-search-text" placeholder="Find almost anything on our website" /><input type="submit" name="ctl07$btnSearch" value="Search" id="ctl07_btnSearch" class="sc-search-button" />
+</div>
+					<div role="status" id="predictiveResults"></div>
+				</div>
+			</div>
+    </div>
+</div>
+<div class="navigation-outer-container">
+	<div id="nav" role="navigation" class="navigation-container navigation-container-option-1" data-menu-type="horizontal" aria-label="primary">
+        <div class="grid">
+            <div class="col-xs-12">                
+                <ul class="sf-menu mega-menu" id="sc-main-menu"><li class="nav-section-quarters-1 nav-active-path  first-item nav-item-seq-1">
+<a href="https://www.strathfield.nsw.gov.au/Council" class="nav-level-1 nav-has-children"  target="">
+	<i class="item-icon" aria-hidden="true"></i><span class="item-text">Council</span>
+</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-1" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-1" class="second-level-container ch-19">
+
+          
+            <li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield" class="nav-has-children"  target="">About Strathfield</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-1" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-1" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield/Community-and-Area-Snapshot"  target="">Community and Area Snapshot</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield/History-and-Heritage"  target="">History and Heritage</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield/Strathfield-Hidden-Treasures"  target="">Strathfield Hidden Treasures</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield/Councils-Executive-Team"  target="">Council's Executive Team</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield/Understanding-Country"  target="">Understanding Country</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield/Customer-Service-Charter"  target="">Customer Service Charter</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield/Town-and-Local-Centres"  target="">Town and Local Centres</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield/Pictorial-History-of-the-Strathfield-District"  target="">Pictorial History of the Strathfield District</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Council-Members" class="nav-has-children"  target="">Council Members</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-2" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-2" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Council-Members/Cr-Sandy-Reddy"  target="">Cr Sandy Reddy</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Council-Members/Cr-Esther-Kim"  target="">Cr Esther Kim</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Council-Members/Cr-John-Paul-Baladi"  target="">Cr John-Paul Baladi</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Council-Members/Cr-Matthew-Blackmore"  target="">Cr Matthew Blackmore</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Council-Members/Cr-Benjamin-Cai"  target="">Cr Benjamin Cai</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Council-Members/Cr-Rory-Nosworthy"  target="">Cr Rory Nosworthy</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Council-Members/Cr-Karen-Pensabene"  target="">Cr Karen Pensabene</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Contact-Us" class=""  target="">Contact Us</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Reports-and-Registers" class=""  target="">Reports and Registers</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Forms" class=""  target="">Forms</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Policies" class=""  target="">Policies</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Strategies-and-Plans" class=""  target="">Strategies and Plans</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Tenders-and-Expressions-of-Interest" class=""  target="">Tenders and Expressions of Interest</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Working-at-Strathfield-Council" class=""  target="">Working at Strathfield Council</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Frequently-Asked-Questions" class=""  target="">Frequently Asked Questions</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Privacy-Management" class=""  target="">Privacy Management</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Access-to-Information" class=""  target="">Access to Information</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Report-an-Issue" class=""  target="">Report an Issue</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/News" class="nav-has-children"  target="">News</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-14" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-14" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/News/Public-Notices"  target="">Public Notices</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/News/eNews"  target="">eNews</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/News/Printed-Newsletters"  target="">Printed Newsletters</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/News/Media-Releases"  target="">Media Releases</a></li></ul></li><li class="second-level-item nav-active-path nav-active-page"><a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings" class="nav-has-children"  target="">Council Meetings</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-15" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-15" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/Council-Meetings-Live"  target="">Council Meetings Live</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects" class="nav-has-children"  target="">Current Projects</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-16" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-16" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Hudson-District-Park"  target="">Hudson District Park</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Switch-On-Strathfield-Event-Ready-Streets"  target="">Switch On Strathfield: Event-Ready Streets</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Airey-Park"  target="">Airey Park Oval Upgrade</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Begnell-Field-Revitalisation"  target="">Begnell Field Revitalisation</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/The-Great-Bin-Count"  target="">The Great Bin Count!</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Energising-Our-Villages"  target="">Energising Our Villages</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Strathfield-Select-Parking-Permits"  target="">Strathfield Select Parking Permits</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Footpaths-Capital-Projects-2026-2027"  target="">Footpaths - Capital Projects 2026-2027</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Roads-Capital-Projects-2026-2027"  target="">Roads Capital Projects 2026-2027</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Cave-Road-Parking-Changes"  target="">Cave Road Parking Changes</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/George-St-Pedestrian-Bridge"  target="">George St Pedestrian Bridge</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Homebush-Railway-Station-Forecourt-Domain-Improvement"  target="">Homebush Railway Station Forecourt Domain Improvement</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Parking-Meter-Upgrade"  target="">Parking Meter Upgrade</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Hudson-Park-Driving-Range"  target="">Hudson Park Driving Range</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Fitzgerald-Crescent-Green-Space"  target="">Fitzgerald Crescent Green Space</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Ismay-Reserve-Homebush"  target="">Ismay Reserve, Homebush</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Strathfield-Town-Hall-Roof-Works"  target="">Strathfield Town Hall Roof Works</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Powells-Creek-Bridges"  target="">Powells Creek Bridges</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/New-Gateway-Signs"  target="">New Gateway Signs</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Site-investigation-for-wastewater-infrastructure-in-Strathfield"  target="">Site investigation for wastewater infrastructure in Strathfield</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Strathfield-Town-Centre-–-Our-Place-Our-Future"  target="">Strathfield Town Centre – Our Place Our Future</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Homebush-Bike-Path-and-Walking-Improvements"  target="">Homebush Bike Path and Walking Improvements</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Bridges-Capital-Projects-2026-2027"  target="">Bridges - Capital Projects 2026-2027</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Stormwater-Drains-Capital-Projects-2026-2027"  target="">Stormwater Drains - Capital Projects 2026-2027</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Traffic-Capital-Projects-2026-2027"  target="">Traffic - Capital Projects 2026-2027</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Shared-Path-Capital-Projects-2026-2027"  target="">Shared Path - Capital Projects 2026-2027</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Demolition-of-former-Pomeroy-Bowling-Club-building"  target="">Demolition of former Pomeroy Bowling Club building</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Hudson-Park-Footpaths-Driving-Range-Ramp-Compliance-Works"  target="">Hudson Park Footpaths- Driving Range Ramp Compliance Works</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Works-Program-Capital-Projects-2026-2027"  target="">Works Program - Capital Projects 2026-2027</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects/Bay-to-Bay-works"  target="">Bay to Bay Works 2026</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog" class="nav-has-children"  target="">Local Studies Blog</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-17" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-17" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Strathfield-Bus-Route-215"  target="">Strathfield Bus Route 215</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Steam-powered-Trams"  target="">Steam-powered Trams</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Next-Stop-Strathfield-Travel-Through-History-Exhibition-Opening"  target="">Next Stop, Strathfield: Travel Through History Exhibition Opening</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Bushrangers"  target="">Bushrangers!</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Australian-Cruiser-Tanks"  target="">Australian Cruiser Tanks</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Enfield-Tram-Service"  target="">The Enfield Tram Service</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/26-and-28-Rochester-Street-Homebush"  target="">26 and 28 Rochester Street, Homebush</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Redmyre-now-Strathfield-1884"  target="">Redmyre (now Strathfield), 1884</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Chemist-Nathaniel-Thomas-Collins-of-Tekoa"  target="">Chemist, Nathaniel Thomas Collins of Tekoa</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Crescent-Homebush-c.1916-1919"  target="">The Crescent, Homebush c.1916-1919</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Professor-James-Douglas-Stewart-1869-1955"  target="">Professor James Douglas Stewart (1869-1955)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Bark-Huts-Gold-Hoax"  target="">The Bark Huts Gold Hoax</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Hunter-Estate-May-1926"  target="">The Hunter Estate, May 1926</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Lord-Allenby-and-the-Junior-Red-Cross"  target="">Lord Allenby and the Junior Red Cross</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Private-Kenneth-Turton-Matchett-Battle-of-Kapyong"  target="">Private Kenneth Turton Matchett, Battle of Kapyong</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Sergeant-Richard-George-Gazzard-402115"  target="">Sergeant Richard George Gazzard (402115)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Charles-Maclurcans-Radio-Station-2CM"  target="">Charles Maclurcan's Radio Station 2CM</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Rita-Smith-and-the-Beaufort-Bomber"  target="">Rita Smith and the Beaufort Bomber</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Mayor-Edward-Austin-Homebush-Council"  target="">Mayor Edward Austin, Homebush Council</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Wynola-Estate-1925"  target="">Wynola Estate, 1925</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Coo-ee-March-through-Homebush-1915"  target="">Coo-ee March through Homebush, 1915</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Mayor-Thomas-Dalton-Homebush-Council"  target="">Mayor Thomas Dalton, Homebush Council</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Strathfield-War-Memorial’s-Centenary"  target="">Strathfield War Memorial’s Centenary</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Mintaro-Estate-1912"  target="">Mintaro Estate, 1912</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Happy-50th-Birthday-Sydney-Markets"  target="">Happy 50th Birthday, Sydney Markets!</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/MooredeanErcildoune-57-59-Burlington-Road-Homebush"  target="">Mooredean/Ercildoune, 57-59 Burlington Road Homebush</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/80th-Anniversary-of-Victory-in-the-Pacific"  target="">80th Anniversary of Victory in the Pacific</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Alderman-William-Herrick"  target="">Alderman William Herrick</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Villers-Brett-33-High-Street-Strathfield"  target="">Villers Brett, 33 High Street, Strathfield</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Thumper-of-Ravenna-Street"  target="">Thumper of Ravenna Street</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Mandemar-Estate-Homebush-West"  target="">The Mandemar Estate, Homebush West</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Celebrating-Strathfield-140-Years"  target="">Celebrating Strathfield: 140 Years</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Sherleigh-13-formerly-7-Abbotsford-Road-Homebush"  target="">Sherleigh 13 (formerly 7) Abbotsford Road, Homebush</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Scout-Camp-Birnam-Wood-1912"  target="">Scout Camp, Birnam Wood, 1912</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Henry-Talbot-Bunny-Hammond-1895-1982"  target="">Henry Talbot (Bunny) Hammond (1895-1982)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Warden-Selby-Prentice-1886-1969"  target="">Warden Selby Prentice (1886-1969)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Margaret-Peggy-Dircks-1917-1992"  target="">Margaret (Peggy) Dircks (1917-1992)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Major-Clara-Jane-Shumack-1899-1974"  target="">Major Clara Jane Shumack (1899-1974)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Isador-Moses-Isidore-Goodman-1909-1982"  target="">Isador (Moses Isidore) Goodman (1909-1982)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Mountain-View-Estate"  target="">Mountain View Estate</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Daphne-Akhurst-and-the-Australian-Open"  target="">Daphne Akhurst and the Australian Open</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Greysteins-and-Edgecumbe-Churchill-Avenue"  target="">Greysteins and Edgecumbe, Churchill Avenue</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Arnotts-Christmas-Cakes-and-Puddings"  target="">Arnott's Christmas Cakes and Puddings</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Centenary-of-St-Marthas-Church-and-School"  target="">Centenary of St Martha's Church and School</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Jacaranda-Time"  target="">Jacaranda Time</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Battles-of-Leyte-Gulf-1944-and-Lingayen-Gulf-1945"  target="">The Battles of Leyte Gulf (1944) and Lingayen Gulf (1945)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Briars-and-Meriden-School"  target="">The Briars and Meriden School</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Premier-George-Reids-Kangaroo"  target="">Premier George Reid's Kangaroo</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Enfield-Council-Staff-1937"  target="">Enfield Council Staff, 1937</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Marking-Time"  target="">Marking Time</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/81-Water-Street-Strathfield-South"  target="">81 Water Street, Strathfield South</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/First-Mayor-of-Homebush-Harry-Neville-Kite"  target="">First Mayor of Homebush, Harry Neville Kite</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/A-Silver-Trowel"  target="">A Silver Trowel</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Lion-Tile-Co.-Subdivision-1990"  target="">Lion Tile Co. Subdivision, 1990</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Strathfield-First-Day-Cover-1984"  target="">Strathfield First Day Cover 1984</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/William-Beard-Hardware-Merchant-and-Author"  target="">William Beard, Hardware Merchant and Author</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Harmsworth-86-Homebush-Road-Strathfield"  target="">Harmsworth 86 Homebush Road, Strathfield</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Message-in-a-Bottle"  target="">Message in a Bottle</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Smallpox-in-Druitt-Town-1881"  target="">Smallpox in Druitt Town, 1881</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Connect-with-our-Oral-Histories"  target="">Connect with our Oral Histories</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Happy-20th-Birthday-Strathfield-Library"  target="">Happy 20th Birthday, Strathfield Library!</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Composer-and-Lyricist-Dorothy-Dodd-1921-2006"  target="">Composer and Lyricist, Dorothy Dodd (1921-2006)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Avon-145-Coronation-Parade-Strathfield-South"  target="">Avon 145 Coronation Parade, Strathfield South</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Flemington-Homebush-West-Public-School-1942"  target="">Flemington (Homebush West) Public School, 1942</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Moore’s-Bridge"  target="">Moore’s Bridge</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Train-and-Cart-Collision-Homebush-Station-1883"  target="">Train and Cart Collision, Homebush Station 1883</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Christmas-in-Strathfield-Square-1959"  target="">Christmas in Strathfield Square, 1959</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Flooding-in-Pemberton-Street-1959"  target="">Flooding in Pemberton Street, 1959</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Returned-Services-Balls-in-Strathfield-Town-Hall"  target="">Returned Services Balls in Strathfield Town Hall</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Wartime-Blackout-1941"  target="">Wartime Blackout, 1941</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Strathfield-Town-Hall’s-Early-Charity-Balls"  target="">Strathfield Town Hall’s Early Charity Balls</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Musician-Marcus-Burkitt-1903-1974"  target="">Musician, Marcus Burkitt (1903-1974)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Ten-Mile-Hill"  target="">Ten Mile Hill</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/House-Stuck-on-Bridge"  target="">House Stuck on Bridge!</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/CorrardHaeremai-78-80-Broughton-Road-Homebush"  target="">Corrard/Haeremai, 78-80 Broughton Road, Homebush</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Roadworks-on-Redmyre-and-Homebush-Roads-1959"  target="">Roadworks on Redmyre and Homebush Roads, 1959</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Parramatta-Road-Car-Yard-1964"  target="">Parramatta Road Car Yard, 1964</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Oldsmobile-v-Roller"  target="">Oldsmobile v Roller</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Hector-of-Homebush"  target="">Hector of Homebush</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Cricketer-Bill-O’Reilly-and-the-Lion-Tile-Co"  target="">Cricketer, Bill O’Reilly and the Lion Tile Co.</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Strathfield’s-Model-Railway"  target="">Strathfield’s Model Railway</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Homebush-Galop"  target="">The Homebush Galop</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Coronation-Arch-Unveiling-5-June-1937"  target="">Coronation Arch Unveiling, 5 June 1937</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Enfield-Council-Chambers-and-War-Memorial-1934"  target="">Enfield Council Chambers and War Memorial, 1934</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Strathfield-and-Burwood-Spitfire-Fund"  target="">The Strathfield and Burwood Spitfire Fund</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Aileen-Alpen-Foreign-Correspondent"  target="">Aileen Alpen, Foreign Correspondent</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Matron-Lucy-Applewhaite-Hicks"  target="">Matron Lucy Applewhaite Hicks</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Up-Up-and-Away"  target="">Up, Up and Away!</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/War-Service-Homes"  target="">War Service Homes</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/A-Tennis-Party-Poisoning"  target="">A Tennis Party Poisoning</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/A-Homebush-Plane-Crash-1949"  target="">A Homebush Plane Crash, 1949</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Christmas-Cheer-1932"  target="">Christmas Cheer, 1932</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Artist-Edward-Bevan"  target="">Artist, Edward Bevan</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Homebush-Council-Chambers"  target="">Homebush Council Chambers</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Canberra-Air-Disaster-1940"  target="">The Canberra Air Disaster, 1940</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Ancestry-Library-Edition-Workshop"  target="">Ancestry Library Edition Workshop</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/A-Bee-in-the-Bonnet"  target="">A Bee in the Bonnet</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/George-Kerslake’s-Gardens"  target="">George Kerslake’s Gardens</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Queen’s-Cup"  target="">The Queen’s Cup</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Parramatta-Road-Concord-1940"  target="">Parramatta Road, Concord, 1940</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/LanghamSt-Neot"  target="">Langham/St Neot</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Homebush-Postman-Mordey-Banjo-Pattinson"  target="">Homebush Postman, Mordey (Banjo) Pattinson</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Homebush-Saleyards"  target="">The Homebush Saleyards</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Arnott’s-Biscuits-and-Columbia-Gramophone-Factory"  target="">Arnott’s Biscuits and Columbia Gramophone Factory</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/W.-Hermon-SladePolymer-–-Industrial-Chemists"  target="">W. Hermon Slade/Polymer – Industrial Chemists</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Stirling-Henry-Ltd.-–-Textile-Manufacturers"  target="">Stirling Henry Ltd. – Textile Manufacturers</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Minding-Our-Business-in-Homebush-West"  target="">Minding Our Business in Homebush West</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/A-Home-of-Their-Own-in-Homebush-West-1950"  target="">A Home of Their Own in Homebush West, 1950</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Maudholme-Estate"  target="">The Maudholme Estate</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Pemberton-Street-Strathfield-1947"  target="">Pemberton Street, Strathfield, 1947</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/WWII-War-Correspondent-Alan-Hulls"  target="">WWII War Correspondent, Alan Hulls</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Strathfield-South-c.1940"  target="">Strathfield South c.1940</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Soprano-Rosina-Pinhey"  target="">Soprano, Rosina Pinhey</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Rachel-Prentice"  target="">Rachel Prentice</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Weatherly-Sisters"  target="">The Weatherly Sisters</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Curious-Case-of-Constance-Kent"  target="">The Curious Case of Constance Kent</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Aerodome"  target="">Aerodome</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Parramatta-Road-Homebush-1929"  target="">Parramatta Road, Homebush, 1929</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Ashby-Z and-the-Reverend-Soo-Hoo-Ten"  target="">Ashby-Z and the Reverend Soo Hoo Ten</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Santa-and-the-Drover"  target="">Santa and the Drover</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Strathfield-South-Shops-1937"  target="">Strathfield South Shops, 1937</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Parramatta-Road-Homebush-1928"  target="">Parramatta Road, Homebush, 1928</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Major-Marr-and-the-1st-Anzac-Wireless-Signal-Squadron"  target="">Major Marr and the 1st Anzac Wireless Signal Squadron</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Hotel-Homebush"  target="">The Hotel Homebush</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Strathfield-Station-c.1915"  target="">Strathfield Station c.1915</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Thomas-Henry-Roberts"  target="">Thomas Henry Roberts</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Who-Do-You-Think-You-Are -Jeff-Fatt-the-Purple-Wiggle"  target="">Who Do You Think You Are?  Jeff Fatt, the Purple Wiggle</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Popular-Dancers’-Competition-of-1928"  target="">The Popular Dancers’ Competition of 1928</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Enfield-Tarpaulin-Factory"  target="">The Enfield Tarpaulin Factory</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Colonel-the-Poet-and-the-Motor-Car"  target="">The Colonel, the Poet and the Motor Car</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/The-Barefoot-Bushwalker-Dorothy-Butler"  target="">The Barefoot Bushwalker: Dorothy Butler</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Suffragette-Katharine-Gatty"  target="">Suffragette, Katharine Gatty</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Lieutenant-Colonel-Alexander-Windeyer-Ralston"  target="">Lieutenant Colonel Alexander Windeyer Ralston</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/His-Father’s-Honour"  target="">His Father’s Honour</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Halloween-Children’s-Home"  target="">Halloween Children’s Home</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/Aviator-Nigel-Love"  target="">Aviator, Nigel Love</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/A-New-Life-in-Strathfield"  target="">A New Life in Strathfield</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Local-Studies-Blog/A-Christmas-Shark-Encounter"  target="">A Christmas Shark Encounter</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/StrathfieldHub-App" class=""  target="">StrathfieldHub App</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Council/Fees-and-Charges" class=""  target="">Fees and Charges</a></li></ul></li>
+          
+            <li class="nav-section-quarters-1   nav-item-seq-2">
+<a href="https://www.strathfield.nsw.gov.au/Participate" class="nav-level-1 nav-has-children"  target="">Participate</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-2" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-2" class="second-level-container ch-14">
+
+          
+            <li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Bushcare" class=""  target="">Bushcare</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Community-Garden" class=""  target="">Strathfield Community Garden</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Grants" class=""  target="">Grants Programs</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Have-Your-Say" class=""  target="">Have Your Say</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Local-Citizen-of-the-Year" class=""  target="">Local Citizen of the Year</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Volunteering-With-Us" class=""  target="">Volunteering With Us</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Discover-Your-Council" class=""  target="">Discover Your Council</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Sponsoring-a-Strathfield-Event" class=""  target="">Sponsoring a Strathfield Event</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Strathfield-Community-Choir" class=""  target="">Strathfield Community Choir</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Community-and-Business-Awards" class=""  target="">Community and Business Awards</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Sister-City" class=""  target="">Sister City</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Classroom-to-Canopy" class=""  target="">Classroom to Canopy</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Battle-of-Kapyong" class=""  target="">Battle of Kapyong</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Participate/Friendship-City" class=""  target="">Friendship City</a></li></ul></li>
+          
+            <li class="nav-section-quarters-2   nav-item-seq-3">
+<a href="https://www.strathfield.nsw.gov.au/Work" class="nav-level-1 nav-has-children"  target="">Work</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-3" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-3" class="second-level-container ch-9">
+
+          
+            <li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/ACU-Co-Lab" class=""  target="">ACU Co-Lab</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Awnings" class=""  target="">Awnings</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Coaching-Permits-at-Hudson-Park-Driving-Range" class=""  target="">Coaching Permits</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Cooling-Towers-Legionella-Control" class=""  target="">Cooling Towers & Legionella Control</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Food-Safety" class="nav-has-children"  target="">Food Safety</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-3-nav-item-seq-5" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-3-nav-item-seq-5" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Food-Safety/Food-Safety-Education"  target="">Food Safety Education</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Food-Safety/Food-Safety-Complaints"  target="">Food Safety Complaints</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Food-Safety/Mobile-Food-Vending-Vehicles"  target="">Mobile Food Vending Vehicles</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Food-Safety/Temporary-Food-Stalls"  target="">Temporary Food Stalls</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Food-Safety/Food-Regulation-Partnerships"  target="">Food Regulation Partnerships</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Food-Safety/Food-Businesses"  target="">Food Businesses</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Food-Safety/Home-Based-Food-Businesses"  target="">Home Based Food Businesses</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Help-for-Small-Business" class=""  target="">Help for Small Business</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Permits" class=""  target="">Permits</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Skin-Penetration-Premises" class=""  target="">Skin Penetration Premises</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Work/Local-Impact-Assessment-–-Liquor-and-Gaming" class=""  target="">Local Impact Assessment – Liquor and Gaming</a></li></ul></li>
+          
+            <li class="nav-section-quarters-2   nav-item-seq-4">
+<a href="https://www.strathfield.nsw.gov.au/Develop" class="nav-level-1 nav-has-children"  target="">Develop</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-4" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-4" class="second-level-container ch-14">
+
+          
+            <li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Understanding-Planning-in-Strathfield" class=""  target="">Understanding Planning in Strathfield</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Determination-List" class=""  target="">Determination List</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Developer-Contributions-and-Voluntary-Planning-Agreement-Register" class=""  target="">Developer Contributions and Voluntary Planning Agreement Register</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Development-Applications" class=""  target="">Development Applications</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Heritage" class=""  target="">Heritage</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Parramatta-Road-Urban-Amenity-Improvement-Plan" class=""  target="">Parramatta Road Urban Amenity Improvement Plan</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Compliance" class="nav-has-children"  target="">Planning Compliance</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-4-nav-item-seq-7" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-4-nav-item-seq-7" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Compliance/Asbestos-and-Development"  target="">Asbestos and Development</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Compliance/Building-and-Compliance-Forms"  target="">Building and Compliance Forms</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Compliance/Dividing-Fences"  target="">Dividing Fences</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Compliance/Erosion-and-Sedimentation-Control"  target="">Erosion and Sedimentation Control</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Compliance/Fire-Safety"  target="">Fire Safety</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Compliance/House-Numbering"  target="">House Numbering</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Compliance/Unauthorised-Building-Works"  target="">Unauthorised Building Works</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Forms" class=""  target="">Planning Forms</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Policies" class=""  target="">Planning Policies</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Planning-Proposals" class=""  target="">Planning Proposals</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Section-10.7-Certificates" class=""  target="">Section 10.7 Certificates</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Strathfield-Local-Planning-Panel-SLPP" class=""  target="">Strathfield Local Planning Panel (SLPP)</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Homebush-Transport-Orientated-Development-TOD-Precinct" class=""  target="">Homebush Transport Orientated Development (TOD) Precinct</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Develop/Low-and-Mid-Rise-Housing-Policy" class=""  target="">Low and Mid Rise Housing Policy</a></li></ul></li>
+          
+            <li class="nav-section-quarters-3   nav-item-seq-5">
+<a href="https://www.strathfield.nsw.gov.au/Environmental" class="nav-level-1 nav-has-children"  target="">Environmental</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-5" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-5" class="second-level-container ch-9">
+
+          
+            <li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Biodiversity" class=""  target="">Biodiversity</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Climate-Change" class=""  target="">Climate Change</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Cooks-River" class=""  target="">Cooks River</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Parramatta-River" class=""  target="">Parramatta River</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution" class="nav-has-children"  target="">Pollution</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-5" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-5" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Abandoned-Shopping-Trolleys"  target="">Abandoned Shopping Trolleys</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Abandoned-Vehicles"  target="">Abandoned Vehicles</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Air-Pollution"  target="">Air Pollution</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Dumped-Rubbish"  target="">Dumped Rubbish</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Noise-Pollution"  target="">Noise Pollution</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Stormwater"  target="">Stormwater</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Water-Pollution"  target="">Water Pollution</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Littering"  target="">Littering</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Junk-Mail"  target="">Junk Mail</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Lead"  target="">Lead</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Pollution/Contaminated-Land"  target="">Contaminated Land</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees" class="nav-has-children"  target="">Trees</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-6" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-6" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees/Tree-Pruning-and-Removal"  target="">Tree Pruning and Removal</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees/Significant-Tree-Register"  target="">Significant Tree Register</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees/Trees-and-Powerlines"  target="">Trees and Powerlines</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees/Trees-Obstructing-Public-Footpaths"  target="">Trees Obstructing Public Footpaths</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees/Trees-on-Neighbouring-Property"  target="">Trees on Neighbouring Property</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees/Street-Trees"  target="">Street Trees</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees/Selecting-and-Planting-Trees"  target="">Selecting and Planting Trees</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees/Tree-Vandalism"  target="">Tree Vandalism</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Trees/Trees-FAQs"  target="">Trees FAQs</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Weeds" class=""  target="">Weeds</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Sustainable-Strathfield" class=""  target="">Sustainable Strathfield</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Environmental/Resilient-Strathfield" class=""  target="">Resilient Strathfield</a></li></ul></li>
+          
+            <li class="nav-section-quarters-3   nav-item-seq-6">
+<a href="https://www.strathfield.nsw.gov.au/Live" class="nav-level-1 nav-has-children"  target="">Live</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-6" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-6" class="second-level-container ch-14">
+
+          
+            <li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Animals-and-Pets" class=""  target="">Animals and Pets</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Children-and-Youth-Services" class=""  target="">Children and Youth Services</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Citizenship" class=""  target="">Citizenship</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Community-Safety" class=""  target="">Community Safety</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Domestic-and-Family-Violence" class=""  target="">Domestic and Family Violence</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Diversity-in-Strathfield" class=""  target="">Diversity in Strathfield</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Local-Health-Services" class=""  target="">Local Health Services</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Pay-Rates" class=""  target="">Pay Rates</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/School-Safety-Program" class=""  target="">School Safety Program</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Seniors-and-Disability-Services" class=""  target="">Seniors and Disability Services</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Swimming-Pools" class="nav-has-children"  target="">Swimming Pools</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-11" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-11" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Swimming-Pools/Pool-and-Fencing-Requirements"  target="">Pool and Fencing Requirements</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Swimming-Pools/Spas"  target="">Spas</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Swimming-Pools/Exemptions-Swimming-Pools"  target="">Exemptions - Swimming Pools</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Swimming-Pools/Purchasing-or-Selling-a-Property-with-a-Pool"  target="">Purchasing or Selling a Property with a Pool</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Waste" class="nav-has-children"  target="">Waste</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-12" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-12" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Waste/Clean-up-Collection"  target="">Clean-up Collection</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Waste/Litter-and-Illegal-Dumping"  target="">Litter and Illegal Dumping</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Waste/New-Residential-Development"  target="">New Residential Development</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Waste/Street-Sweeping"  target="">Street Sweeping</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Waste/Residential-Bin-Collection"  target="">Residential Bin Collection</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Waste/Waste-Matters"  target="">Waste Matters</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Waste/Recycle-Mate"  target="">Recycle Mate</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Waste/Information-for-Apartments"  target="">Information for Apartments</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic" class="nav-has-children"  target="">Roads, Footpaths and Traffic</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-13" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-13" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic/Street-Sweeping"  target="">Street Sweeping</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic/Parking"  target="">Parking</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic/Road-Safety"  target="">Road Safety</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic/Resident-Parking-Scheme"  target="">Resident Parking Scheme</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic/Strathfield-Select-Parking-Permits"  target="">Strathfield Select Parking Permits</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic/National-Road-Safety-Week"  target="">National Road Safety Week</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic/Mobile-Licence-Plate-Recognition-Technology"  target="">Mobile Licence Plate Recognition Technology</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Roads-Footpaths-and-Traffic/parking-permit-renewal"  target="">How do I renew my parking permit</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Community-and-Business-Directory" class="nav-has-children"  target="">Community and Business Directory</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-14" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-14" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Community-and-Business-Directory/Business-Directory"  target="">Business Directory</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Live/Community-and-Business-Directory/Community-Directory"  target="">Community Directory</a></li></ul></li></ul></li>
+          
+            <li class="nav-section-quarters-4   nav-item-seq-7">
+<a href="https://www.strathfield.nsw.gov.au/Play" class="nav-level-1 nav-has-children"  target="">Play</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-7" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-7" class="second-level-container ch-15">
+
+          
+            <li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Cycling-and-Walking" class=""  target="">Cycling and Walking</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Hudson-Park-Driving-Range" class=""  target="">Hudson Park Driving Range</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Leash-Free-Areas" class=""  target="">Leash Free Park Locations</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Parks-and-Natural-Areas" class=""  target="">Parks and Natural Areas</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Strathfield-Connector" class=""  target="">Strathfield Connector Bus Service to Cease Operations</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Venues-for-Hire" class=""  target="">Venues for Hire</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Playgrounds" class=""  target="">Playgrounds</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Strathfield-Council-Library" class=""  target="">Strathfield Council Library & Innovation Hub</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Strathfield-Eats" class=""  target="">Strathfield Eats</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar" class="nav-has-children"  target="">Events Calendar</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-7-nav-item-seq-10" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-7-nav-item-seq-10" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Cuppas-Craft-at-the-Library"  target="">Cuppas & Craft at the Library</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Strathfield-Community-Choir"  target="">Strathfield Community Choir</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Strathfield-Community-Garden"  target="">Strathfield Community Garden</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Sunday-Yoga-for-Adults"  target="">Sunday Yoga for Adults</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Toddler-Time"  target="">Toddler Time</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Baby-Bounce"  target="">Baby Bounce</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Pre-school-Storytime"  target="">Pre-school Storytime</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Pico-Coding-Club"  target="">Pico Coding Club</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Scenes-from-Gadigal-and-surrounds-Tahlia-Henderson"  target="">Scenes from Gadigal and surrounds: Tahlia Henderson</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Strathfield-Spring-Festival-2024"  target="">Strathfield Spring Festival 2024</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Embrace-Kids-Live"  target="">Embrace Kids Live</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Friends-of-the-Mason-Park-Wetlands-Photography-Competition"  target="">Friends of the Mason Park Wetlands Photography Competition</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Back-to-Black-The-David-Jones-Family-in-Strathfield"  target="">Back to Black: The David Jones Family in Strathfield</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/FREE-Drama-Workshops"  target="">FREE Drama Workshops</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Parents-Connect-with-CABL"  target="">Parents Connect with CABL</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Share-the-Dignity-Its-in-the-bag"  target="">Share the Dignity - "It's in the bag"</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/FREE-Recirculate-Exhibition-Sustainable-Art-Classes-for-Seniors-Kids"  target="">FREE Recirculate Exhibition & Art Classes for Seniors & Kids</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Lunar-New-Year-Celebration-Calligraphy-Drop-in"  target="">Lunar New Year Celebration Calligraphy Drop-in</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Free-Online-Teaching-Learner-Drivers-Workshop"  target="">Free Online Teaching Learner Drivers Workshop</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/World-Wetlands-Day-Guided-Walk"  target="">World Wetlands Day Guided Walk</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Line-Dancing-Classes-for-Seniors"  target="">Line Dancing Classes for Seniors</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/SAISH-Pongol-Makar-Sankranti-and-LOHRI"  target="">SAISH Pongol, Makar Sankranti and LOHRI</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/한인-어르신-컴퓨터스마트폰-교실-Tech-Savvy-Seniors-Korean"  target="">한인 어르신 컴퓨터/스마트폰 교실 Tech Savvy Seniors - Korean</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/VHP-Sanskrit-School"  target="">VHP Sanskrit School</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Art-Therapy-Program-for-Boys-12-15yrs"  target="">Art Therapy Program for Boys (12-15yrs)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Conversation-Club-English-Conversation-Group"  target="">Conversation Club (English Conversation Group)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Bilingual-Storytime-Korean-and-English"  target="">Bilingual Storytime - Korean and English</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Hudson-Park-Dog-Park-Opening"  target="">Hudson Park Dog Park Opening</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Easter-Craft"  target="">Children's Easter Craft</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Jane’s-Walk-of-Homebush"  target="">Jane’s Walk of Homebush</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Tech-Savvy-Seniors-English"  target="">Tech Savvy Seniors - English</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Reading-Buddies"  target="">Reading Buddies</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Strathfield-Seniors-Sessions-Lets-Play-Golf"  target="">Strathfield Seniors Sessions - Let's Play Golf!</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Planning-Information-Session"  target="">Planning Information Session</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/National-Tree-Day-at-Bressington-Park"  target="">National Tree Day at Bressington Park - SOLD OUT</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Celebrate-NAIDOC-Week-at-Strathfield-Library"  target="">Celebrate NAIDOC Week at Strathfield Library</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Friends-of-the-Mason-Park-Wetlands-Photography-Competition-2025"  target="">Friends of the Mason Park Wetlands Photography Competition 2025</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Supervising-a-Learner-Driver"  target="">Free Online Workshop: Supervising a Learner Driver</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Workforce-Preparation-Workshop-2026"  target="">Workforce Preparation Workshop 2026</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Lunar-New-Year-Celebration"  target="">Lunar New Year Celebration</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Reading-Rangers"  target="">Reading Rangers</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Art-Exhibition-Where-Song-Began"  target="">Art Exhibition - Where Song Began</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/2026-International-Women’s-Day"  target="">2026 International Women’s Day Afternoon Event At Strathfield Council</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Homebush-Boys-High-School-Open-Night"  target="">Homebush Boys High School Open Night</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Jongbopsa-Korean-Lunar-New-Year-Celebrations"  target="">Jongbopsa Korean Lunar New Year Celebrations</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Baby-Massage-Workshop"  target="">Baby Massage Workshop</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Tech-Diet-Workshop-by-CABL"  target="">Tech Diet Workshop</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Harmony-Day"  target="">Harmony Day</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Easter-Craft-Morning-Tea"  target="">Easter Craft & Morning Tea for Adults</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Youth-Easter-Craft"  target="">Youth Easter Craft</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/2026-Youth-Week-Pizza-and-Ping-Pong"  target="">2026 Youth Week - Pizza and Ping Pong</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Copy-of-Tech-Savvy-Seniors-Mandarin"  target="">Tech Savvy Seniors - Mandarin | 新州长者科技通课程 - 国语</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Homebush-Village-Markets"  target="">Homebush Village Markets</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Strathfield-History-talk"  target="">Strathfield History talk - History of Cinemas</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/National-Simultaneous-Storytime-2026"  target="">National Simultaneous Storytime 2026</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Table-Tennis-Open-Day"  target="">Table Tennis Open Day</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Reconciliation-Week-2026"  target="">Reconciliation Week 2026 at the Library</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Strathfield-Spring-Festival-2026"  target="">Strathfield Spring Festival 2026</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/National-Tree-Day-2026"  target="">National Tree Day at Hudson Park - EVENT SOLD OUT!</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/SAISH-Excellence-Awards"  target="">SAISH Excellence Awards</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/SEE-Program-2026"  target="">FREE SEE (Skills for Education & Employment) Program</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Science-Week-2026"  target="">STEM Workshops for Children at the Library</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Sep-oct-2026-School-Holidays"  target="">Sep-Oct 2026 School Holidays Program at the Library!</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Sep-Oct-2026-School-Holiday-Cricket-Program"  target="">Sep-Oct 2026 School Holidays Cricket Program at the Library (Ages 5-8)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Exhibition-and-History-Talk-Next-Stop-Strathfield"  target="">Next Stop, Strathfield: Travel Through History</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Next-Stop-Strathfield-Travel-Through-History-Talk"  target="">Next Stop, Strathfield: Travel Through History Talk</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Textile-Repair-Workshop-with-Reverse-Garbage"  target="">Textile Repair Workshop with Reverse Garbage (Ages 12 plus)</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar/Slogue-Yo-Tee"  target="">Refresh & Recycle Weekend 2026 with Slogue Yo-Tee</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery" class="nav-has-children"  target="">Ironbark Gallery</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-7-nav-item-seq-11" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-7-nav-item-seq-11" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/The-Tractor-Chapters"  target="">The Tractor Chapters: Annabel Butler</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Echoes-of-Silence"  target="">Echoes of Silence: Amanda Hitchens & Clair Reynolds</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Awareness-of-Between-ness-Memory-Time-Miho-Watanabe"  target="">Awareness of Between-ness: Memory & Time: Miho Watanabe</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Spinning-the-spirits-Wai-Han-Lee"  target="">Spinning the spirits: Wai Han Lee</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Thinking-in-Pictures-Chalmers-Road-School"  target="">Thinking in Pictures: Chalmers Road School</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/AI-–-Artist’s-Impressions-Oscar-Garcia"  target="">AI – Artist’s Impressions: Oscar Garcia</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Verdure-luminous-beings-Liam-Benson"  target="">Verdure - luminous beings: Liam Benson</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Celebrating-Strathfield-140-years"  target="">Celebrating Strathfield: 140 years</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Symphonic-Trees-Fan-Dongwang"  target="">Symphonic Trees: Fan Dongwang</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Time-to-shine-celebrating-Seniors"  target="">Time to shine: celebrating Seniors</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Chasing-Light-a-photographic-journey"  target="">Chasing Light: a photographic journey</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Back-to-Black-The-David-Jones-family-in-Strathfield"  target="">Back to Black: The David Jones family in Strathfield</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Scenes-from-Gadigal-and-surrounds-Tahlia-Henderson"  target="">Scenes from Gadigal and surrounds: Tahlia Henderson</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Safe-from-the-rising-tide-Andrew-Tomkins"  target="">Safe from the rising tide?: Andrew Tomkins</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Beaches-Boats-Bays-Jillian-Corcoran"  target="">Beaches, Boats & Bays: Jillian Corcoran</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Cooks-River-Yesterday-Today-and-Tomorrow"  target="">Cooks River: Yesterday, Today and Tomorrow</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/History-of-Strathfield-Town-Hall"  target="">History of Strathfield Town Hall</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Somewhere-in-Between-Marina-Mavritsky"  target="">Somewhere in Between: Marina Mavritsky</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/NAIDOC-Week-with-Walangari-Karntawarra"  target="">NAIDOC Week with Walangari Karntawarra</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Net-calls-Net-Weave-calls-Wave-Marta-Romani-and-Karl-Logge"  target="">Net calls Net, Weave calls Wave: Marta Romani and Karl Logge</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Painting-on-Mondays-Catriona-Grant-Megan-Winch"  target="">Painting on Mondays: Catriona Grant & Megan Winch</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Light-Interactions-Bernadette-Smith"  target="">Light Interactions: Bernadette Smith</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Visions-with-Variety-Celebrating-Seniors"  target="">Visions with Variety: Celebrating Seniors</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/ROAR-revisited"  target="">ROAR revisited</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Minding-Our-Business-Strathfield’s-Industrial-Heritage"  target="">Minding Our Business: Strathfield’s Industrial Heritage</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/NAIDOC-Week-with-Boomalli"  target="">NAIDOC Week with Boomalli</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Making-Memories-Shine-Art-Academy"  target="">Making Memories: Shine Art Academy</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Elementals-Stefanie-Ferguson"  target="">Elementals: Stefanie Ferguson</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Historic-Houses-of-Strathfield"  target="">Historic Houses of Strathfield</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/ROAR"  target="">ROAR</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Strathfield-Answers-the-Call-1914-1918"  target="">Strathfield Answers the Call 1914-1918</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Beyond-Sight-Lea-Kannar-Lichtenberger"  target="">Beyond Sight: Lea Kannar-Lichtenberger</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Ironbark-Gallery/Gilded-Perceptions-Erika-Cholich"  target="">Gilded Perceptions: Erika Cholich</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Park-and-Sportsground-Hire" class=""  target="">Park and Sportsground Hire</a></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Annual-Strathfield-Events" class="nav-has-children"  target="">Annual Strathfield Events</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-7-nav-item-seq-13" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-7-nav-item-seq-13" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Annual-Strathfield-Events/Anzac-Day-2025"  target="">Anzac Day 2025</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Public-Art" class="nav-has-children"  target="">Public Art</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-7-nav-item-seq-14" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-7-nav-item-seq-14" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Public-Art/3-Bridges-Studio-Chris-Fox-Studio-Mike-Daly"  target="">3 Bridges - Studio Chris Fox + Studio Mike Daly</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Public-Art/Christina-Huynh"  target="">Christina Huynh – grafitti grant funded murals</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Public-Art/Traditional-Aboriginal-Stone-Tools-of-the-Wangal-People"  target="">Traditional Aboriginal Stone Tools of the Wangal People - Edwards & Co</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Public-Art/N-S-E-W-North-South-East-West"  target="">N-S-E-W (North, South, East, West) Warren Langley & Dennis Golding</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Public-Art/Hudson-Park-tunnel-mural-Daniel-Walton-Mountain-Ash-Creative"  target="">Hudson Park tunnel mural, Danial Walton, Mountain Ash Creative</a></li><li  class="third-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Public-Art/In-progress-Nuha-Saad-Where-Song-Began"  target="">In progress: Nuha Saad - Where Song Began</a></li></ul></li><li class="second-level-item  "><a href="https://www.strathfield.nsw.gov.au/Play/Table-Tennis-Hire" class=""  target="">Table Tennis Hire</a></li></ul></li>
+          
+            </ul>
+            </div>
+        </div>
+    </div>
+</div>
+            </header>
+            <div class="content-outer-container">
+                <div id="main" role="main" class="main-outer-container clearfix">
+                        
+                        <div class="content-main-container">
+                            <div class="grid">
+					            <div class="col-xs-12">
+						            <nav id="breadcrumbs-container" aria-label="You Are Here :">
+							            <span role="list">
+<span role="listitem">
+	<a href="https://www.strathfield.nsw.gov.au/Home"  lang="en-AU">Home</a>
+	<span class="nav-separator" aria-hidden="true" role="presentation">/</span>
+</span>
+          <span role="listitem"><a href="https://www.strathfield.nsw.gov.au/Council" >Council</a><span class='nav-separator' aria-hidden="true" role="presentation">/</span></span><span class="current-page" role="listitem" aria-current="page" >Council Meetings</span></span>
+						            </nav>
+					            </div>
+                      
+					            <div class="col-xs-12">
+						            <div class="main-inner-container">
+							            <div id="main-content" class="main-container clearfix">
+							              
+                            <!-- OC Layout Element Conent Template -->
+							              <!--normalTemplateStart--><h1 class='oc-page-title '>Council Meetings</h1>
+
+<p>Council and Committee Meetings are held on a regular basis at Strathfield Council.</p>
+<p>Ordinary Council Meetings are held on the fourth Tuesday of every month at 6:30pm.</p>
+<div data-type="0" data-title-level="2" class="oc-wysiwyg-container">
+<div class="oc-wysiwyg-container-panel">
+<h2>Watch the Council Meeting Live</h2>
+<div class="oc-wysiwyg-container-panel-content"><section wpb_row="" height_medium"="">
+<div via_flex="" valign_top="" type_default"="">
+<div wpb_column="" vc_column_container"="">
+<div>
+<div>
+<div>
+<div>
+<p>Strathfield Council offers live streaming of its Council meetings. This allows the community to follow Council debates and decisions without the need to attend meetings in person. Any part of a meeting that is held in closed session will not be streamed.</p>
+</div>
+</div>
+<br>
+<div data-layout="1" data-title-level="2" class="featured-links featured-links-option-1">
+<div class="featured-links-body clearfix">
+<ul class="clearfix">
+    <li><a class="featured-link" href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/Council-Meetings-Live" target="">Launch Live Council Meeting</a></li>
+</ul>
+</div>
+</div>
+&nbsp;</div>
+</div>
+</div>
+</div>
+</section><section wpb_row="" us_custom_604be26a="" height_medium"="">
+<div via_flex="" valign_top="" type_default"="">
+<div wpb_column="" vc_column_container"="">
+<div>
+<div>
+<div>
+<div>
+<p><strong><br>
+Notice of Copyright and Disclaimer</strong></p>
+<p>This electronic transmission is protected by copyright owned by Strathfield Council and no part thereof may be copied, reproduced, recorded or made available to others without the prior written consent of Strathfield Council.</p>
+<p>Opinions expressed or statements made by individual persons during the course of this transmission are the opinions or statements of those individual persons and are not opinions or statements of Strathfield Council. Strathfield Council does not accept liability for any defamatory remarks or inappropriate comments that are made during the course of a meeting.</p>
+<p>This transmission is not, and shall not, be taken to be an official record of Strathfield Council or of any meeting or discussion depicted therein.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section></div>
+</div>
+<div class="oc-wysiwyg-container-panel">
+<h2>Code of Meeting Practice</h2>
+<div class="oc-wysiwyg-container-panel-content">
+<p>The elected councillors meet at Council Meetings and Committee Meetings in accordance with&nbsp;Council&rsquo;s&nbsp;<a title="Code-of-Meeting-Practice-June-2026.pdf" href="/files/assets/public/v/2/council/council-meetings/code-of-meeting-practice-july-2026.pdf" target="_self" class="document ext-pdf"><i aria-hidden="true"></i>Code of Meeting Practice<span class="file-info">(PDF,&nbsp;397KB)</span></a>.</p>
+<p>Under section 360(2) of the Local Government Act Council may establish a Code of Meeting Practice.&nbsp;&nbsp;The Code must incorporate meeting procedures set out in the Local Government Act 1993 and Local Government (General) Regulation 2005 and can incorporate local provisions.&nbsp;&nbsp;However, in adopting local provisions, the Code must be consistent with the relevant legislative provisions.&nbsp;&nbsp;Council and Committee meetings must operate in accordance with the adopted Code of Meeting Practice.</p>
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="oc-wysiwyg-container-panel">
+<h2>Public Forum</h2>
+<div class="oc-wysiwyg-container-panel-content">
+<p>Council conducts an Public Forum session during Council Meetings which is limited to fifteen (15) minutes. A person or persons may address Council only on matters on the agenda of the meeting. Speakers can request to speak by completing the &lsquo;Request to Address Council or Committee Meetings&rsquo; form or make a request to speak during the Public Forum session.</p>
+<p>Speakers are limited to five minutes.&nbsp; Speakers can speak on matters other than those listed on the evening&rsquo;s business papers, those matters being actioned under Council&rsquo;s complaints handling mechanisms, in dispute or under investigation or a Code of Conduct complaint or investigation.</p>
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="oc-wysiwyg-container-panel">
+<h2>Who can speak at Council Meetings?</h2>
+<div class="oc-wysiwyg-container-panel-content">
+<p>Members of the public may attend&nbsp;Council and Committee Meetings&nbsp;and may speak on matters, such as those in general business on the&nbsp;agenda of the meeting.</p>
+<p>To speak at a meeting please complete the below Request to Address Council Meeting form. Requests to address a meeting must be submitted in writing by 12.00pm on the day of the meeting to the General Manager. Speakers are limited to five minutes and must provide their name and address to the meeting. Speakers are not permitted to ask questions of Councillors or staff.</p>
+<p><a title="Request-to-Address-Council-Committee-Meetings.pdf" href="/files/assets/public/v/1/council/council-meetings/request-to-address-council-committee-meetings_1.pdf" target="_self" class="document ext-pdf"><i aria-hidden="true"></i>Request to Address Council Committee Meetings.pdf<span class="file-info">(PDF,&nbsp;162KB)</span></a></p>
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="oc-wysiwyg-container-panel">
+<h2>Are there restrictions on what I can speak about?</h2>
+<div class="oc-wysiwyg-container-panel-content">
+<p>Speakers are limited to a maximum of four (4) on an item and speak on an alternative basis eg commencing with a speaker for, then a speaker against. Additional speakers may be permitted by decision of the Council meeting.</p>
+<p>Speakers have a time limit of 5 minutes each and can only speak once in the course of the meeting. Members of the public address Council prior to debate by Councillors.</p>
+<p>On occasion, a council or committee meeting may be closed to the public when matters listed in Section&nbsp;14.1 of the Code are discussed. This can include legal advices, matters relating to commercial information or trade secret, or personnel hardship of a resident. Section&nbsp;14.9 may allow representations by members of the public prior to the meeting closing to the public.</p>
+<p>Council webcasts and records proceedings at&nbsp;Council and Committee meetings, which includes speeches of members of the public. The purpose of recording the meeting is to assist in preparation of meetings minutes, which is the official record of Council and Committee Meetings.&nbsp; It is prohibited to privately record, by visual and audio recording devices, Council or Committee meetings without permission of the Council.</p>
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="oc-wysiwyg-container-panel">
+<h2>Conduct of the Meeting</h2>
+<div class="oc-wysiwyg-container-panel-content">
+<p>All participants at Council meetings including Councillors, Council staff and members of the public are expected not to make personal comments concerning Councillors, staff or other members of the public or engage in disorderly conduct at a meeting. Acts of disorder are outlined in Section&nbsp;15.12 of the Code. Penalties for disorder may include rescinding speaking rights or expulsion from the meeting.</p>
+<p>These guidelines relate to Council&rsquo;s Code of Meeting Practice. The Code is made under Local Government Act 1993 and Local Government Regulations. The Code is also available to view at Council&rsquo;s Customer Service Centre.</p>
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="oc-wysiwyg-container-panel">
+<h2>Business Papers</h2>
+<div class="oc-wysiwyg-container-panel-content">
+<p>Business papers, minutes and agendas are available below for 2020 meetings, with past meetings available at the bottom link.</p>
+<p>Council Meetings are open to the public, except for discussion of legal, staff or other confidential matters</p>
+<p>Before each Council&nbsp;or Committee meeting, a Business Paper is prepared detailing the items that are to be presented to the meeting.&nbsp; Business papers include an agenda (list of items to be considered at the meeting), reports (details of items to be considered by Council) and minutes (details of decisions made at previous Council and Committee meetings).</p>
+<p>Readers should be aware that the Recommendations as set out in the Business Papers are simply proposals to the Council for its consideration. The Council may adopt these proposals, amend the proposals, determine a completely different course of action, or it may decline to pursue any course of action. The decision of the Council becomes a resolution of the Council and is recorded in the Minutes.</p>
+<p>Ordinary meetings of Council are held on the first Tuesday of the month, except during January and July. Business papers for the Council meetings are published on the Council website on the Thursday prior to the Tuesday meeting. Copies may be viewed on a computer at Council&rsquo;s libraries and copies of the report will be printed upon request.</p>
+<p>Minutes of the Council Meetings are placed on Council&rsquo;s website within five working days of the meeting. For further information on Council and Committee meeting agendas, minutes or business papers please contact Council&rsquo;s Governance department on 9748 9999.</p>
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="oc-wysiwyg-container-panel">
+<h2>Congratulatory Letters</h2>
+<div class="oc-wysiwyg-container-panel-content">
+<p>Strathfield Council offers a range of congratulatory messages from Council to residents who are celebrating significant milestones in their lives.</p>
+<p>Some examples where residents may be eligible for a congratulatory message include:</p>
+<ul>
+    <li>90 or 100th birthdays or any birthday after turning 90</li>
+    <li>50 or 60th wedding anniversaries or any anniversary after 50</li>
+    <li>being nominated for a significant community award</li>
+    <li>winning a significant community award</li>
+</ul>
+<p>To nominate a community member for a congratulatory message from the Mayor please complete and send in the form below.</p>
+<p>Council also offers letters of condolence to those who have recently been diagnosed with a serious illness or have passed away. For more information contact Council on 9748 9999 email&nbsp;<a href="mailto:council@strathfield.nsw.gov.au">council@strathfield.nsw.gov.au</a></p>
+<p>Australians can also apply for messages from the Prime Minister, Governor General and the Queen. To do this, you must contact the local Federal Member or any office of any Senator. More information about this can be found&nbsp;<a href="https://www.pmc.gov.au/government/its-honour" target="_blank" rel="noopener noreferrer">here.</a></p>
+<p><a title="Congratulatory-Letter-Application.pdf" href="/files/assets/public/v/1/council/council-meetings/congratulatory-letter-application_1.pdf" target="_self" class="document ext-pdf"><i aria-hidden="true"></i>Congratulatory Letter Application.pdf<span class="file-info">(PDF,&nbsp;80KB)</span></a></p>
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+
+<h3>&nbsp;</h3>
+<h3>Council Meeting Agendas and Minutes</h3>
+
+<div class="grid">
+
+<div class="col-xs-12 col-lg-8">
+<div class="listing-results">
+138 Result(s) Found
+</div>
+<div class="accordion-list-container ajax-accordion minutes-list-container left" data-search-keywords="">
+<div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/27-October-2026-Ordinary-Council-Meeting" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="c655730c-c950-4fc4-87c8-f866e4dc6749" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody0" >
+				<h2 class="item-text"><span class="minutes-date">27 October 2026</span>
+				<span class="meeting-type">Ordinary Meeting</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody0" class="accordion-item-body"></div>
+	</article>
+</div><div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/29-September-2026-Ordinary-Council-Meeting" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="5a2a8c03-9e52-46a8-bf07-b9f358c0e065" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody1" >
+				<h2 class="item-text"><span class="minutes-date">29 September 2026</span>
+				<span class="meeting-type">Ordinary Meeting</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody1" class="accordion-item-body"></div>
+	</article>
+</div><div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/25-August-2026-Ordinary-Council-Meeting" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="a2e7b278-15a2-45a5-a6bb-a9b66662d21c" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody2" >
+				<h2 class="item-text"><span class="minutes-date">25 August 2026</span>
+				<span class="meeting-type">Ordinary Meeting</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody2" class="accordion-item-body"></div>
+	</article>
+</div><div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/11-August-2026-Strategy-and-Policy-Committee-Meeting" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="04a0fe21-9dcb-4c72-8d72-5092f4548b6f" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody3" >
+				<h2 class="item-text"><span class="minutes-date">11 August 2026</span>
+				<span class="meeting-type">Strategy and Policy Committee</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody3" class="accordion-item-body"></div>
+	</article>
+</div><div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/28-July-2026-Ordinary-Meeting" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="e5e9f68d-3be1-4c58-9af0-fef7cd456053" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody4" >
+				<h2 class="item-text"><span class="minutes-date">28 July 2026</span>
+				<span class="meeting-type">Ordinary Meeting</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody4" class="accordion-item-body"></div>
+	</article>
+</div><div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/14-July-2026-Strategy-and-Policy-Committee" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="c3597e87-4307-4efe-9b97-1ac4765f5f67" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody5" >
+				<h2 class="item-text"><span class="minutes-date">14 July 2026</span>
+				<span class="meeting-type">Strategy and Policy Committee</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody5" class="accordion-item-body"></div>
+	</article>
+</div><div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/7-July-2026-Extraordinary-Meeting" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="23433414-a0dc-464c-9a19-616c54078e15" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody6" >
+				<h2 class="item-text"><span class="minutes-date">07 July 2026</span>
+				<span class="meeting-type">Extraordinary Meeting</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody6" class="accordion-item-body"></div>
+	</article>
+</div><div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/30-June-2026-Ordinary-Meeting" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="3de558d2-5eff-4ed6-bf3b-e7d252d86688" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody7" >
+				<h2 class="item-text"><span class="minutes-date">30 June 2026</span>
+				<span class="meeting-type">Ordinary Meeting</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody7" class="accordion-item-body"></div>
+	</article>
+</div><div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/9-June-2026-Strategy-and-Policy-Committee" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="1cef1b64-2990-4054-b558-303c870e123b" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody8" >
+				<h2 class="item-text"><span class="minutes-date">09 June 2026</span>
+				<span class="meeting-type">Strategy and Policy Committee</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody8" class="accordion-item-body"></div>
+	</article>
+</div><div class="accordion-list-item-container">	
+	<article>	
+		<div class="accordion-item-header">
+			<a href="https://www.strathfield.nsw.gov.au/Council/Council-Meetings/2-June-2026-Extraordinary-Meeting" class="accordion-trigger minutes-trigger ajax-trigger" data-cvid="42efb273-ce7b-4904-a81a-492a5346af03" data-accordion-all-device="true" data-open="false" data-accordion-body="#minutesBody9" >
+				<h2 class="item-text"><span class="minutes-date">02 June 2026</span>
+				<span class="meeting-type">Extraordinary Meeting</span></h2>
+				<i aria-hidden="true"></i>
+			</a>
+		</div>
+		<div id="minutesBody9" class="accordion-item-body"></div>
+	</article>
+</div>
+</div>
+<div class="seamless-pagination left seamless-pagination-count-14">
+	<div class="seamless-pagination-controls">
+		<span class="button-previous"><input type="submit" name="ctl10$ctl00$ctl06" value="Previous" disabled="disabled" title="Previous page" class="btn_scPagingNonJS_disabled" /></span>
+	    <div class="seamless-pagination-data" aria-label='Pagination' role='navigation'>
+        Page <select name="ctl10$ctl00$ctl08" title="Please select the page here." class="scSearchInputBox">
+	<option selected="selected" value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5">5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	<option value="9">9</option>
+	<option value="10">10</option>
+	<option value="11">11</option>
+	<option value="12">12</option>
+	<option value="13">13</option>
+	<option value="14">14</option>
+
+</select><input type="submit" name="ctl10$ctl00$ctl09" value="Go" title="Change page" class="btn_scPagingNonJS_enabled" />
+	    </div>
+	    <span class="button-next"><input type="submit" name="ctl10$ctl00$ctl10" value="Next" title="Next page" class="btn_scPagingNonJS_enabled" /></span>
+    </div>
+    <div class="seamless-pagination-pages" aria-label="Pagination" role="navigation">
+    </div>
+</div>
+<div class="seamless-pagination-info right" role="status">
+  Page 1 of 14
+</div>
+
+</div>
+<div class="col-xs-12 col-lg-4">
+	<div class="search-filter">
+		<div class="search-filter-header">
+			<h2 class="filter-title">Search Minutes & Agendas</h2>
+				<span class="accordion-trigger search-filter-trigger" data-accordion-body="#minutesListBody" data-open="false" data-accordion-all-device="false">
+					<i aria-hidden="true"></i>
+				</span>
+		</div>
+		<div class="search-filter-body accordion-panel clearfix" id="minutesListBody">
+			<label for="ctl10_ctl00_ctl14">
+				By Phrase or Keyword
+			</label>
+			<span class='sc-search-box'><input name="ctl10$ctl00$ctl14" type="text" id="ctl10_ctl00_ctl14" class="inputBox" /></span>		
+			<label for="ctl10_ctl00_ctl16_ctl00_ctl00">
+				By Meeting Type
+			</label>
+			<select name="ctl10$ctl00$ctl16$ctl00$ctl00" id="ctl10_ctl00_ctl16_ctl00_ctl00" class="scSearchInputBox">
+	<option value="">Any Meeting Type</option>
+	<option value="Ordinary Meeting">Ordinary Meeting</option>
+	<option value="Extraordinary Meeting">Extraordinary Meeting</option>
+	<option value="Special Meeting">Special Meeting</option>
+	<option value="Strategy and Policy Committee">Strategy and Policy Committee</option>
+
+</select>      
+			<label for="ctl10_ctl00_ctl18_ctl00_ctl00">
+				  By Year
+			</label>	
+      <span class="clf-year">
+			  <select name="ctl10$ctl00$ctl18$ctl00$ctl00" id="ctl10_ctl00_ctl18_ctl00_ctl00" class="scSearchInputBox">
+	<option value="">Any Year</option>
+	<option value="2026">2026</option>
+	<option value="2025">2025</option>
+	<option value="2024">2024</option>
+	<option value="2023">2023</option>
+	<option value="2022">2022</option>
+	<option value="2021">2021</option>
+	<option value="2020">2020</option>
+	<option value="2019">2019</option>
+	<option value="2018">2018</option>
+	<option value="2017">2017</option>
+
+</select>
+      </span>
+			<input type="submit" name="ctl10$ctl00$ctl19" value="Search" />
+		</div>
+	</div>
+</div>
+</div>
+
+
+
+
+
+<section wpb_row="" us_custom_19737bc8="" height_medium"="">
+<div via_flex="" valign_top="" type_default"=""></div>
+</section>
+<h2></h2>
+<h4><span style="font-size: 1.7778em;">Local Transport Forum</span></h4>
+<p>The Local Transport Forum meets regularly through the year to review potential changes in traffic and parking management on local roads within the Strathfield LGA. The Forum is comprised of representatives of from Transport for NSW, Strathfield Council, NSW Police and a representative from the local State Member for Parliament.&nbsp; Council also consults with bus operators where bus services may be impacted.</p>
+<p><span style="font-size: 1em;">The Forum operates under the following delegation from Transport for NSW: &nbsp;</span><a href="https://aus01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.transport.nsw.gov.au%2Fsystem%2Ffiles%2Fmedia%2Fdocuments%2F2025%2F2025-Authorisation-Delegation-Instrument.pdf&amp;data=05%7C02%7Cayla.karabulut%40strathfield.nsw.gov.au%7C81bd4cefd9624e49db3408ddf022832b%7Cdfcb3a8506bf4fdb9a7443f3f93a1f85%7C1%7C0%7C638930753226279980%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&amp;sdata=tYu97tvXJ%2BUqiCysxyJehkGFMUnLUeN5WyLhNUmBWaQ%3D&amp;reserved=0" style="font-size: 1em;">2025 Authorisation Delegation Instrument for Councils</a><span style="font-size: 1.125em;">&nbsp;</span></p>
+<p><span style="font-size: 1em;">The meetings are typically held on 11.00am &ndash; 12.30pm (on the&nbsp;3rd</span><em style="font-size: 1em;"></em><span style="font-size: 1em;">Tuesday of the Month).</span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div></div>
+<p>&nbsp;</p>
+<table width="100%">
+    <tbody>
+    </tbody>
+</table>
+<!--normalTemplateEnd-->
+                            
+                            
+                            
+							            </div>
+						            </div>
+					            </div>
+                        
+                            </div>
+                        </div>
+                        <div class="back-to-top-container text-center">
+                            <a href="#body-top" id="back-to-top"><i aria-hidden="true"></i><span class="js-visuallyhidden">Back to top</span></a>
+                        </div>
+                </div>
+            </div><!--groupTemplateEnd-->
+            <footer>
+                
+                    <div class="footer-outer-container footer-first-row">
+                        <div class="footer-container clearfix">
+                            <div class="grid grid-pad">
+                                <div class="col-xs-12 col-s-12 col-m-4 col-lg-5 footer-widget-contact" >
+	
+			<h2 class="visuallyhidden">Site Footer</h2>
+			<h3 class="footer-title">Contact Us</h3>
+			
+	<p>Strathfield Council<br />
+65 Homebush Road, Strathfield 2135<br />
+PO Box 120, Strathfield NSW 2135</p>
+<p>Phone: <a href="tel:0297489999">(02) 9748 9999</a><br />
+<span style="font-size: 1em;">Email:</span> <a href="mailto:council@strathfield.nsw.gov.au" style="font-size: 1em;">council@strathfield.nsw.gov.au</a></p>
+<p>Customer Service operating hours:<br />
+Monday to Friday: 8.30am - 4.00pm</p>
+
+
+	
+	
+</div><div class="col-xs-12 col-s-12 col-m-4 col-lg-4 footer-widget-links" >
+	
+			<h2 class="visuallyhidden">Site Footer</h2>
+			<h3 class="footer-title">Quick Links</h3>
+			
+	
+	<ul class="footer-links without-icons ">  <li>
+<a href="https://www.strathfield.nsw.gov.au/Council/Working-at-Strathfield-Council" target="_self"  >Careers</a>
+</li>
+          <li>
+<a href="https://www.strathfield.nsw.gov.au/Play/Events-Calendar" target="_self"  >Events Calendar</a>
+</li>
+          <li>
+<a href="https://www.strathfield.nsw.gov.au/Council/About-Strathfield" target="_self"  >About Strathfield Council</a>
+</li>
+          <li>
+<a href="https://www.strathfield.nsw.gov.au/Council/Current-Projects" target="_self"  >Current Projects</a>
+</li>
+          <li>
+<a href="https://www.strathfield.nsw.gov.au/Council/Frequently-Asked-Questions" target="_self"  >FAQ</a>
+</li>
+           </ul>
+	
+</div><div class="col-xs-12 col-s-12 col-m-4 col-lg-3 footer-widget-connect" >
+	
+			<h2 class="visuallyhidden">Site Footer</h2>
+			<h3 class="footer-title">Share &amp; Connect</h3>
+			
+	
+	<ul class="footer-links with-icons social-media-links">  <li class="footer-link-facebook">
+	<a href="https://www.facebook.com/StrathfieldCouncil/" target="_blank"  >
+<i aria-hidden="true"></i>Facebook
+</a>
+</li>
+          <li class="footer-link-instagram">
+	<a href="https://www.instagram.com/strathfieldcouncil/" target="_blank"  >
+<i aria-hidden="true"></i>Instagram
+</a>
+</li>
+          <li class="footer-link-x">
+	<a href="https://x.com/StrathfieldMC" target="_blank"  >
+<i aria-hidden="true"></i>X
+</a>
+</li>
+          <li class="footer-link-linkedin">
+	<a href="https://www.linkedin.com/company/strathfield-municipal-council" target="_self"  >
+<i aria-hidden="true"></i>LinkedIn
+</a>
+</li>
+          <li class="footer-link-youtube">
+	<a href="https://www.youtube.com/c/strathfieldtv" target="_blank"  >
+<i aria-hidden="true"></i>YouTube
+</a>
+</li>
+          <li class="footer-link-at">
+	<a href="https://www.strathfield.nsw.gov.au/Council/News/eNews" target="_self"  >
+<i aria-hidden="true"></i>eNews
+</a>
+</li>
+           </ul>
+	
+</div><div class="col-xs-12 col-s-12 col-m-12 col-lg-12 footer-widget-aoc" >
+	
+			<h2 class="visuallyhidden">Site Footer</h2>
+			<h3 class="footer-title">Acknowledgement of Country</h3>
+			
+	<p>Strathfield Council acknowledges the Wangal people who are the traditional custodians of the land on which Council is located. We pay respect to Elders past, present and emerging.</p>
+
+
+	
+	
+</div>
+                            </div>
+                        </div>
+                    </div>
+                
+                <div class="footer-outer-container footer-second-row">
+                    <div class="footer-container clearfix">
+                        <div class="grid grid-pad footer-secondary-links">
+                            <div class="col-xs-12 col-m-7">
+                                
+                                    <div><a href="https://www.strathfield.nsw.gov.au/Disclaimer-and-Copyright" target="_self"  >Disclaimer & Copyright</a>&nbsp;| <a href="https://www.strathfield.nsw.gov.au/Council/Privacy-Management" target="_self"  >Privacy Statement</a>&nbsp;| <a href="https://www.strathfield.nsw.gov.au/Sitemap" target="_self"  >Sitemap</a></div>
+                                
+                            </div>
+                            <div class="col-xs-12 col-m-5 powered-by">
+                                <div class="right">
+                                    &copy; 2026 Strathfield Council&nbsp;|&nbsp;<span class="powered-by">Powered by <a href="https://granicus.com/solution/govaccess/opencities/" target="_blank">Granicus</a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="/files/oc-resources/b9015858-988c-48a4-9473-7c193df083e4/JsTextSnippets.js?ocsvclang=en-AU" type="text/javascript"></script><script></script>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA4-CODE-GOES-HERE"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'G-MVG9J0MV45');
+</script>
+    
+    
+
+<script type="text/javascript">
+//<![CDATA[
+window.__TsmHiddenField = $get('ctl04_seamless_script_manager_TSM');//]]>
+</script>
+</form>
+</body>
+</html>
