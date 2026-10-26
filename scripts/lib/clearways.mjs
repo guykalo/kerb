@@ -111,7 +111,16 @@ export function buildClearways(raw, reg, { existing = [] } = {}) {
       // Shift ~6 m towards the kerb, then keep only the runs Kerb has nothing else for.
       const pts = line.map(([lon, lat]) => round([lon + (vx * 6) / (Math.cos((lat * Math.PI) / 180) * 111320), lat + (vy * 6) / 110540]));
       let run = [];
-      const flush = () => { if (run.length > 1 && dist(run[0], run[run.length - 1]) > 20) features.push({ type: 'Feature', properties: { s: titleCase(cw.street), b: titleCase(cw.suburb), sd: SIDE_NAME[`${vx},${vy}`], k, z: 2, pa: '', f15: 0, n: 0, src: 'cw' }, geometry: { type: 'LineString', coordinates: simplify(run) } }); run = []; };
+      const flush = () => {
+        if (run.length > 1 && dist(run[0], run[run.length - 1]) > 20) {
+          // Pieces of at most ~400 m, so walking distances and taps point at the right stretch, not a 5 km road.
+          let piece = [run[0]], len = 0;
+          const emit = () => { if (piece.length > 1) features.push({ type: 'Feature', properties: { s: titleCase(cw.street), b: titleCase(cw.suburb), sd: SIDE_NAME[`${vx},${vy}`], k, z: 2, pa: '', f15: 0, n: 0, src: 'cw' }, geometry: { type: 'LineString', coordinates: simplify(piece) } }); };
+          for (let i = 1; i < run.length; i++) { piece.push(run[i]); len += dist(run[i - 1], run[i]); if (len > 400 && i < run.length - 1) { emit(); piece = [run[i]]; len = 0; } }
+          emit();
+        }
+        run = [];
+      };
       for (const p of pts) { if (near(p)) flush(); else run.push(p); }
       flush();
     }
