@@ -653,7 +653,7 @@ function renderList() {
   const foot = document.createElement('div'); foot.className = 'foot';
   const upd = META ? new Date(META.fetchedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', timeZone: CITY.tz }) : '';
   foot.innerHTML = CITY_ID !== 'syd' ? `${FOOT[CITY_ID]}${upd ? ` Refreshed nightly, last on ${upd}.` : ''} Councils don't publish every sign, so always read the sign before you park.` : `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey, Woollahra's resident permit areas, Randwick's resident permit kerbs, Randwick's and Inner West's published parking maps and meter lists, and street sign surveys for Manly (2020) and Chatswood, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
-  foot.insertAdjacentHTML('beforeend', ' <a href="./parking/">Parking by area</a> · <a href="./terms.html">Terms</a> · <a href="./privacy.html">Privacy</a>');
+  foot.insertAdjacentHTML('beforeend', ' <a href="./parking/">Parking by area</a> · <a href="./terms.html">Terms</a> · <a href="./privacy.html">Privacy</a> · <a href="https://www.instagram.com/getstreety/" target="_blank" rel="noopener">Instagram</a>');
   body.appendChild(foot);
 }
 
