@@ -1,0 +1,14 @@
+== app
+<title>Streety · Sydney parking</title>
+rel="canonical" href="https://getstreety.com.au/"
+https://api.getstreety.com.au/report
+https://api.getstreety.com.au/snap
+== sitemap
+<loc>https://getstreety.com.au/
+<loc>https://getstreety.com.au/parking/
+<loc>https://getstreety.com.au/parking/syd/kings-cross/
+grep: write error: Broken pipe
+terms 200
+privacy 200
+parking/ 200
+data/meta.json 200
