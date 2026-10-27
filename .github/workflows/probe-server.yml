@@ -11,7 +11,11 @@ jobs:
       - run: |
           mkdir out; W=https://streety.guyraner.workers.dev; O=https://guykalo.github.io
           set +e; {
-          for u in https://api.getstreety.com.au/snaps https://getstreety.com.au/ https://www.getstreety.com.au/ http://getstreety.com.au/; do echo "== $u"; curl -sS -m 20 -o /tmp/b -w "%{http_code} -> %{redirect_url}\n" -H "Origin: https://getstreety.com.au" "$u"; head -c 200 /tmp/b | grep -o '<title>[^<]*</title>\|^\[.*' ; echo; done
-          curl -sS -D - -o /dev/null -H "Origin: https://getstreety.com.au" https://api.getstreety.com.au/snaps | grep -i access-control-allow-origin
+          S=https://getstreety.com.au
+          echo "== app"; curl -s $S/ | grep -o '<title>[^<]*</title>\|rel="canonical"[^>]*'
+          for a in $(curl -s $S/ | grep -o 'assets/[^"]*\.js'); do curl -s $S/$a | grep -o 'https://api.getstreety[^"`]*' | sort -u; done
+          echo "== sitemap"; curl -s $S/sitemap.xml | grep -o '<loc>[^<]*' | head -3
+          for p in terms privacy parking/ data/meta.json; do curl -s -o /dev/null -w "$p %{http_code}\n" -L $S/$p; done
+          curl -s -L $S/privacy | grep -o 'getstreety@gmail.com' | head -1
           } > out/result.txt 2>&1
           cd out && git init -q -b probe-server-out && git config user.name gh && git config user.email gh@users.noreply.github.com && git add -A && git commit -qm out && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" probe-server-out
