@@ -11,12 +11,7 @@ jobs:
       - run: |
           mkdir out; W=https://streety.guyraner.workers.dev; O=https://guykalo.github.io
           {
-          echo "== GET /snaps"; curl -sS -D - -H "Origin: $O" $W/snaps | head -c 1500; echo
-          echo "== OPTIONS /report"; curl -sS -D - -o /dev/null -X OPTIONS -H "Origin: $O" -H 'Access-Control-Request-Method: POST' $W/report; echo
-          echo "== POST /report (test)"; curl -sS -H "Origin: $O" -H 'content-type: application/json' -d '{"kind":"test","street":"Probe test, ignore","at":[151.2093,-33.8688],"note":"automatic test from the deploy check"}' $W/report; echo
-          echo "== pages.dev"; curl -sS https://streety.pages.dev/ | grep -o '<title>[^<]*</title>'
-          for p in terms.html privacy.html data/meta.json data/fines.json data/kerbs.json data/mel/meta.json parking/ sitemap.xml; do curl -s -o /dev/null -w "$p %{http_code} %{size_download}\n" https://streety.pages.dev/$p; done
-          echo "== github.io app has the server address?"; for a in $(curl -s $O/kerb/ | grep -o 'assets/[^"]*\.js'); do curl -s $O/kerb/$a | grep -o 'https://streety[^"`]*workers.dev[^"`]*' | sort -u; done
-          echo "== pages.dev app has the server address?"; for a in $(curl -s https://streety.pages.dev/ | grep -o 'assets/[^"]*\.js'); do curl -s https://streety.pages.dev/$a | grep -o 'https://streety[^"`]*workers.dev[^"`]*' | sort -u; done
+          J=$(python3 -c "import base64,struct,zlib;print('/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=')")
+          echo "== POST /report (sign, photo)"; curl -sS -H "Origin: $O" -H 'content-type: application/json' -d "{\"kind\":\"sign\",\"title\":\"Test street (setup check, close me)\",\"target\":\"kerb\",\"city\":\"syd\",\"at\":[151.2093,-33.8688],\"note\":\"Test report from the setup. You can close this.\",\"photo\":\"data:image/jpeg;base64,$J\",\"time\":\"$(date -u +%FT%TZ)\"}" $W/report; echo
           } > out/result.txt 2>&1
           cd out && git init -q -b probe-server-out && git config user.name gh && git config user.email gh@users.noreply.github.com && git add -A && git commit -qm out && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" probe-server-out
