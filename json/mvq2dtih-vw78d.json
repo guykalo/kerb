@@ -1,0 +1,13 @@
+{
+ "kind": "sign",
+ "title": "Test street (setup check, close me)",
+ "target": "kerb",
+ "city": "syd",
+ "at": [
+  151.2093,
+  -33.8688
+ ],
+ "note": "Test report from the setup. You can close this.",
+ "time": "2026-10-27T02:26:26Z",
+ "received": "2026-10-27T02:26:27.113Z"
+}
