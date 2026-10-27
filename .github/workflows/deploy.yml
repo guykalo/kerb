@@ -132,10 +132,11 @@ jobs:
       - name: Build app
         run: npm run build
         env:
+          SITE_URL: https://getstreety.com.au/
           VITE_MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
           VITE_SIGN_READ_URL: ${{ secrets.VITE_SIGN_READ_URL }}
-          VITE_SNAP_SHARE_URL: ${{ secrets.VITE_SNAP_SHARE_URL || (steps.worker.outputs.url && format('{0}/snap', steps.worker.outputs.url)) || '' }}
-          VITE_REPORT_URL: ${{ secrets.VITE_REPORT_URL || (steps.worker.outputs.url && format('{0}/report', steps.worker.outputs.url)) || '' }}
+          VITE_SNAP_SHARE_URL: ${{ secrets.VITE_SNAP_SHARE_URL || (steps.worker.outputs.url && 'https://api.getstreety.com.au/snap') || '' }}
+          VITE_REPORT_URL: ${{ secrets.VITE_REPORT_URL || (steps.worker.outputs.url && 'https://api.getstreety.com.au/report') || '' }}
           VITE_CF_BEACON_TOKEN: ${{ secrets.VITE_CF_BEACON_TOKEN }}
       # Never blocks the GitHub Pages deploy below; the reason shows as an annotation on the run.
       - name: Deploy to Cloudflare Pages
