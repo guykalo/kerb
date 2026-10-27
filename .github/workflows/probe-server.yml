@@ -10,7 +10,7 @@ jobs:
     steps:
       - run: |
           mkdir out; W=https://streety.guyraner.workers.dev; O=https://guykalo.github.io
-          {
+          set +e; {
           for u in https://api.getstreety.com.au/snaps https://getstreety.com.au/ https://www.getstreety.com.au/ http://getstreety.com.au/; do echo "== $u"; curl -sS -m 20 -o /tmp/b -w "%{http_code} -> %{redirect_url}\n" -H "Origin: https://getstreety.com.au" "$u"; head -c 200 /tmp/b | grep -o '<title>[^<]*</title>\|^\[.*' ; echo; done
           curl -sS -D - -o /dev/null -H "Origin: https://getstreety.com.au" https://api.getstreety.com.au/snaps | grep -i access-control-allow-origin
           } > out/result.txt 2>&1
