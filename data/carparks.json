@@ -1596,7 +1596,8 @@
   "checked": "2026-10-24",
   "research": "Casual rates apply every day incl. public holidays; '6 hours +: $50 maximum (per entry day)'. Evening flat rate '$15* entry after 4pm', must exit before close (asterisk not explained). Overnight $50 per night plus daily charges. Height limit 1.95m. Entry from Victoria St via the hospital foyer driveway near Burton St. No concessions currently. Coordinates: centre of the 394-404 Victoria St lot (NSW Planning Portal address API).",
   "note": "$15 evening rate if you enter after 4pm and leave before closing. Overnight costs $50 a night on top. Height limit 1.95m.",
-  "estBasis": true
+  "estBasis": true,
+  "hospital": true
  },
  {
   "id": "new-randwick-hospitals",
@@ -1653,7 +1654,8 @@
   "source": "https://www.schn.health.nsw.gov.au/visiting-and-staying/our-hospitals/finding-us/randwick-parking",
   "checked": "2026-10-24",
   "research": "Visitor and patient car park for Sydney Children's, Prince of Wales and Royal Hospital for Women. Rates 'current as of 14 May 2026'. 'More than 2.5 hours' $35 (page does not say if per 24 h); lost ticket $35. Concessions for eligible patients/carers with validation: up to 3 h free, >3 h $6.80, 3-day $13.50, 7-day $27.10. Height 2.0m. Point is approximate (Prince of Wales Hospital, Wikipedia).",
-  "note": "Visitor car park for Prince of Wales, Sydney Children's and the Royal Hospital for Women. Eligible patients and carers can get concession rates with validation. Height limit 2.0m."
+  "note": "Visitor car park for Prince of Wales, Sydney Children's and the Royal Hospital for Women. Eligible patients and carers can get concession rates with validation. Height limit 2.0m.",
+  "hospital": true
  },
  {
   "id": "new-westfield-sydney",
@@ -5072,5 +5074,63 @@
   "note": "Public pick-up car park for T1: free for up to 15 minutes, one entry per calendar day. Open-air, about 7 min walk. $80.90 for each extra day.",
   "research": "Sydney Airport drive-up and overstay rates page, read 26 Oct 2026. Location: OpenStreetMap (ODbL).",
   "checked": "2026-10-26"
+ },
+ {
+  "id": "new-ssm",
+  "name": "Sydney Superyacht Marina car park",
+  "address": "James Craig Road, Rozelle (Rozelle Bay)",
+  "at": [
+   151.18127,
+   -33.86921
+  ],
+  "operator": "Sydney Superyacht Marina (private car park)",
+  "hours": "7am to 5pm for public parking, 7 days",
+  "phone": "9818 0605 (8am to 5pm)",
+  "rates": [
+   {
+    "kind": "casual",
+    "days": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "from": 7,
+    "to": 17,
+    "bands": [
+     [
+      0.5,
+      0
+     ],
+     [
+      1,
+      6.25
+     ],
+     [
+      2,
+      12.5
+     ],
+     [
+      3,
+      18.75
+     ],
+     [
+      4,
+      25
+     ],
+     [
+      24,
+      36
+     ]
+    ]
+   }
+  ],
+  "source": "",
+  "checked": "2026-10-28",
+  "research": "From Guy's photo of the PARKING RATES board at the entrance, 28 Oct 2026; location from his Google Maps pin (-33.8692132, 151.1812714). Board: Monday to Sunday; 0 to 30 min free; '16 min to 1 hr' $6.25 (the first line looks re-stickered from 15 to 30 min, so free is recorded as 30 min); 1-2 hr $12.50; 2-3 hr $18.75; 3-4 hr $25; 4-24 hr $36. Private car park offering public parking 7am-5pm; open area plus limited undercover levels; max height 2.1 m undercover; reserved bays are marked; unhitched trailers $35/day; card tap only, no cash; lost ticket = daily maximum; accessible parking on the ground floor; monthly permits from the Marina Office; after-hours contact 03 9926 6691; guards patrol and CCTV. Prices include GST. Addresses seen online: Gate 15, 33 James Craig Rd and 2 Maritime Court, Rozelle.",
+  "note": "Prices from the board at the entrance, photographed 28 Oct 2026. First 30 minutes free (the board also lists a 16 min to 1 hr line, so check if you're near 30 minutes). Public parking is 7am to 5pm. Card or phone tap only, no cash. Lost ticket costs the daily $36. Undercover levels have a 2.1 m height limit. Accessible parking on the ground floor."
  }
 ]

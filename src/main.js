@@ -801,7 +801,7 @@ function parkedNow(f) {
   // The rules are checked in quarter hours from the start of this quarter, so the limit counts from there too
   // (parked at 12:13 with no stopping from 7am: move by 7:00, not 7:13).
   const d0 = new Date(), intoQuarter = legal != null ? ((d0.getMinutes() % 15) * 60 + d0.getSeconds()) * 1e3 : 0;
-  const sess = { at: mids.get(p.id), name: p.s, side: p.sd || '', start: Date.now(), until: Date.now() + hours * 3600e3 - intoQuarter, legal: legal != null && legal < 24, planned: legal == null };
+  const sess = { at: mids.get(p.id), name: p.s, side: p.sd || '', start: Date.now(), until: Date.now() + hours * 3600e3 - intoQuarter, legal: legal != null && legal < 24, planned: legal == null, ...proofFrom(p, now) };
   store.set('kerb-parked', sess);
   setSessionMarker(); parkedPill(); toast(legal != null && legal < 24 ? `Saved. Move by ${clockAt(sess.until)}.` : 'Saved where you parked.');
   try { if (sess.legal && 'Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch { /* not supported */ }
@@ -838,9 +838,11 @@ function sessionCard() {
     <div class="acts">
       <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${s.at[1]},${s.at[0]}&travelmode=walking" target="_blank" rel="noopener"><i class="ph ph-person-simple-walk"></i>Walk back</a>
       ${s.legal || s.planned ? `<a class="cta" href="${icsFor(s)}" download="kerb-move-the-car.ics"><i class="ph ph-bell-ringing"></i>Remind me</a>` : ''}
+      <button class="cta" type="button" data-act="proof"><i class="ph ph-shield-check"></i>${s.photo ? 'Proof' : 'Add proof'}</button>
       <button class="cta" type="button" data-act="done"><i class="ph ph-check"></i>I've left</button>
     </div>`;
-  el.querySelector('[data-act=done]').onclick = () => { store.set('kerb-parked', null); setSessionMarker(); parkedPill(); renderList(); };
+  el.querySelector('[data-act=proof]').onclick = () => openProof(s, true);
+  el.querySelector('[data-act=done]').onclick = () => { keepProof({ ...store.get('kerb-parked', s), left: Date.now() }); store.set('kerb-parked', null); setSessionMarker(); parkedPill(); renderList(); };
   body.appendChild(el);
 }
 // A small countdown on the map while you're parked, and a heads-up 10 minutes before you have to move.
@@ -867,6 +869,99 @@ function parkedPill() {
 }
 setInterval(() => { parkedPill(); if (S.sel == null && store.get('kerb-parked', null)) renderList(); }, 30e3);
 setTimeout(parkedPill, 1500);
+
+/* ---------- Proof of parking: a record of where, when and what the sign said, in case a fine looks wrong ---------- */
+// Kept on the phone only. Photos are the real evidence; Streety's map is a guide, so the record says so.
+const PROOFS = 'streety-proofs';
+const REVIEW_URL = 'https://www.nsw.gov.au/money-and-taxes/fines-and-fees/fines/request-a-review';
+const plainText = (h) => String(h || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+function proofFrom(p, now) {
+  const set = p.k >= 0 ? RULES[p.k] : null;
+  return {
+    sign: set ? plainText(set.text || '') : '',
+    src: set ? (set.src || 'City of Sydney parking meter data') : '',
+    said: plainText(p.k >= 0 || p.ps || p.pa ? plainNow(p, RULES, now.day, now.hour) : ''),
+    city: CITY_ID,
+  };
+}
+const whenText = (ms) => new Date(ms).toLocaleString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: CITY.tz });
+function keepProof(s) {
+  if (!s?.start) return;
+  // Newest first; keep 20 records, and photos only on the 8 newest so the phone's storage doesn't fill up.
+  const list = [s, ...store.get(PROOFS, []).filter((x) => x.start !== s.start)].slice(0, 20).map((x, i) => (i < 8 ? x : { ...x, photo: undefined }));
+  try { localStorage.setItem(PROOFS, JSON.stringify(list)); } catch { try { localStorage.setItem(PROOFS, JSON.stringify(list.map((x, i) => (i ? { ...x, photo: undefined } : x)))); } catch { /* storage full */ } }
+}
+function proofText(s) {
+  return [
+    `Parking record from Streety`,
+    `Where: ${s.name}${s.side ? `, ${s.side.toLowerCase()}` : ''} (${s.at[1].toFixed(5)}, ${s.at[0].toFixed(5)})`,
+    `Parked: ${whenText(s.start)}`,
+    s.left ? `Left: ${whenText(s.left)}` : '',
+    s.sign ? `Published sign: ${s.sign}${s.src ? ` (${s.src})` : ''}` : '',
+    s.said ? `Streety said: ${s.said}` : '',
+    s.photo ? 'A photo of the sign was taken at the time.' : '',
+    `Map: https://www.google.com/maps/search/?api=1&query=${s.at[1]},${s.at[0]}`,
+  ].filter(Boolean).join('\n');
+}
+function openProof(s, live) {
+  const nsw = (s.city || 'syd') === 'syd';
+  const el = document.createElement('div'); el.className = 'snap'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Proof of parking');
+  el.innerHTML = `<div class="snap-card"><div class="snap-top"><b>Proof of parking</b><button type="button" class="snap-x" aria-label="Close"><i class="ph ph-x"></i></button></div>
+    <div class="snap-body">
+      <p class="snap-status"><b>${s.name}</b>${s.side ? `, ${s.side.toLowerCase()}` : ''}</p>
+      <div class="proof-rows">
+        <div><span>Parked</span><b>${whenText(s.start)}</b></div>
+        ${s.left ? `<div><span>Left</span><b>${whenText(s.left)}</b></div>` : ''}
+        ${s.sign ? `<div><span>Published sign</span><b>${s.sign}</b></div>` : ''}
+        ${s.said ? `<div><span>Streety said</span><b>${s.said}</b></div>` : ''}
+        <div><span>Spot</span><b class="num">${s.at[1].toFixed(5)}, ${s.at[0].toFixed(5)}</b></div>
+      </div>
+      <label class="rep-photo"><i class="ph ph-camera" aria-hidden="true"></i><span>${s.photo ? 'Photo saved. Tap to replace it' : 'Photograph the sign with your car in the shot'}</span><input type="file" accept="image/*" capture="environment" hidden></label>
+      <img class="rep-preview" alt="Your photo of the sign" ${s.photo ? `src="${s.photo}"` : 'hidden'}>
+      <p class="note">Got a fine you think is wrong? ${nsw ? 'You can ask Revenue NSW for a review.' : 'You can ask the council that issued it for a review.'} Your own photos, taken at the time, are the strongest evidence. Streety's map is a guide, not proof of what the sign said.${nsw ? ' Since July 2025 rangers in NSW must usually leave the fine on your car.' : ''}</p>
+      ${nsw ? `<a class="cta" href="${REVIEW_URL}" target="_blank" rel="noopener"><i class="ph ph-scales"></i>How to ask for a review</a>` : ''}
+    </div>
+    <div class="snap-actions"><button type="button" class="snap-save">Share this record</button></div></div>`;
+  document.body.appendChild(el);
+  const close = () => el.remove();
+  el.querySelector('.snap-x').onclick = close;
+  el.onclick = (e) => { if (e.target === el) close(); };
+  const fi = el.querySelector('input[type=file]'), pv = el.querySelector('.rep-preview');
+  fi.onchange = async () => {
+    const f = fi.files?.[0]; if (!f) return;
+    const photo = await shrinkPhoto(f); if (!photo) return;
+    s.photo = photo; pv.src = photo; pv.hidden = false;
+    el.querySelector('.rep-photo span').textContent = 'Photo saved. Tap to replace it';
+    if (live && store.get('kerb-parked', null)?.start === s.start) {
+      try { localStorage.setItem('kerb-parked', JSON.stringify(s)); } catch { toast("Your phone's storage is full, so the photo wasn't kept. It's still in your camera roll."); }
+    } else keepProof(s);
+  };
+  el.querySelector('.snap-save').onclick = async () => {
+    const text = proofText(s);
+    try {
+      const files = s.photo ? [new File([await (await fetch(s.photo)).blob()], 'parking-sign.jpg', { type: 'image/jpeg' })] : [];
+      if (navigator.canShare?.({ text, files }) && files.length) await navigator.share({ title: 'Parking record', text, files });
+      else if (navigator.share) await navigator.share({ title: 'Parking record', text });
+      else { await navigator.clipboard.writeText(text); toast('Copied. Paste it into an email or your notes.'); }
+    } catch (e) { if (e?.name !== 'AbortError') { try { await navigator.clipboard.writeText(text); toast('Copied. Paste it into an email or your notes.'); } catch { /* nothing more to try */ } } }
+  };
+}
+function openProofList() {
+  const list = store.get(PROOFS, []);
+  const el = document.createElement('div'); el.className = 'snap'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Your parking records');
+  el.innerHTML = `<div class="snap-card"><div class="snap-top"><b>Your parking records</b><button type="button" class="snap-x" aria-label="Close"><i class="ph ph-x"></i></button></div>
+    <div class="snap-body">
+      ${list.length ? `<div class="proof-list">${list.map((x, i) => `<button type="button" data-i="${i}"><span><b>${x.name}</b><small>${whenText(x.start)}</small></span>${x.photo ? '<i class="ph-fill ph-camera" aria-label="Has a photo"></i>' : ''}<i class="ph ph-caret-right" aria-hidden="true"></i></button>`).join('')}</div>`
+        : '<p class="plain">No records yet. Tap "I parked here" on a street and Streety keeps where, when and what the sign said, so you have it if a fine turns up.</p>'}
+      <p class="note">Records stay on this phone only. Streety keeps your last 20.</p>
+      <a class="cta" href="${REVIEW_URL}" target="_blank" rel="noopener"><i class="ph ph-scales"></i>How to ask Revenue NSW for a review</a>
+    </div></div>`;
+  document.body.appendChild(el);
+  const close = () => el.remove();
+  el.querySelector('.snap-x').onclick = close;
+  el.onclick = (e) => { if (e.target === el) close(); };
+  el.querySelectorAll('[data-i]').forEach((b) => (b.onclick = () => { close(); openProof(list[+b.dataset.i], false); }));
+}
 
 /* ---------- detail ---------- */
 // Plates come straight from the meter's own sign text, so they read like the real sign.
@@ -1079,6 +1174,8 @@ function fineHTML(p, set, c) {
   return `<div class="fines"><h3 class="h3">Fines here</h3>
     ${rows.length ? `<div class="fine-rows">${rows.slice(0, 5).map((x) => `<div class="fine-row${x.now ? ' now' : ''}"><span>${x.label}${x.now ? ' <b>(right now)</b>' : ''}</span><b>${x.a}</b></div>`).join('')}</div>` : ''}
     ${cn ? `<p class="plain"><span class="lvl" style="background:var(--${lv})">${cn.level[0].toUpperCase() + cn.level.slice(1)} ranger activity</span> ${cn.name} wrote ${cn.n.toLocaleString('en-AU')} parking fines in ${FINES.councilYear.replace('-20', '-')}, about ${cn.perKm2.toLocaleString('en-AU')} per square km (${cn.rank === 1 ? 'the most' : `number ${cn.rank}`} of ${FINES.of} Sydney councils).</p>` : ''}
+    ${set?.rules.some((r) => r[4] !== 0) ? `<p class="plain"><i class="ph ph-device-mobile" aria-hidden="true"></i> Paying by app? Some council apps add a service fee on top of the price on the sign. Paying at the meter, or with the NSW Government's Park'nPay app where the council takes it (it says it adds no fees), costs just the sign's price.</p>` : ''}
+    <button type="button" class="linkbtn" data-act="proofs"><i class="ph ph-shield-check" aria-hidden="true"></i>Got a fine? Your parking records and how to ask for a review</button>
     <p class="note">Fine amounts from Revenue NSW's ${FINES.fineYear.replace('-20', '-')} penalty data (they usually go up a little each July). Two amounts mean it depends on the area. Fines by council from Revenue NSW open data.</p></div>`;
 }
 
@@ -1128,6 +1225,7 @@ function renderDetail() {
       ${price?.none ? `<p class="plain">${price.why === 'long' ? 'Longer stays aren\'t allowed or aren\'t published, so check the board at the entrance.' : 'It may be closed then, or the rate isn\'t published. Check the board at the entrance.'}</p>` : ''}
       ${cp.hours ? `<p class="plain">Open ${cp.hours}.</p>` : ''}
       ${cp.note ? `<p class="plain">${cp.note}</p>` : ''}
+      ${cp.hospital ? `<div class="concession"><i class="ph ph-first-aid-kit" aria-hidden="true"></i><span><b>Here often for treatment, or caring for a patient?</b> NSW public hospitals have concession parking for patients and carers who come often or for a long stay, and for people in financial hardship. Before you leave, take your ticket, photo ID and any concession card to the hospital's parking office and ask for the concession rate. <a href="https://www.service.nsw.gov.au/referral/claim-concession-car-parking-at-nsw-health-public-hospitals" target="_blank" rel="noopener">How it works</a></span></div>` : ''}
       ${cp.phone ? `<p class="plain">Phone <span class="num">${cp.phone}</span></p>` : ''}
       ${cp.url && !cp.rates?.length ? `<a class="cta" href="${cp.url}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i>Rates on ${cp.operator || 'the operator'}'s website</a>` : ''}
       ${/2016/.test(cp.source || '') ? '<p class="note">From Transport for NSW\'s 2016 list of CBD car parks, so the operator or hours may have changed.</p>' : ''}
@@ -1146,6 +1244,7 @@ function renderDetail() {
   d.querySelector('[data-act=save]').onclick = (e) => { toggleSaved(id); const on = isSaved(id); e.currentTarget.setAttribute('aria-pressed', String(on)); e.currentTarget.innerHTML = starInner(on); };
   d.querySelector('[data-act=share]').onclick = () => shareSel(f, cp);
   const pk = d.querySelector('[data-act=park]'); if (pk) pk.onclick = () => parkedNow(f);
+  const pb = d.querySelector('[data-act=proofs]'); if (pb) pb.onclick = openProofList;
   const rb = d.querySelector('#reportBtn');
   if (rb) rb.onclick = () => (f
     ? openReport({ id: f.properties.id, title: `${f.properties.s}${f.properties.sd ? `, ${f.properties.sd.toLowerCase()}` : ''}`, at: mids.get(f.properties.id), published: f.properties.k >= 0 ? RULES[f.properties.k]?.text || '' : '' })

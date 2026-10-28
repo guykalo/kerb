@@ -464,3 +464,20 @@ button.brand { font: inherit; cursor: pointer; position: relative; }
 
 .snap-share { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--muted); margin: 0 0 10px; }
 .snap-share input { margin-top: 3px; }
+
+/* Proof of parking, fines extras, hospital concessions */
+.linkbtn { display: flex; align-items: center; gap: 8px; width: 100%; margin: 8px 0 4px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--fg); font: inherit; font-size: 14.5px; font-weight: 600; text-align: left; cursor: pointer; }
+.linkbtn i { font-size: 20px; color: var(--accent); flex: none; }
+.fines .plain i { color: var(--accent); }
+.proof-rows { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.proof-rows div { display: flex; flex-direction: column; gap: 2px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.proof-rows span { font-size: 12.5px; color: var(--muted); }
+.proof-rows b { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.proof-list { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 12px; }
+.proof-list button { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--fg); font: inherit; text-align: left; cursor: pointer; }
+.proof-list button span { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.proof-list small { color: var(--muted); font-size: 13px; }
+.proof-list i { color: var(--accent); }
+.concession { display: flex; gap: 10px; margin: 10px 0; padding: 12px; border-radius: 12px; background: color-mix(in srgb, var(--free) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--free) 35%, transparent); font-size: 14.5px; line-height: 1.45; }
+.concession i { font-size: 22px; color: var(--free); flex: none; }
+.concession a { color: var(--accent); font-weight: 600; }
