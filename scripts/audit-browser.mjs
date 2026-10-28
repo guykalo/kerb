@@ -27,20 +27,20 @@ for (const [name, q] of views) {
     if (opt && name === 'syd') {
       try {
         const fines = await p.$('.fines');
-        if (fines) { await fines.scrollIntoViewIfNeeded(); await p.waitForTimeout(400); await p.screenshot({ path: `audit/shots/${name}-fines.png` }); }
-        const park = await p.$('[data-act=park]');
-        if (park) {
-          await park.click(); await p.waitForTimeout(1200);
+        const tap = (sel) => p.evaluate((q) => { const el = document.querySelector(q); if (el) el.click(); return !!el; }, sel); // the sheet may hide it, so tap it in the page
+        if (fines) { await tap('#handle'); await p.waitForTimeout(800); await fines.scrollIntoViewIfNeeded(); await p.waitForTimeout(400); await fines.screenshot({ path: `audit/shots/${name}-fines.png` }); }
+        if (await tap('[data-act=park]')) {
+          await p.waitForTimeout(1200);
           const parked = await p.evaluate(() => !!localStorage.getItem('kerb-parked') && localStorage.getItem('kerb-parked') !== 'null');
           const proof = await p.$('[data-act=proof]');
           if (!parked) { /* can't park on this kerb right now: nothing to check */ }
-          else if (proof) { await proof.click(); await p.waitForTimeout(800); await p.screenshot({ path: `audit/shots/${name}-proof.png` }); await p.click('.snap-x'); }
+          else if (proof) { await tap('[data-act=proof]'); await p.waitForTimeout(800); await p.screenshot({ path: `audit/shots/${name}-proof.png` }); await tap('.snap-x'); }
           else errs.push('proof: no "Add proof" button on the parked card');
-          const done = await p.$('[data-act=done]'); if (done) { await done.click(); await p.waitForTimeout(500); }
+          if (await tap('[data-act=done]')) await p.waitForTimeout(500);
           const kept = await p.evaluate(() => (JSON.parse(localStorage.getItem('streety-proofs') || '[]')).length);
           if (parked && !kept) errs.push('proof: "I\'ve left" did not keep a parking record');
         }
-      } catch (e) { errs.push('proof: ' + e.message); }
+      } catch (e) { errs.push('proof: ' + e.message.split('\n')[0]); }
     }
   } catch (e) { errs.push('load: ' + e.message); }
   md += `- **${name}**: ${((Date.now() - t0) / 1000).toFixed(1)} s, ${errs.length} errors, ${failed.length} failed requests${errs.length ? `\n  - ${errs.slice(0, 5).join('\n  - ')}` : ''}${failed.length ? `\n  - ${failed.slice(0, 5).join('\n  - ')}` : ''}\n`;
