@@ -481,3 +481,4 @@ button.brand { font: inherit; cursor: pointer; position: relative; }
 .concession { display: flex; gap: 10px; margin: 10px 0; padding: 12px; border-radius: 12px; background: color-mix(in srgb, var(--free) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--free) 35%, transparent); font-size: 14.5px; line-height: 1.45; }
 .concession i { font-size: 22px; color: var(--free); flex: none; }
 .concession a { color: var(--accent); font-weight: 600; }
+.rep-preview[hidden] { display: none; }

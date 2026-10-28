@@ -29,6 +29,11 @@ for (const [name, q] of views) {
         const fines = await p.$('.fines');
         const tap = (sel) => p.evaluate((q) => { const el = document.querySelector(q); if (el) el.click(); return !!el; }, sel); // the sheet may hide it, so tap it in the page
         if (fines) { await tap('#handle'); await p.waitForTimeout(800); await fines.scrollIntoViewIfNeeded(); await p.waitForTimeout(400); await fines.screenshot({ path: `audit/shots/${name}-fines.png` }); }
+        if (fines) {
+          const t = await fines.innerText();
+          if (/Not paying the meter/.test(t) && !/Paying by app/.test(t)) errs.push('fines: metered kerb without the app-fee tip');
+          if (!(await p.$('.fines [data-act=proofs]'))) errs.push('fines: no "Got a fine?" records button');
+        }
         if (await tap('[data-act=park]')) {
           await p.waitForTimeout(1200);
           const parked = await p.evaluate(() => !!localStorage.getItem('kerb-parked') && localStorage.getItem('kerb-parked') !== 'null');
