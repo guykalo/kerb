@@ -370,8 +370,10 @@ export function snapsToKerbs(K, RULES, byId, mids) {
   if (RULES.base == null) RULES.base = RULES.length; else RULES.length = RULES.base;
   K.features = K.features.filter((f) => { if (f.properties.id >= 9000000) { byId.delete(f.properties.id); mids.delete(f.properties.id); return false; } return true; });
   for (const f of K.features) if (f.properties.snap) { f.properties.k = f.properties.k0; delete f.properties.snap; }
-  const mine = loadSnaps();
-  const all = [...SHARED.filter((x) => !mine.some((m) => m.ids?.some((i) => x.ids?.includes(i)))).map((x) => ({ ...x, shared: true })), ...mine.slice().reverse()];
+  // A shared reading Streety has corrected ("fixed") replaces the phone's own copy of that same photo.
+  const fixed = new Set(SHARED.filter((x) => x.fixed).map((x) => x.id));
+  const mine = loadSnaps().filter((m) => !fixed.has(m.id));
+  const all = [...SHARED.filter((x) => x.fixed || !mine.some((m) => m.ids?.some((i) => x.ids?.includes(i)))).map((x) => ({ ...x, shared: true })), ...mine.slice().reverse()];
   for (const s of all) {
     const k = RULES.push({ rules: s.rules, q: s.q ? 1 : 0, text: s.text, src: s.shared ? `A Streety driver's reading of the sign, ${s.date}` : `Your sign photo, ${s.date}` }) - 1;
     const take = (f) => { if (!f.properties.snap) f.properties.k0 = f.properties.k; f.properties.k = k; f.properties.snap = 1; };
