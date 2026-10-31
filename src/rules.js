@@ -123,10 +123,13 @@ const mpsLimit = (p) => (p < 0 || p > 0.5 ? Infinity : p === 0.5 ? 2 : 0.5);
 export function costFor(props, rules, day, h, stay) {
   if (props.k < 0) return { ok: null, why: 'No published rules for this kerb yet' };
   const set = rules[props.k];
-  const step = 0.25, n = Math.max(1, Math.round(stay / step));
+  // Signs change on quarter hours, so the stay is walked in pieces that end on a quarter hour. A stay that starts
+  // at 8:58pm is checked from 8:58pm to 10:58pm (not 8:45 to 10:45), and each piece counts for the time it covers.
+  const end = h + Math.max(stay, 0.01);
   let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0, waived = 0, unknownRate = false, limitUnknown = false, unknown = false;
-  for (let i = 0; i < n; i++) {
-    const t = h + i * step, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
+  for (let t = h, nx = h; t < end - 1e-9; t = nx) {
+    nx = Math.min(end, Math.floor(t * 4 + 1e-6) / 4 + 0.25);
+    const step = nx - t, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
     const s = stateAt(props, rules, d, hh);
     if (s.kind === 'restricted') return { ok: false, why: `${s.note || 'No parking'} ${s.until < 24 || hh > 0 ? `${fmtTime(hh)}-${fmtTime(s.until)}` : ''}`.trim() };
     if (s.kind === 'unknown') unknown = true;
