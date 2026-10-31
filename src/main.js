@@ -669,6 +669,7 @@ function renderList() {
   drawDest(S.dest ? { free, paid, likely } : null);
 
   // Filter chips: one list, narrowed when you want.
+  if (S.filter === 'carparks' && !cps.length) S.filter = 'all';
   const fl = document.createElement('div'); fl.className = 'filters'; fl.setAttribute('role', 'group'); fl.setAttribute('aria-label', 'Show');
   const count = { all: ranked.length, free: free.length + likely.length, meters: paid.length, carparks: cps.length };
   fl.innerHTML = FILTERS.filter(([k]) => k !== 'carparks' || cps.length).map(([k, t]) => `<button type="button" data-filter="${k}" aria-pressed="${S.filter === k}">${t}<span class="num">${count[k]}</span></button>`).join('');
@@ -1340,7 +1341,7 @@ function renderDetail() {
     const v = verdictText(p, c);
     const g = c.ok === null ? 'check' : kerbRow({ p, c, d: 0 }).g;
     const suburb = p.b && !/side$/i.test(p.b) ? p.b : '';
-    const extra = [p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} ${p.k >= 0 ? 'paid ' : ''}spaces` : ''].filter(Boolean).join(', ');
+    const extra = [p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} ${p.k >= 0 ? 'paid ' : ''}space${p.n === 1 ? '' : 's'}` : ''].filter(Boolean).join(', ');
     d.innerHTML = `${head}
       <div class="dtitle"><h2>${p.s}</h2><div class="where">${[p.sd, suburb].filter(Boolean).join(' · ') || 'This side of the street'}</div></div>
       ${liveCount(p) ? `<div class="live"><i class="ph-fill ph-broadcast" aria-hidden="true"></i><span><b>${liveText(liveCount(p))}</b><small>Live from the council's in-ground sensors, ${Math.max(1, Math.round((Date.now() - LIVE_AT) / 60000))} min ago</small></span></div>` : ''}
@@ -1474,7 +1475,8 @@ async function shareSel(f, cp) {
     const p = f.properties; at = mids.get(p.id);
     const c = kerbCost(p);
     const v = verdictText(p, c);
-    text = `${p.s}${p.sd ? ` (${p.sd.toLowerCase()})` : ''}: ${v.head}${c.ok && !c.likely ? `, ${costText(c)}` : ''} for ${when}.`;
+    const g = c.ok === null ? 'check' : kerbRow({ p, c, d: 0 }).g;
+    text = `${p.s}${p.sd ? ` (${p.sd.toLowerCase()})` : ''}: ${g === 'guess' ? 'probably free, check the sign' : g === 'free' ? 'free' : v.head}${g === 'paid' ? `, ${costText(c)}` : ''} for ${when}.`;
   } else {
     at = cp.at;
     const occ = cp.kind === 'parkride' ? occAt(cp, S.day, S.hour) : null;
@@ -1549,11 +1551,11 @@ function renderLegend() {
   const lg = $('#legend'); lg.replaceChildren();
   const chip = (cls, pressed, html, title, onclick) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.setAttribute('aria-pressed', String(pressed)); b.innerHTML = html; b.title = title; b.onclick = onclick; lg.appendChild(b); return b; };
   const cpOn = !S.hidden.has('carpark');
-  chip('perm', cpOn, `<i class="ph ph-local-parking" aria-hidden="true"></i>Car parks${cpOn ? '' : ' off'}`, 'Show or hide car parks', () => { cpOn ? S.hidden.add('carpark') : S.hidden.delete('carpark'); renderLegend(); drawCarParks(); renderBody(); });
+  chip('perm', cpOn, `<b class="pmini" aria-hidden="true">P</b>Car parks${cpOn ? '' : ' off'}`, 'Show or hide car parks', () => { cpOn ? S.hidden.add('carpark') : S.hidden.delete('carpark'); renderLegend(); drawCarParks(); renderBody(); });
   const carBits = [BEN.vehicle === 'moto' ? 'Motorbike' : BEN.vehicle === 'ev' ? 'Electric' : '', BEN.permit ? `Permit ${BEN.permit.replace(/^.*Area\s*/i, '')}` : '', BEN.mps ? 'Mobility' : ''].filter(Boolean);
   chip('perm', carBits.length > 0, `<i class="ph ph-${BEN.vehicle === 'moto' ? 'motorcycle' : 'car-profile'}" aria-hidden="true"></i>${carBits.length ? carBits.join(' · ') : 'My car'}`, 'My car: vehicle, resident permit, mobility permit', () => toggleCar());
   chip('perm', !!DRIVE, `<i class="ph ph-steering-wheel" aria-hidden="true"></i>${DRIVE ? 'Driving' : 'Drive'}`, 'Drive mode: Streety follows you and says where to park', () => (DRIVE ? stopDrive() : startDrive()));
-  chip('keybtn', false, '<i class="ph ph-swatches" aria-hidden="true"></i>Map key', 'What the lines mean', () => toggleKey());
+  chip('keybtn', false, '<i class="ph ph-swatches" aria-hidden="true"></i>Key', 'Map key: what the lines mean', () => toggleKey());
 }
 // My car: the answers change to fit the driver (motorbike bays, EV bays, their own permit area, mobility permit).
 function saveCar() {
@@ -1584,13 +1586,13 @@ const KEY_LINE = {
   free: ['--free', 5, '', 'round'], likely: ['--free', 4, '10 3 3 3', 'butt'], paid: ['--paid', 4.5, '12 4', 'butt'],
   short: ['--paid', 3, '4 4', 'butt'], restricted: ['--restricted', 3, '0.1 5', 'round'], permit: ['--permit', 3, '6 6', 'butt'],
 };
-const keySwatch = (k) => { const [c, w, d, cap] = KEY_LINE[k]; return `<svg class="ksw" viewBox="0 0 44 12" aria-hidden="true"><line x1="4" y1="6" x2="40" y2="6" style="stroke:var(${c});stroke-width:${w};stroke-linecap:${cap}${d ? `;stroke-dasharray:${d}` : ''}"/>${k === 'paid' ? '<text x="22" y="4" text-anchor="middle" style="fill:var(--paid-ink);font:800 8px var(--font)">$</text>' : ''}</svg>`; };
+const keySwatch = (k) => { const [c, w, d, cap] = KEY_LINE[k]; return `<svg class="ksw" viewBox="0 0 44 12" aria-hidden="true"><line x1="4" y1="6" x2="40" y2="6" style="stroke:var(${c});stroke-width:${w};stroke-linecap:${cap}${d ? `;stroke-dasharray:${d}` : ''}"/></svg>`; };
 function toggleKey(force, intro) {
   let pop = $('#keyPop');
   if (pop && force !== true) { pop.remove(); return; }
   $('#carPop')?.remove();
   if (!pop) { pop = document.createElement('div'); pop.id = 'keyPop'; pop.className = 'keypop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-labelledby', 'kpT'); $('#app').appendChild(pop); }
-  const WHAT = { free: 'Free for your whole stay', likely: 'Probably free: check the sign', paid: 'Meter: you pay', short: 'Time limit shorter than your stay', restricted: 'No parking or no stopping', permit: 'Resident permit area: visitors time-limited' };
+  const WHAT = { free: 'Free for your whole stay', likely: 'Probably free: check the sign', paid: 'Meter: you pay ($ marks up close)', short: 'Time limit shorter than your stay', restricted: 'No parking or no stopping', permit: 'Resident permit area: visitors time-limited' };
   pop.innerHTML = `<div class="kp-top"><b id="kpT">${intro ? 'What the lines mean' : 'Map key'}</b><button type="button" class="iconx" aria-label="Close"><i class="ph ph-x"></i></button></div>${Object.keys(KEY_LINE).map((k) => `<label class="kp-row">${keySwatch(k)}<span>${WHAT[k]}</span>${intro ? '' : `<input type="checkbox" data-k="${k}"${S.hidden.has(k) ? '' : ' checked'} aria-label="Show ${WHAT[k]}">`}</label>`).join('')}
     <p class="kp-note">${intro ? 'Lines change with your day, time and stay. The sign on the street always wins.' : 'Untick a line to hide it from the map.'}</p>${intro ? '<button type="button" class="snap-save" data-act="keydone">Got it</button>' : ''}`;
   pop.querySelector('.kp-top button').onclick = () => pop.remove();
@@ -1683,7 +1685,7 @@ function setSheet(state) {
   const grab = [$('#handle'), $('#dock')];
   for (const el of grab) {
     el.addEventListener('pointerdown', (e) => {
-      if (isDesk() || e.button > 0 || (el.id === 'dock' && e.target.closest('input, select, textarea, .setup'))) return;
+      if (isDesk() || e.button > 0 || (el.id === 'dock' && e.target.closest('input, select, textarea, button, a, label, .setup'))) return;
       begin(e.clientY);
       try { el.setPointerCapture(e.pointerId); } catch { /* not supported */ }
     });
@@ -1945,13 +1947,14 @@ function onDrivePos(pos) {
   const best = opts[0];
   const main = DRIVE.hud.querySelector('.dh-main');
   if (!best) { main.innerHTML = `<b>Nothing that fits ${stayWords(true)} right here</b><small>Keep driving: Streety is watching ${DRIVE.heading == null ? 'around you' : 'the streets ahead'}.</small>`; return; }
-  const what = best.c.cost === 0 ? 'Free' : `${money(best.c.cost)}`;
+  const guess = best.c.cost === 0 && guessed(best.p, now.day, now.hour);
+  const what = best.c.cost === 0 ? (guess ? 'Probably free' : 'Free') : `${money(best.c.cost)}`;
   const m100 = Math.max(20, Math.round(best.d / 10) * 10);
   main.innerHTML = `<b>${what} · ${best.p.s}</b><small>${m100} m ahead${best.side ? ` on your ${best.side}` : ''} · ${stayWords(true)}</small>`;
   const key = `${best.p.s}|${best.p.sd || ''}|${what}`;
   if (key !== DRIVE.saidKey && Date.now() - DRIVE.saidAt > 25000) {
     DRIVE.saidKey = key; DRIVE.saidAt = Date.now();
-    say(`${best.c.cost === 0 ? 'Free parking' : `Parking for ${money(best.c.cost).replace('$', '')} dollars`} on ${best.p.s}, about ${m100} metres ahead${best.side ? ` on your ${best.side}` : ''}.`);
+    say(`${best.c.cost === 0 ? (guess ? 'Probably free parking' : 'Free parking') : `Parking for ${money(best.c.cost).replace('$', '')} dollars`} on ${best.p.s}, about ${m100} metres ahead${best.side ? ` on your ${best.side}` : ''}.`);
   }
 }
 

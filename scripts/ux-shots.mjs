@@ -16,8 +16,8 @@ const GLEBE = '#at=-33.87755,151.18527';
 const TASKS = [
   { name: 'start', fresh: true, url: '', steps: [['shot'], ['tap', ['[data-welcome-skip]']], ['wait', 600], ['shot']] },
   { name: 'list', url: '', steps: [['tap', ['#handle']], ['shot']] },
-  { name: 'street', url: GLEBE, steps: [['visible', '[data-act=directions]'], ['visible', '.trust'], ['shot'], ['tap', ['#handle']], ['shot'], ['scroll', '#body'], ['shot']] },
-  { name: 'option', url: '', steps: [['tap', ['#handle']], ['tap', ['.rows .opt', '.opt']], ['visible', '[data-act=directions]'], ['shot'], ['scroll', '#body'], ['shot']] },
+  { name: 'street', url: GLEBE, steps: [['wait', 800], ['visible', '[data-act=directions]'], ['visible', '.trust'], ['shot'], ['tap', ['#handle']], ['shot'], ['scroll', '#body'], ['shot']] },
+  { name: 'option', url: '', steps: [['tap', ['#handle']], ['tap', ['.rows .opt', '.opt']], ['wait', 700], ['visible', '[data-act=directions]'], ['shot'], ['scroll', '#body'], ['shot']] },
   { name: 'search', url: '', steps: [['tap', ['#q']], ['type', 'Glebe Point Road'], ['wait', 2500], ['shot'], ['key', 'Enter'], ['wait', 2500], ['shot']] },
   { name: 'when', url: '', steps: [['tap', ['[data-when]', '#ask']], ['wait', 600], ['shot']] },
   // Sat 7pm for 2 hours from the pill: pill, Sat, 7pm (2 hours is the default; tapped anyway to be sure).
