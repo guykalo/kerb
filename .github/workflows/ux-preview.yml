@@ -47,11 +47,14 @@ jobs:
           B=$(echo "${GITHUB_REF_NAME}" | tr '/_' '--' | tr -cd 'a-z0-9-' | cut -c1-28)
           npx --yes wrangler@4 pages deploy dist --project-name streety --branch "$B" --commit-dirty=true 2>&1 | tee pages.log
           echo "::notice title=Preview::https://$B.streety.pages.dev"
+          echo "url=https://$B.streety.pages.dev/" >> "$GITHUB_OUTPUT"
       - name: Phone screenshots
         run: |
           npm i --no-save playwright@1.47 && npx playwright install --with-deps chromium >/dev/null
           (npx vite preview --port 4173 --strictPort >/dev/null 2>&1 &) ; sleep 4
-          node scripts/ux-shots.mjs http://localhost:4173/ ux-shots
+          # The preview address can call the Streety server (CORS); localhost can't.
+          U="${{ steps.pages.outputs.url }}"; [ -n "$U" ] && curl -fsS -o /dev/null "$U" || U=http://localhost:4173/
+          node scripts/ux-shots.mjs "$U" ux-shots
       - name: Save screenshots to the ux-shots branch
         if: always()
         run: |
