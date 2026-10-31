@@ -32,8 +32,18 @@ for (const key of keys) {
 }
 console.log(`${byId.size} shared reading(s); ${fixes.length} fix(es) to apply`);
 
-// The named street's centreline near a point, from OpenStreetMap.
+// The named street's centreline near a point: NSW road centrelines (Spatial Services) first, the same source
+// the map's kerbs are built from, then OpenStreetMap (Overpass often doesn't answer GitHub's runners).
 async function streetNear(at, name) {
+  const base = name.toUpperCase().replace(/\s+(STREET|ST|ROAD|RD|LANE|LN|AVENUE|AVE|PLACE|PL|PARADE|PDE|DRIVE|DR|CRESCENT|CRES|TERRACE|TCE|WAY)$/, '').replace(/'/g, "''");
+  try {
+    const d = 0.0015, u = new URL('https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Transport_Theme/FeatureServer/5/query');
+    Object.entries({ geometry: JSON.stringify({ xmin: at[0] - d, ymin: at[1] - d, xmax: at[0] + d, ymax: at[1] + d, spatialReference: { wkid: 4326 } }), geometryType: 'esriGeometryEnvelope', inSR: '4326', outSR: '4326', spatialRel: 'esriSpatialRelIntersects', where: `UPPER(roadnamebase)='${base}'`, outFields: 'roadnamebase,roadnametype', returnGeometry: 'true', f: 'json' }).forEach(([k, v]) => u.searchParams.set(k, v));
+    const j = await (await fetch(u)).json();
+    const lines = (j.features || []).flatMap((f) => f.geometry?.paths || []).filter((p) => p.length > 1);
+    if (lines.length) return lines;
+    console.log(`NSW roads: no ${name} here${j.error ? ` (${JSON.stringify(j.error)})` : ''}; trying OpenStreetMap`);
+  } catch (e) { console.log(`NSW roads: ${e.message}; trying OpenStreetMap`); }
   const q = `[out:json][timeout:25];way(around:120,${at[1]},${at[0]})[highway][name=${JSON.stringify(name)}];out geom;`;
   for (const host of ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter']) {
     for (let i = 0; i < 2; i++) {
