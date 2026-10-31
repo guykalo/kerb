@@ -1298,8 +1298,22 @@ function kerbVerdict(p, c, g, v) {
   if (g === 'free') return { g, word: c.quarterFree ? 'Free with a ticket' : c.waived > 0 && c.paidHours === 0 ? 'Free with your permit' : c.yourPermit ? 'Free in your permit area' : 'Free', sub };
   return { g: 'paid', word: v.head, big: c.unknownRate && !(c.cost > 0) ? '' : costText(c), sub };
 }
+// Why Streety thinks a kerb is free when no sign says so, in hedged words (never as fact).
+function guessWhy(p) {
+  const set = RULES[p.k];
+  for (let t = S.hour; t < S.hour + S.stay - 1e-9; t = Math.floor(t * 4 + 1e-6) / 4 + 0.25) {
+    const d = (S.day + Math.floor(t / 24)) % 7, s = stateAt(p, RULES, d, t % 24);
+    if (s.kind !== 'free') continue;
+    if (s.why === 'after-hours') return `The meters finish before you get there, and the council doesn't publish any night rules here, so it's probably free.`;
+    if (s.why === 'before-hours' || s.why === 'night') return `The meters don't start until ${fmtTime(s.until)}, and the council doesn't publish what applies before then, so it's probably free.`;
+    if (s.why === 'no-meter-day') return `There are no meters here on ${DAYS_LONG[d]}s, and the council doesn't publish other ${DAYS_LONG[d]} rules, so it's probably free.`;
+    if (s.why === 'outside-sign' && set.g === 'edges') return `The published sign doesn't cover this time${s.until < 24 ? ` (it starts again at ${fmtTime(s.until)})` : ''}, so there's probably no limit.`;
+  }
+  return '';
+}
 function whyLine(p, c, g, v) {
   const end = fmtTime((S.hour + S.stay) % 24);
+  if (g === 'guess' && !p.lk && p.k >= 0) { const t = guessWhy(p); if (t) return `${t} You leave at ${end}.`; }
   if (g === 'no') { const t = plainNow(p, RULES, S.day, S.hour); return /can't park/i.test(t) ? t : `${t} You'd be there until ${end}.`; }
   let t = v.why || plainNow(p, RULES, S.day, S.hour);
   if (c.ok && !/gone by|you leave/i.test(t)) t += ` You leave at ${end}.`;
