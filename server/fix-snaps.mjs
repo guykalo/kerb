@@ -35,10 +35,14 @@ console.log(`${byId.size} shared reading(s); ${fixes.length} fix(es) to apply`);
 // The named street's centreline near a point: NSW road centrelines (Spatial Services) first, the same source
 // the map's kerbs are built from, then OpenStreetMap (Overpass often doesn't answer GitHub's runners).
 async function streetNear(at, name) {
-  const base = name.toUpperCase().replace(/\s+(STREET|ST|ROAD|RD|LANE|LN|AVENUE|AVE|PLACE|PL|PARADE|PDE|DRIVE|DR|CRESCENT|CRES|TERRACE|TCE|WAY)$/, '').replace(/'/g, "''");
+  // Match the type too, so "Gottenham Street" never lands on "Gottenham Lane".
+  const TYPE = { ST: 'STREET', RD: 'ROAD', LN: 'LANE', AVE: 'AVENUE', PL: 'PLACE', PDE: 'PARADE', DR: 'DRIVE', CRES: 'CRESCENT', TCE: 'TERRACE' };
+  const tm = /\s+(STREET|ST|ROAD|RD|LANE|LN|AVENUE|AVE|PLACE|PL|PARADE|PDE|DRIVE|DR|CRESCENT|CRES|TERRACE|TCE|WAY)$/.exec(name.toUpperCase());
+  const base = name.toUpperCase().slice(0, tm ? tm.index : undefined).replace(/'/g, "''");
+  const type = tm ? TYPE[tm[1]] || tm[1] : null;
   try {
     const d = 0.0015, u = new URL('https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Transport_Theme/FeatureServer/5/query');
-    Object.entries({ geometry: JSON.stringify({ xmin: at[0] - d, ymin: at[1] - d, xmax: at[0] + d, ymax: at[1] + d, spatialReference: { wkid: 4326 } }), geometryType: 'esriGeometryEnvelope', inSR: '4326', outSR: '4326', spatialRel: 'esriSpatialRelIntersects', where: `UPPER(roadnamebase)='${base}'`, outFields: 'roadnamebase,roadnametype', returnGeometry: 'true', f: 'json' }).forEach(([k, v]) => u.searchParams.set(k, v));
+    Object.entries({ geometry: JSON.stringify({ xmin: at[0] - d, ymin: at[1] - d, xmax: at[0] + d, ymax: at[1] + d, spatialReference: { wkid: 4326 } }), geometryType: 'esriGeometryEnvelope', inSR: '4326', outSR: '4326', spatialRel: 'esriSpatialRelIntersects', where: `UPPER(roadnamebase)='${base}'${type ? ` AND UPPER(roadnametype)='${type}'` : ''}`, outFields: 'roadnamebase,roadnametype', returnGeometry: 'true', f: 'json' }).forEach(([k, v]) => u.searchParams.set(k, v));
     const j = await (await fetch(u)).json();
     const lines = (j.features || []).flatMap((f) => f.geometry?.paths || []).filter((p) => p.length > 1);
     if (lines.length) return lines;
