@@ -131,6 +131,7 @@ jobs:
           node scripts/deploy-worker.mjs 2>&1 | tee worker.log || { echo "::error title=Streety server::$(tail -c 900 worker.log | tr '\n' ' ')"; exit 1; }
           echo "::notice title=Streety server::$(grep '^server:' worker.log)"
           echo "::notice title=Sign reader::$(grep '^sign reader:' worker.log)"
+          grep '^reader test' worker.log | while read -r l; do echo "::notice title=Sign reader test::$l"; done
       - name: Build app
         run: npm run build
         env:

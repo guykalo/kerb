@@ -23,13 +23,23 @@ A small box saying "1/4P FREE" (first 15 minutes free) belongs to the sign it is
 Write permit wording in full, including the area letter or number (PERMIT HOLDERS EXCEPTED AREA G).
 Include arrows as "<-" or "->" at the end of a line if shown. Only write what is printed on the signs. If you can't read part of it, write "?" there. If there is no parking sign, reply NONE.`;
 
+// Vision models on Cloudflare Workers AI, tried in order. Each answers in the same plain sign wording as Claude.
+const VISION = ['@cf/meta/llama-4-scout-17b-16e-instruct', '@cf/mistralai/mistral-small-3.1-24b-instruct', '@cf/google/gemma-3-12b-it'];
+// Models sometimes wrap the reading in a sentence or code fences: keep just the sign lines.
+const done = (raw, by) => {
+  let text = String(raw || '').replace(/```[a-z]*\n?|```/g, '').trim();
+  if (/^NONE\b/i.test(text)) text = '';
+  text = text.split('\n').map((l) => l.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, '').trim()).filter((l) => l && !/^(here|the sign|this (?:photo|image)|sure|i can see)\b.*:?$/i.test(l)).join('\n');
+  return json({ text, by });
+};
+
 export default {
   async fetch(req, env) {
     cors = corsFor(req);
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url);
     if (url.pathname === '/read' && req.method === 'POST') {
-      if (!env.ANTHROPIC_API_KEY) return json({ error: 'reader off' }, 503);
+      if (!env.ANTHROPIC_API_KEY && !env.AI) return json({ error: 'reader off' }, 503);
       // Only the app's own pages, and a daily cap so a stranger can't run up the reading bill.
       const o = req.headers.get('origin') || '';
       if (!ORIGINS.includes(o) && !o.endsWith('.streety.pages.dev')) return json({ error: 'not allowed' }, 403);
@@ -39,15 +49,31 @@ export default {
       const { image } = await req.json();
       const m = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(image || '');
       if (!m || m[2].length > 6_000_000) return json({ error: 'Send a JPEG or PNG under 4 MB' }, 400);
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-        body: JSON.stringify({ model: env.MODEL || MODEL, max_tokens: 300, messages: [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } }, { type: 'text', text: PROMPT }] }] }),
-      });
-      if (!r.ok) return json({ error: `reader ${r.status}` }, 502);
-      const out = await r.json();
-      const text = out.content?.map((c) => c.text || '').join('\n').trim() || '';
-      return json({ text: text === 'NONE' ? '' : text });
+      const errors = [];
+      // 1. Claude, when the Anthropic key is set (best at signs).
+      if (env.ANTHROPIC_API_KEY) {
+        try {
+          const r = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+            body: JSON.stringify({ model: env.MODEL || MODEL, max_tokens: 300, messages: [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } }, { type: 'text', text: PROMPT }] }] }),
+          });
+          if (r.ok) { const out = await r.json(); return done(out.content?.map((c) => c.text || '').join('\n'), 'claude'); }
+          errors.push(`claude ${r.status}`);
+        } catch (e) { errors.push(`claude ${e.message}`); }
+      }
+      // 2. Cloudflare Workers AI vision models (free daily allowance on the account, no key needed).
+      if (env.AI) {
+        for (const model of VISION) {
+          try {
+            const out = await env.AI.run(model, { messages: [{ role: 'user', content: [{ type: 'text', text: PROMPT }, { type: 'image_url', image_url: { url: image } }] }], max_tokens: 300, temperature: 0 });
+            const text = typeof out?.response === 'string' ? out.response : out?.choices?.[0]?.message?.content || '';
+            if (text.trim()) return done(text, model);
+            errors.push(`${model}: empty`);
+          } catch (e) { errors.push(`${model}: ${String(e.message || e).slice(0, 160)}`); }
+        }
+      }
+      return json({ error: 'reader failed', tried: errors }, 502);
     }
     if (url.pathname === '/snap' && req.method === 'POST') {
       const s = await req.json();

@@ -2,6 +2,10 @@ name = "streety"
 main = "worker.js"
 compatibility_date = "2026-10-01"
 
+# Workers AI: free vision models that read sign photos (POST /read) when there's no Anthropic key.
+[ai]
+binding = "AI"
+
 # npx wrangler kv namespace create SNAPS  -> paste the id below
 [[kv_namespaces]]
 binding = "SNAPS"
