@@ -9,21 +9,28 @@ const BASE = process.argv[2] || 'http://localhost:4173/';
 const OUT = process.argv[3] || 'ux-shots';
 await mkdir(OUT, { recursive: true });
 
-// Saturday 7pm Sydney, so "plan ahead" results are stable between runs.
+// The clock is fixed at Wednesday 4 Nov 2026, 10am Sydney, so "now" screens are the same between runs.
+// Only the "start" task sees the first-open welcome; the others start as a returning visitor.
+const NOW = new Date('2026-11-04T10:00:00+11:00');
 const GLEBE = '#at=-33.87755,151.18527';
 const TASKS = [
-  { name: 'start', url: '', steps: [['shot']] },
-  { name: 'list', url: '', steps: [['tap', ['#handle', '[data-sheet-toggle]']], ['shot']] },
-  { name: 'street', url: GLEBE, steps: [['shot'], ['tap', ['#handle', '[data-sheet-toggle]']], ['shot'], ['scroll', '#body'], ['shot']] },
-  { name: 'option', url: '', steps: [['tap', ['#handle', '[data-sheet-toggle]']], ['tap', ['.opt', '[data-option]']], ['shot'], ['scroll', '#body'], ['shot']] },
-  { name: 'search', url: '', steps: [['tap', ['#q', '[data-search]']], ['type', 'Glebe Point Road'], ['wait', 2500], ['shot'], ['key', 'Enter'], ['wait', 2500], ['shot']] },
-  { name: 'when', url: '', steps: [['tap', ['#ask', '[data-when]', '.ask-edit']], ['wait', 600], ['shot']] },
+  { name: 'start', fresh: true, url: '', steps: [['shot'], ['tap', ['[data-welcome-skip]']], ['wait', 600], ['shot']] },
+  { name: 'list', url: '', steps: [['tap', ['#handle']], ['shot']] },
+  { name: 'street', url: GLEBE, steps: [['visible', '[data-act=directions]'], ['visible', '.trust'], ['shot'], ['tap', ['#handle']], ['shot'], ['scroll', '#body'], ['shot']] },
+  { name: 'option', url: '', steps: [['tap', ['#handle']], ['tap', ['.rows .opt', '.opt']], ['visible', '[data-act=directions]'], ['shot'], ['scroll', '#body'], ['shot']] },
+  { name: 'search', url: '', steps: [['tap', ['#q']], ['type', 'Glebe Point Road'], ['wait', 2500], ['shot'], ['key', 'Enter'], ['wait', 2500], ['shot']] },
+  { name: 'when', url: '', steps: [['tap', ['[data-when]', '#ask']], ['wait', 600], ['shot']] },
+  // Sat 7pm for 2 hours from the pill: pill, Sat, 7pm (2 hours is the default; tapped anyway to be sure).
+  { name: 'plan', url: '', steps: [['tap', ['[data-when]']], ['tap', ['[data-dow="6"]']], ['tap', ['[data-time="19"]']], ['tap', ['[data-stay="2"]']], ['shot'], ['tap', ['[data-when-done]']], ['tap', ['#handle']], ['shot']] },
+  { name: 'directions', url: GLEBE, steps: [['tap', ['[data-act=directions]']], ['wait', 600], ['shot']] },
 ];
 
 const b = await chromium.launch();
 let md = `# UX screenshots\n\n${new Date().toISOString()}  ·  ${BASE}\n`;
 for (const t of TASKS) {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, timezoneId: 'Australia/Sydney', geolocation: { latitude: -33.8722, longitude: 151.2075 }, permissions: ['geolocation'] });
+  try { await ctx.clock.setFixedTime(NOW); } catch { /* older Playwright: real time */ }
+  if (!t.fresh) await ctx.addInitScript(() => { try { localStorage.setItem('streety-welcomed', '1'); localStorage.setItem('streety-legend', '1'); } catch { /* no storage */ } });
   const p = await ctx.newPage();
   const errs = [], notes = [];
   p.on('pageerror', (e) => errs.push(e.message));
@@ -31,13 +38,19 @@ for (const t of TASKS) {
   let n = 0;
   try {
     await p.goto(BASE + t.url, { waitUntil: 'load', timeout: 60000 });
-    await p.waitForFunction(() => !/Loading the kerbs/.test(document.body.innerText), null, { timeout: 45000 }).catch(() => notes.push('still loading after 45 s'));
+    await p.waitForFunction(() => document.documentElement.dataset.ready === '1', null, { timeout: 45000 }).catch(() => notes.push('still loading after 45 s'));
     await p.waitForTimeout(2500);
     for (const [act, arg] of t.steps) {
       if (act === 'shot') { await p.screenshot({ path: `${OUT}/${t.name}-${++n}.png` }); continue; }
       if (act === 'wait') { await p.waitForTimeout(arg); continue; }
       if (act === 'type') { await p.keyboard.type(arg, { delay: 30 }); continue; }
       if (act === 'key') { await p.keyboard.press(arg); continue; }
+      // Is this element fully on screen and not covered (by the sheet edge or anything else)?
+      if (act === 'visible') {
+        const r = await p.evaluate((q) => { const el = document.querySelector(q); if (!el) return null; const b = el.getBoundingClientRect(); const top = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2); return { top: Math.round(b.top), bottom: Math.round(b.bottom), h: innerHeight, ok: b.top >= 0 && b.bottom <= innerHeight && !!top && (el === top || el.contains(top)) }; }, arg);
+        notes.push(r ? `${arg} ${r.ok ? 'visible' : 'NOT fully visible'} (top ${r.top}, bottom ${r.bottom} of ${r.h})` : `no ${arg}`);
+        continue;
+      }
       if (act === 'scroll') { await p.evaluate((s) => { const el = document.querySelector(s); if (el) el.scrollTop += 600; }, arg); await p.waitForTimeout(500); continue; }
       if (act === 'tap') {
         let ok = false;
