@@ -21,14 +21,16 @@ const TASKS = [
   { name: 'search', url: '', steps: [['tap', ['#q']], ['type', 'Glebe Point Road'], ['wait', 2500], ['shot'], ['key', 'Enter'], ['wait', 2500], ['shot']] },
   { name: 'when', url: '', steps: [['tap', ['[data-when]', '#ask']], ['wait', 600], ['shot']] },
   // Sat 7pm for 2 hours from the pill: pill, Sat, 7pm (2 hours is the default; tapped anyway to be sure).
-  { name: 'plan', url: '', steps: [['tap', ['[data-when]']], ['tap', ['[data-dow="6"]']], ['tap', ['[data-time="19"]']], ['tap', ['[data-stay="2"]']], ['shot'], ['tap', ['[data-when-done]']], ['tap', ['#handle']], ['shot']] },
+  { name: 'plan', url: '', steps: [['tap', ['[data-when]']], ['tap', ['[data-dow="6"]']], ['tap', ['[data-time="19"]']], ['tap', ['[data-stay="2"]']], ['shot'], ['tap', ['[data-when-done]']], ['tap', ['#handle']], ['shot'], ['tap', ['.rows .opt']], ['wait', 700], ['shot']] },
   { name: 'directions', url: GLEBE, steps: [['tap', ['[data-act=directions]']], ['wait', 600], ['shot']] },
+  // Contrast check in the dark theme.
+  { name: 'dark', dark: true, url: GLEBE, steps: [['shot'], ['tap', ['#handle']], ['scroll', '#body'], ['shot']] },
 ];
 
 const b = await chromium.launch();
 let md = `# UX screenshots\n\n${new Date().toISOString()}  ·  ${BASE}\n`;
 for (const t of TASKS) {
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, timezoneId: 'Australia/Sydney', geolocation: { latitude: -33.8722, longitude: 151.2075 }, permissions: ['geolocation'] });
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, colorScheme: t.dark ? 'dark' : 'light', timezoneId: 'Australia/Sydney', geolocation: { latitude: -33.8722, longitude: 151.2075 }, permissions: ['geolocation'] });
   try { await ctx.clock.setFixedTime(NOW); } catch { /* older Playwright: real time */ }
   if (!t.fresh) await ctx.addInitScript(() => { try { localStorage.setItem('streety-welcomed', '1'); localStorage.setItem('streety-legend', '1'); } catch { /* no storage */ } });
   const p = await ctx.newPage();

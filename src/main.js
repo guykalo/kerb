@@ -746,7 +746,7 @@ function optRow(o) {
   const s = stateAt(o.p, RULES, S.day, S.hour);
   const c = o.c;
   const sub = c.ok
-    ? (c.yourPermit ? `Your permit area (${o.p.pa}): no time limit` : c.permitOnly ? (usual(o.p) ? `Permit ${o.p.pa}: usually ${usual(o.p).sign} for visitors` : `Resident permit ${o.p.pa}: visitors usually time-limited`) : c.likely ? 'No published sign. Check it when you park' : r.g === 'guess' ? `Probably free: ${s.why === 'before-hours' || s.why === 'night' ? `meters start ${fmtTime(s.until)}` : s.why === 'no-meter-day' ? `no meters on ${DAYS[S.day]}` : s.why === 'after-hours' ? 'the meters have finished' : 'outside the published sign'}` : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? (s.rule[0] >= 24 || s.rule[0] < 0 ? `${s.rule[7] || 'Free'} until ${fmtTime(s.rule[3])}` : `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}`) : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
+    ? (c.yourPermit ? `Your permit area (${o.p.pa}): no time limit` : c.permitOnly ? (usual(o.p) ? `Permit ${o.p.pa}: usually ${usual(o.p).sign} for visitors` : `Resident permit ${o.p.pa}: visitors usually time-limited`) : c.likely ? 'No published sign. Check it when you park' : r.g === 'guess' ? `Probably free: ${s.why === 'before-hours' || s.why === 'night' ? `meters start at ${fmtTime(s.until)}` : s.why === 'no-meter-day' ? `no meters on ${DAYS_LONG[S.day]}s` : s.why === 'after-hours' ? 'the meters have finished' : 'no published rule for this time'}` : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? (s.rule[0] >= 24 || s.rule[0] < 0 ? `${s.rule[7] || 'Free'} until ${fmtTime(s.rule[3])}` : `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}`) : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
     : c.why;
   const lv = busyLevel(busy(o.p, RULES, S.day, S.hour));
   const tone = r.g === 'no' ? (cat === 'short' ? 'short' : 'restricted') : TONE[r.g];
@@ -1551,11 +1551,11 @@ function renderLegend() {
   const lg = $('#legend'); lg.replaceChildren();
   const chip = (cls, pressed, html, title, onclick) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.setAttribute('aria-pressed', String(pressed)); b.innerHTML = html; b.title = title; b.onclick = onclick; lg.appendChild(b); return b; };
   const cpOn = !S.hidden.has('carpark');
-  chip('perm', cpOn, `<b class="pmini" aria-hidden="true">P</b>Car parks${cpOn ? '' : ' off'}`, 'Show or hide car parks', () => { cpOn ? S.hidden.add('carpark') : S.hidden.delete('carpark'); renderLegend(); drawCarParks(); renderBody(); });
+  chip('perm', cpOn, `Car parks${cpOn ? '' : ' off'}`, 'Show or hide car parks', () => { cpOn ? S.hidden.add('carpark') : S.hidden.delete('carpark'); renderLegend(); drawCarParks(); renderBody(); });
   const carBits = [BEN.vehicle === 'moto' ? 'Motorbike' : BEN.vehicle === 'ev' ? 'Electric' : '', BEN.permit ? `Permit ${BEN.permit.replace(/^.*Area\s*/i, '')}` : '', BEN.mps ? 'Mobility' : ''].filter(Boolean);
-  chip('perm', carBits.length > 0, `<i class="ph ph-${BEN.vehicle === 'moto' ? 'motorcycle' : 'car-profile'}" aria-hidden="true"></i>${carBits.length ? carBits.join(' · ') : 'My car'}`, 'My car: vehicle, resident permit, mobility permit', () => toggleCar());
-  chip('perm', !!DRIVE, `<i class="ph ph-steering-wheel" aria-hidden="true"></i>${DRIVE ? 'Driving' : 'Drive'}`, 'Drive mode: Streety follows you and says where to park', () => (DRIVE ? stopDrive() : startDrive()));
-  chip('keybtn', false, '<i class="ph ph-swatches" aria-hidden="true"></i>Key', 'Map key: what the lines mean', () => toggleKey());
+  chip('perm', carBits.length > 0, `${carBits.length ? carBits.join(' · ') : 'My car'}`, 'My car: vehicle, resident permit, mobility permit', () => toggleCar());
+  chip('perm', !!DRIVE, `${DRIVE ? 'Driving' : 'Drive'}`, 'Drive mode: Streety follows you and says where to park', () => (DRIVE ? stopDrive() : startDrive()));
+  chip('keybtn', false, 'Key', 'Map key: what the lines mean', () => toggleKey());
 }
 // My car: the answers change to fit the driver (motorbike bays, EV bays, their own permit area, mobility permit).
 function saveCar() {
@@ -1636,7 +1636,10 @@ function setSheet(state) {
   sheet = state; S.open = state === 'open';
   panel.classList.toggle('open', state === 'open');
   panel.classList.toggle('min', state === 'min');
-  root.style.setProperty('--vis', `${Math.round(visibleHeight(state === 'open' ? 'peek' : state))}px`);
+  const vis = Math.round(visibleHeight(state === 'open' ? 'peek' : state));
+  root.style.setProperty('--vis', `${vis}px`);
+  // A tall sheet (the picker, a long card) leaves no room for the camera and satellite buttons above it.
+  root.classList.toggle('sheet-tall', !isDesk() && vis > innerHeight - 330);
   // A popup that floats above the sheet (the map key) would hang in the air once the sheet covers the map.
   if (state === 'open') document.querySelector('.keypop')?.remove();
   const fb = $('#fullBtn');
