@@ -334,6 +334,8 @@ async function openSnap(file, getWhere, fromKerb) {
     let ids = (place.ids || []).filter((x) => x < 9000000), line = place.line || null;
     const tmp = (place.ids || []).find((x) => x >= 9000000);
     if (tmp != null && !ids.length && !line) line = C.byId.get(tmp)?.geometry.coordinates || null;
+    // Ids change with each night's build: keep the kerb's line too, so the reading finds its kerb again.
+    if (ids.length && !line) line = C.byId.get(ids[0])?.geometry.coordinates || null;
     const snap = { id: `s${Date.now().toString(36)}`, date: new Date().toISOString().slice(0, 10), street: place.street, side: place.side || '', at: place.at, ids, line, rules, q: qNow(), text: panels.map(describePanel).join('; '), read: read?.text?.slice(0, 400) || '', by: read?.by || 'typed', thumb: toCanvas(img, 360).toDataURL('image/jpeg', 0.7) };
     const list = loadSnaps().filter((s) => !(s.ids.length && s.ids.some((x) => snap.ids.includes(x))));
     list.unshift(snap);
@@ -372,15 +374,34 @@ export function snapsToKerbs(K, RULES, byId, mids) {
   const all = [...SHARED.filter((x) => !mine.some((m) => m.ids?.some((i) => x.ids?.includes(i)))).map((x) => ({ ...x, shared: true })), ...mine.slice().reverse()];
   for (const s of all) {
     const k = RULES.push({ rules: s.rules, q: s.q ? 1 : 0, text: s.text, src: s.shared ? `A Streety driver's reading of the sign, ${s.date}` : `Your sign photo, ${s.date}` }) - 1;
-    // Ids from 9,000,000 are kerbs drawn on someone's phone; they mean nothing here (older readings saved them).
-    const ids = (s.ids || []).filter((x) => x < 9000000);
-    if (ids.length) { for (const id of ids) { const f = byId.get(id); if (f) { if (!f.properties.snap) f.properties.k0 = f.properties.k; f.properties.k = k; f.properties.snap = 1; } } continue; }
+    const take = (f) => { if (!f.properties.snap) f.properties.k0 = f.properties.k; f.properties.k = k; f.properties.snap = 1; };
+    // Kerb ids are renumbered by each night's build, so an id only counts if it's still the same street.
+    // Ids from 9,000,000 are kerbs drawn on someone's phone and mean nothing here (older readings saved them).
+    const ids = (s.ids || []).filter((x) => x < 9000000 && byId.get(x) && (!s.street || byId.get(x).properties.s === s.street));
+    if (ids.length) { for (const id of ids) take(byId.get(id)); continue; }
+    // A line that sits on a kerb Streety already has (same street, same ends): give that kerb the sign.
+    const ref = s.line ? [(s.line[0][0] + s.line[s.line.length - 1][0]) / 2, (s.line[0][1] + s.line[s.line.length - 1][1]) / 2] : s.at;
+    const same = ref && s.street ? nearestOn(K, mids, ref, s.street, s.line ? 8 : 40) : null;
+    if (same) { take(same); continue; }
     if (!s.line) continue;
     const id = next++;
     const f = { type: 'Feature', properties: { id, s: s.street, b: '', sd: s.side, k, z: 2, pa: '', f15: 0, n: 0, snap: 1 }, geometry: { type: 'LineString', coordinates: s.line } };
     K.features.push(f); byId.set(id, f); mids.set(id, s.line[1]); made.set(s.id, id);
   }
   return made;
+}
+function nearestOn(K, mids, at, street, max) {
+  const k = Math.cos((at[1] * Math.PI) / 180) * 111320;
+  let best = null, bd = max;
+  for (const f of K.features) {
+    const p = f.properties;
+    if (p.id >= 9000000 || p.s !== street) continue;
+    const m = mids.get(p.id);
+    if (!m) continue;
+    const d = Math.hypot((m[0] - at[0]) * k, (m[1] - at[1]) * 110540);
+    if (d < bd) { bd = d; best = f; }
+  }
+  return best;
 }
 
 /* ---------- Snap the price board (car parks) ---------- */

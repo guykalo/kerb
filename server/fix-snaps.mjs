@@ -78,6 +78,9 @@ function kerbAlong(lines, at) {
   return { line, side: compass, d: Math.round(best.d) };
 }
 
+const SITE = 'https://getstreety.com.au';
+let KERBS = null, RULESETS = null;
+const metres = (a, b) => Math.hypot((a[0] - b[0]) * Math.cos((b[1] * Math.PI) / 180) * 111320, (a[1] - b[1]) * 110540);
 let failed = 0;
 for (const f of fixes) {
   const hit = byId.get(f.id);
@@ -86,7 +89,17 @@ for (const f of fixes) {
   try {
     if (f.delete) { await cf(url, { method: 'DELETE' }); console.log(`${f.id}: removed (${f.note || ''})`); continue; }
     const v = { ...hit.v, ...(f.set || {}) };
-    if (f.move) {
+    if (f.move?.onKerb) {
+      // Onto a kerb the live map already has on that street: the nearest one to where the photo was taken.
+      KERBS ??= await (await fetch(`${SITE}/data/kerbs.json`)).json();
+      RULESETS ??= await (await fetch(`${SITE}/data/rules.json`)).json();
+      const near = KERBS.features.filter((x) => x.properties.s === f.move.street).map((x) => ({ x, d: Math.min(...x.geometry.coordinates.map((c) => metres(c, v.at))) })).sort((a, b) => a.d - b.d);
+      for (const { x, d } of near.slice(0, 6)) console.log(`::notice title=${f.move.street} kerb ${x.properties.id}::${Math.round(d)} m from the photo; side ${x.properties.sd || x.properties.b || '?'}; ${x.geometry.coordinates.length} points; src ${x.properties.src}; pa ${x.properties.pa}; rules ${JSON.stringify(RULESETS[x.properties.k] ?? null).slice(0, 600)}`);
+      const hit = near[0];
+      if (!hit || hit.d > 80) throw new Error(`no ${f.move.street} kerb within 80 m of the photo`);
+      Object.assign(v, { street: f.move.street, side: hit.x.properties.sd || hit.x.properties.b || '', line: hit.x.geometry.coordinates, ids: [hit.x.properties.id] });
+      console.log(`${f.id}: put on ${f.move.street} kerb ${hit.x.properties.id} (${Math.round(hit.d)} m from the photo)`);
+    } else if (f.move) {
       const k = kerbAlong(await streetNear(v.at, f.move.street), v.at);
       if (!k) throw new Error(`no ${f.move.street} within 80 m of the photo`);
       Object.assign(v, { street: f.move.street, side: k.side, line: k.line, ids: [] });
