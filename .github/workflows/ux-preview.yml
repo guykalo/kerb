@@ -1,0 +1,65 @@
+name: UX preview
+# Builds a ux/* branch with the live Sydney data, puts it on a private preview address
+# (https://<branch>.streety.pages.dev) and saves phone screenshots of the main tasks to the ux-shots branch,
+# so a redesign can be checked before it goes live. main is never touched.
+on:
+  push:
+    branches: ['ux/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ux-preview-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    env:
+      SITE: https://getstreety.com.au
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Live Sydney data
+        run: |
+          mkdir -p public/data
+          for f in meta kerbs rules meters carparks; do curl -fsSL "$SITE/data/$f.json" -o "public/data/$f.json"; done
+          curl -fsSL "$SITE/data/fines.json" -o public/data/fines.json || true
+      - name: Build
+        run: npm run build
+        env:
+          SITE_URL: https://getstreety.com.au/
+          VITE_SNAP_SHARE_URL: https://api.getstreety.com.au/snap
+          VITE_SIGN_READ_URL: https://api.getstreety.com.au/read
+          VITE_REPORT_URL: https://api.getstreety.com.au/report
+      - name: Preview address
+        id: pages
+        if: env.CF_TOKEN != ''
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          B=$(echo "${GITHUB_REF_NAME}" | tr '/_' '--' | tr -cd 'a-z0-9-' | cut -c1-28)
+          npx --yes wrangler@4 pages deploy dist --project-name streety --branch "$B" --commit-dirty=true 2>&1 | tee pages.log
+          echo "::notice title=Preview::https://$B.streety.pages.dev"
+      - name: Phone screenshots
+        run: |
+          npm i --no-save playwright@1.47 && npx playwright install --with-deps chromium >/dev/null
+          (npx vite preview --port 4173 --strictPort >/dev/null 2>&1 &) ; sleep 4
+          node scripts/ux-shots.mjs http://localhost:4173/ ux-shots
+      - name: Save screenshots to the ux-shots branch
+        if: always()
+        run: |
+          [ -d ux-shots ] || exit 0
+          D="ux-shots/$(echo "${GITHUB_REF_NAME}" | tr '/' '-')"
+          mkdir -p out && cp -r ux-shots out/x && cd out
+          git init -q -b ux-shots
+          git fetch -q --depth 1 "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ux-shots 2>/dev/null && git checkout -q FETCH_HEAD -- . 2>/dev/null || true
+          rm -rf "$(echo "${GITHUB_REF_NAME}" | tr '/' '-')" && mv x "$(echo "${GITHUB_REF_NAME}" | tr '/' '-')"
+          git add -A && git -c user.name=ux-bot -c user.email=ux-bot@users.noreply.github.com commit -qm "UX shots: ${GITHUB_REF_NAME} ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:ux-shots
