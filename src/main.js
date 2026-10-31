@@ -666,7 +666,7 @@ function renderList() {
   const top = ranked[0];
   const sure = top && (top.g === 'guess' || top.cert > 0) ? ranked.find((r) => r.cert === 0 && (r.kind === 'cp' || r.g === 'free' || r.g === 'paid')) : null;
   const priceOf = (r) => (r.kind === 'cp' ? (r.cert ? `about ${money(r.cost)} (estimate)` : r.cp.kind === 'parkride' ? 'free with an Opal trip' : money(r.cost)) : r.g === 'free' ? 'free' : costText(r.c));
-  const nameOf = (r) => (r.kind === 'cp' ? r.cp.name : r.p.s);
+  const nameOf = (r) => (r.kind === 'cp' ? r.cp.name : `${r.p.s}${sure && top && sure.kind === 'kerb' && top.kind === 'kerb' && sure.p.s === top.p.s && r.p.sd ? `, ${r.p.sd.toLowerCase()}` : ''}`);
 
   const sum = document.createElement('p');
   sum.className = 'summary';

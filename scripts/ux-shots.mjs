@@ -56,7 +56,7 @@ for (const t of TASKS) {
       if (act === 'scroll') { await p.evaluate((s) => { const el = document.querySelector(s); if (el) el.scrollTop += 600; }, arg); await p.waitForTimeout(500); continue; }
       if (act === 'tap') {
         let ok = false;
-        for (const sel of arg) { const el = await p.$(sel); if (el && (await el.isVisible())) { await el.click({ timeout: 4000 }).catch((e) => notes.push(`tap ${sel} failed: ${e.message.split('\n').slice(0, 3).join(' ').slice(0, 220)}`)); ok = true; break; } }
+        for (const sel of arg) { const el = await p.$(sel); if (el && (await el.isVisible())) { await el.click({ timeout: 12000 }).catch((e) => notes.push(`tap ${sel} failed: ${e.message.split('\n').slice(0, 8).join(' ').slice(0, 600)}`)); ok = true; break; } }
         if (!ok) notes.push(`no ${arg.join(' / ')}`);
         await p.waitForTimeout(900);
       }
