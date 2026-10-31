@@ -4,7 +4,7 @@ import '@phosphor-icons/web/regular';
 import '@phosphor-icons/web/fill';
 import './style.css';
 import {
-  DAYS, DAYS_LONG, fmtTime, fmtClock, fmtDays, pLabel, money,
+  DAYS, DAYS_LONG, fmtTime, fmtDays, pLabel, money,
   stateAt, costFor, category, plainNow, dayTimeline, BEN, permitMine,
   busy, busyLevel, BUSY_WORD, BANDS, band,
 } from './rules.js';
@@ -51,14 +51,15 @@ const NEAR_M = 650; // list shows kerbs within this distance of the map centre
 const WALK_M_PER_MIN = 80;
 
 /* ---------- state ---------- */
-const S = { day: 1, hour: 9, stay: 2, night: false, edit: false, sel: null, hidden: new Set(), open: false, dest: null, walk: 10 };
+// planned: false while Streety follows the clock ("Now"); true once a day or time has been picked.
+const S = { day: 1, hour: 9, stay: 2, night: false, edit: false, sel: null, hidden: new Set(), open: false, dest: null, walk: 10, planned: false, filter: 'all', more: false };
 // Overnight: from the arrival time until 8am the next morning.
 const nightStay = (h) => Math.max(1, h < 8 ? 8 - h : 32 - h);
-function sydneyNow() { // "now" in the city on the map
+function sydneyNow() { // "now" in the city on the map, to the minute (a stay starting 8:58pm is checked from 8:58pm)
   const p = new Intl.DateTimeFormat('en-AU', { timeZone: CITY.tz, weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date());
   const g = (t) => (p.find((x) => x.type === t) || {}).value;
   const day = DAYS.indexOf(g('weekday').slice(0, 3));
-  const h = (+g('hour') % 24) + Math.floor(+g('minute') / 15) * 0.25;
+  const h = (+g('hour') % 24) + +g('minute') / 60;
   return { day: day < 0 ? new Date().getDay() : day, hour: h };
 }
 const today = sydneyNow();
@@ -157,30 +158,41 @@ function restyleBase() {
   }
 }
 
+// Kerb line layers, all clickable.
+const KERB_LAYERS = ['kerb-faint', 'kerb-no', 'kerb-short', 'kerb-likely', 'kerb-paid', 'kerb-line'];
 const under = () => ['dest-mask', 'opt-kerb', 'cp-cluster'].find((id) => map.getLayer(id));
 function kerbLayers() {
   const c = C();
   const col = ['match', ['get', 'c'], 'free', c.free, 'likely', c.free, 'paid', c.paid, 'short', c.short, 'restricted', c.restricted, 'permit', c.permit, c.unknown];
   const w = (m) => ['interpolate', ['linear'], ['zoom'], 12, 1 * m, 14, 2.2 * m, 16, 4.5 * m, 18, 8 * m];
-  const known = ['all', ['!=', ['get', 'c'], 'unknown'], ['!=', ['get', 'c'], 'permit'], ['!=', ['get', 'c'], 'likely'], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]];
   if (!map.getSource('kerbs')) {
     map.addSource('kerbs', { type: 'geojson', data: KERBS, promoteId: 'id', tolerance: 0.2 });
     map.addSource('meters', { type: 'geojson', data: { type: 'FeatureCollection', features: METERS.map(([x, y, k, n]) => ({ type: 'Feature', properties: { k, n }, geometry: { type: 'Point', coordinates: [x, y] } })) } });
   }
-  for (const id of ['kerb-glow', 'kerb-faint', 'kerb-line', 'kerb-short', 'kerb-sel', 'meter-dot']) if (map.getLayer(id)) map.removeLayer(id);
-  // No-parking kerbs are thinner and don't glow, so the places you can park stand out (CBDs are mostly no stopping).
-  const wr = (m, r) => ['interpolate', ['linear'], ['zoom'], ...[12, 1, 14, 2.2, 16, 4.5, 18, 8].flatMap((v, i) => (i % 2 ? [['case', ['==', ['get', 'c'], 'restricted'], v * r, v * m]] : [v]))];
-  map.addLayer({ id: 'kerb-glow', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short'], ['!=', ['get', 'c'], 'restricted']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(3.2), 'line-blur': w(2.4), 'line-opacity': S.sat ? 0.55 : dark() ? 0.35 : 0.18 } }, under());
-  map.addLayer({ id: 'kerb-faint', type: 'line', source: 'kerbs', filter: ['all', ['in', ['get', 'c'], ['literal', ['unknown', 'permit', 'likely']]], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'round' }, paint: { 'line-color': col, 'line-width': w(0.55), 'line-opacity': ['case', ['==', ['get', 'c'], 'permit'], 0.4, ['==', ['get', 'c'], 'likely'], 0.85, 0.5], 'line-dasharray': [1.5, 1.5] } }, under());
-  map.addLayer({ id: 'kerb-line', type: 'line', source: 'kerbs', filter: ['all', known, ['!=', ['get', 'c'], 'short']], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': wr(1, 0.55), 'line-opacity': ['case', ['==', ['get', 'c'], 'restricted'], 0.75, 1] } }, under());
-  map.addLayer({ id: 'kerb-short', type: 'line', source: 'kerbs', filter: ['all', ['==', ['get', 'c'], 'short'], ['!', ['in', 'short', ['literal', [...S.hidden]]]]], layout: { 'line-cap': 'butt' }, paint: { 'line-color': col, 'line-width': w(0.9), 'line-dasharray': [1.2, 1] } }, under());
+  for (const id of [...KERB_LAYERS, 'kerb-glow', 'kerb-paid-sym', 'kerb-sel', 'meter-dot']) if (map.getLayer(id)) map.removeLayer(id);
+  // Every state has its own line pattern as well as its colour, so the map reads without colour (and the key
+  // draws the same patterns): free is a thick solid line, probably free a green dash-dot, paid a long dash with "$"
+  // marks, too short a thin short dash, no parking a thin dotted red line, permit areas and unknown kerbs faint dashes.
+  const is = (c) => ['all', ['==', ['get', 'c'], c], ['!', ['in', c, ['literal', [...S.hidden]]]]];
+  const line = (id, c, width, dash, extra = {}) => map.addLayer({ id, type: 'line', source: 'kerbs', filter: Array.isArray(c) ? c : is(c), layout: { 'line-cap': dash ? 'butt' : 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': width, ...(dash ? { 'line-dasharray': dash } : {}), ...extra } }, under());
+  map.addLayer({ id: 'kerb-glow', type: 'line', source: 'kerbs', filter: is('free'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': w(3.2), 'line-blur': w(2.4), 'line-opacity': S.sat ? 0.55 : dark() ? 0.35 : 0.18 } }, under());
+  line('kerb-faint', ['all', ['in', ['get', 'c'], ['literal', ['unknown', 'permit']]], ['!', ['in', ['get', 'c'], ['literal', [...S.hidden]]]]], w(0.55), [1.5, 1.5], { 'line-opacity': ['case', ['==', ['get', 'c'], 'permit'], 0.55, 0.5] });
+  line('kerb-no', 'restricted', w(0.55), [0.4, 1.4], { 'line-opacity': 0.85 });
+  line('kerb-short', 'short', w(0.6), [1.2, 1.2]);
+  line('kerb-likely', 'likely', w(0.8), [3, 1, 0.8, 1]);
+  line('kerb-paid', 'paid', w(0.95), [3.2, 1.1]);
+  line('kerb-line', 'free', w(1));
+  // "$" marks along paid kerbs once the streets are big enough to carry them.
+  map.addLayer({ id: 'kerb-paid-sym', type: 'symbol', source: 'kerbs', minzoom: 16.2, filter: is('paid'), layout: { 'symbol-placement': 'line', 'symbol-spacing': 90, 'text-field': '$', 'text-font': ['Noto Sans Bold'], 'text-size': 12, 'text-keep-upright': true, 'text-allow-overlap': false }, paint: { 'text-color': c.paid, 'text-halo-color': c.bg, 'text-halo-width': 2 } }, under());
   map.addLayer({ id: 'kerb-sel', type: 'line', source: 'kerbs', filter: ['==', ['get', 'id'], S.sel && typeof S.sel === 'number' ? S.sel : -1], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': c.fg, 'line-width': ['interpolate', ['linear'], ['zoom'], 13, 1.5, 18, 3], 'line-gap-width': w(1.4), 'line-opacity': 0.95 } }, under());
   map.addLayer({ id: 'meter-dot', type: 'circle', source: 'meters', minzoom: 16.5, paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 16.5, 2, 19, 5], 'circle-color': c.bg, 'circle-stroke-color': c.fg, 'circle-stroke-width': 1.2 } }, under());
 }
 
 function recolour() {
   if (!KERBS) return;
-  for (const f of KERBS.features) f.properties.c = category(f.properties, RULES, S.day, S.hour, S.stay);
+  // Free only because Streety reads the meter hours (no meter after 6pm, none on Sundays) is drawn as "probably
+  // free", never like a kerb whose own sign says free.
+  for (const f of KERBS.features) { let c = category(f.properties, RULES, S.day, S.hour, S.stay); if (c === 'free' && f.properties.k >= 0 && guessed(f.properties)) c = 'likely'; f.properties.c = c; }
   const src = map.getSource('kerbs');
   if (src) src.setData(KERBS);
 }
@@ -255,12 +267,14 @@ function cpLayers() {
     'text-field': ['let', 'n', ['concat', ['to-string', ['get', 'point_count']], ' car parks'], ['case',
       ['==', ['get', 'minp'], 0], ['concat', ['var', 'n'], ' · incl. free'],
       ['<', ['get', 'minp'], 99999], ['concat', ['var', 'n'], ' · from $', ['to-string', ['round', ['get', 'minp']]]],
-      ['<', ['get', 'mine'], 99999], ['concat', ['var', 'n'], ' · ~$', ['to-string', ['round', ['get', 'mine']]], ' est.'],
       ['var', 'n']]],
     'icon-allow-overlap': false, 'text-allow-overlap': false }, paint: { 'text-color': c.bg } });
   map.addLayer({ id: 'cp-pill', type: 'symbol', source: 'cps', filter: ['all', ['!', ['has', 'point_count']], ['!=', ['get', 'sel'], 1]], layout: { ...common,
     'icon-image': ['concat', 'pill-', ['get', 'tone']], 'text-size': 12.5,
-    'text-field': ['case', ['==', ['get', 'label'], ''], 'P', ['format', 'P  ', { 'text-color': green }, ['get', 'label'], {}]],
+    // Streety's estimates stay a plain "P" until you zoom in, so real published prices aren't lost among guesses.
+    'text-field': ['step', ['zoom'],
+      ['case', ['any', ['==', ['get', 'label'], ''], ['==', ['get', 'tone'], 'est']], 'P', ['format', 'P  ', { 'text-color': green }, ['get', 'label'], {}]],
+      16.5, ['case', ['==', ['get', 'label'], ''], 'P', ['format', 'P  ', { 'text-color': green }, ['get', 'label'], {}]]],
     'symbol-sort-key': ['get', 'p'], 'icon-allow-overlap': false, 'text-allow-overlap': false },
     paint: { 'text-color': ['match', ['get', 'tone'], 'est', '#1d3140', 'free', '#0f7a43', '#0f2230'], 'icon-opacity': ['case', ['==', ['get', 'out'], 1], 0.4, 1], 'text-opacity': ['case', ['==', ['get', 'out'], 1], 0.4, 1] } });
   map.addLayer({ id: 'cp-sel', type: 'symbol', source: 'cps', filter: ['==', ['get', 'sel'], 1], layout: { ...common, 'icon-image': 'pill-sel', 'text-size': 13,
@@ -301,9 +315,9 @@ function drawDest(o) {
   area.setData({ type: 'FeatureCollection', features: [
     { type: 'Feature', properties: { k: 'mask' }, geometry: { type: 'Polygon', coordinates: [[[149.5, -35], [153, -35], [153, -32.5], [149.5, -32.5], [149.5, -35]], ring.slice().reverse()] } },
     { type: 'Feature', properties: { k: 'ring' }, geometry: { type: 'LineString', coordinates: ring } }] });
-  const top = [...o.free.slice(0, 5), ...o.paid.filter((x) => !x.c.unknownRate).slice(0, 3), ...(o.free.length ? [] : o.likely.slice(0, 3))];
+  const top = [...o.free.slice(0, 5), ...o.paid.filter((x) => !x.c.unknownRate).slice(0, 3), ...(o.free.length >= 3 ? [] : o.likely.slice(0, 3))];
   map.setFilter('opt-kerb', ['in', ['get', 'id'], ['literal', top.map((x) => x.p.id)]]);
-  opts.setData({ type: 'FeatureCollection', features: top.map((x, r) => ({ type: 'Feature', properties: { r, tone: x.c.cost > 0 ? 'price' : 'free', label: `${x.c.likely ? 'Probably free' : x.c.cost > 0 ? money(x.c.cost) : 'Free'} · ${Math.max(1, Math.round(x.d / WALK_M_PER_MIN))} min` }, geometry: { type: 'Point', coordinates: mids.get(x.p.id) } })) });
+  opts.setData({ type: 'FeatureCollection', features: top.map((x, r) => ({ type: 'Feature', properties: { r, tone: x.c.cost > 0 ? 'price' : 'free', label: `${x.c.likely || x.g === 'guess' ? 'Probably free' : x.c.cost > 0 ? money(x.c.cost) : 'Free'} · ${Math.max(1, Math.round(x.d / WALK_M_PER_MIN))} min` }, geometry: { type: 'Point', coordinates: mids.get(x.p.id) } })) });
 }
 // Zoom out just enough to see the whole walk, clear of the search bar and the panel.
 function fitDest() {
@@ -442,135 +456,119 @@ function rateLines(cp) {
     return [`${r.label || 'Flat rate'} ${money(r.price)}`, `${days}, in ${hm(r.enter[0])}-${hm(r.enter[1])}${r.exitAfter != null ? `, out after ${hm(r.exitAfter)}` : ''}${r.exitBy != null ? `, out by ${hm(r.exitBy)}${r.exitBy < r.enter[0] ? ' next day' : ''}` : ''}`];
   });
 }
-// You picked a stay longer than this car park allows: show the longest stay you can have and what it costs.
-function maxStayHTML(cp, price, stayTxt) {
-  if (price.why === 'long') {
-    for (let s = Math.min(S.stay, 24) - 0.25; s >= 0.25; s -= 0.25) {
-      const q = carParkPrice(cp, S.day, S.hour, s);
-      if (q && !q.none) return `<div class="verdict"><div><small>You picked ${stayTxt}. The longest stay here from ${fmtTime(S.hour)} is ${stayWordsFor(s)}</small>${stayWordsFor(s)} max</div><span class="big" style="color:var(--${q.p === 0 ? 'free' : 'fg'})">${money(q.p)}</span></div>`;
-    }
-  }
-  return `<div class="verdict"><div><small>${stayTxt} from ${DAYS[S.day]} ${fmtTime(S.hour)}</small>${price.why === 'long' ? 'Not for that long' : 'No rate at this time'}</div></div>`;
-}
 const stayWordsFor = (h) => (h < 1 ? `${Math.round(h * 60)} min` : `${+h.toFixed(2)} hr${h === 1 ? '' : 's'}`);
 function rateBoard(cp) {
   return `<div class="rateboard">${rateLines(cp).map(([t, sub, bands]) => `<div class="rl"><div class="rt">${t}</div><div class="rs">${sub}</div>${bands ? `<div class="rb">${bands}</div>` : ''}</div>`).join('')}</div>`;
 }
 
-/* ---------- controls ---------- */
-// The dock asks two plain questions (how long, when) and repeats the answer as one sentence on top.
-const isNow = () => S.day === today.day && Math.abs(S.hour - today.hour) < 0.01;
+/* ---------- when and how long: one pill, one short picker ---------- */
+// The pill says the plan ("Now · 2 h", "Sat 7pm · 2 h"); tapping it opens day, time and stay chips. Every tap
+// applies straight away, so Sat 7pm for 2 hours is three taps: the pill, Sat, 7pm (2 hours is the default).
 const dayName = (d) => (d === today.day ? 'Today' : d === (today.day + 1) % 7 ? 'Tomorrow' : DAYS_LONG[d]);
-const daySel = $('#daySel');
-daySel.innerHTML = `<option value="now">Now</option>${[0, 1, 2, 3, 4, 5, 6].map((i) => { const d = (today.day + i) % 7; return `<option value="${d}">${dayName(d)}</option>`; }).join('')}`;
 const setNight = () => { if (S.night) S.stay = nightStay(S.hour); };
-daySel.onchange = () => {
-  if (daySel.value === 'now') { Object.assign(today, sydneyNow()); Object.assign(S, today); }
-  else S.day = +daySel.value;
-  setNight(); update();
-};
-// -/+ move the arrival by half an hour, rolling over midnight into the next or previous day.
-function stepTime(dir) {
-  let h = dir > 0 ? Math.floor(S.hour * 2 + 1e-6) / 2 + 0.5 : Math.ceil(S.hour * 2 - 1e-6) / 2 - 0.5;
-  if (h >= 24) { h -= 24; S.day = (S.day + 1) % 7; }
-  if (h < 0) { h += 24; S.day = (S.day + 6) % 7; }
-  S.hour = h; setNight(); update();
+const TIMES = [['now', 'Now'], [8, '8am'], [9, '9am'], [12, 'Noon'], [15, '3pm'], [17, '5pm'], [18, '6pm'], [19, '7pm'], [20, '8pm']];
+const STAYS = [['0.25', '15', 'min', '15 minutes'], ['1', '1', 'hour', '1 hour'], ['2', '2', 'hours', '2 hours'], ['3', '3', 'hours', '3 hours'], ['4', '4', 'hours', '4 hours'], ['8', '8', 'hours', '8 hours'], ['night', '<i class="ph ph-moon" aria-hidden="true"></i>', 'night', 'Overnight, until 8am']];
+const stayShort = () => (S.night ? 'Overnight' : S.stay === 0.25 ? '15 min' : `${S.stay} h`);
+const whenShort = () => (S.planned ? `${S.day === today.day ? 'Today' : S.day === (today.day + 1) % 7 ? 'Tomorrow' : DAYS[S.day]} ${fmtTime(S.hour)}` : 'Now');
+const untilText = () => { const end = S.hour + S.stay; return `until ${fmtTime(end % 24)}${end >= 24 ? ` ${S.day === today.day ? 'tomorrow' : DAYS[(S.day + 1) % 7]}` : ''}`; };
+function buildDays() {
+  $('#dayChips').innerHTML = [0, 1, 2, 3, 4, 5, 6].map((i) => {
+    const d = (today.day + i) % 7;
+    return `<button type="button" data-dow="${d}" aria-label="${dayName(d)}"><b>${DAYS[d]}</b><small>${i === 0 ? 'today' : i === 1 ? 'tmrw' : new Date(Date.now() + i * 864e5).toLocaleDateString('en-AU', { day: 'numeric', timeZone: CITY.tz })}</small></button>`;
+  }).join('');
 }
-$('#timeDown').onclick = () => stepTime(-1);
-$('#timeUp').onclick = () => stepTime(1);
-$('#staySeg').querySelectorAll('button').forEach((b) => (b.onclick = () => {
-  S.night = b.dataset.v === 'night';
-  S.stay = S.night ? nightStay(S.hour) : +b.dataset.v;
+buildDays();
+$('#timeChips').innerHTML = TIMES.map(([v, t]) => `<button type="button" data-time="${v}">${t}</button>`).join('')
+  + '<label class="timeother"><span id="timeOtherTxt">Other</span><input type="time" id="timeIn" step="900" aria-label="Other arrival time"></label>';
+$('#staySeg').innerHTML = STAYS.map(([v, b, u, l]) => `<button type="button" data-stay="${v}" data-v="${v}" aria-label="${l}"><b>${b}</b><small>${u}</small></button>`).join('');
+function goNow() {
+  Object.assign(today, sydneyNow());
+  S.planned = false; S.day = today.day; S.hour = today.hour; setNight();
+}
+function pickDay(d) {
+  if (!S.planned) {
+    if (d === today.day) return;
+    S.hour = (Math.ceil(today.hour * 4) / 4) % 24; // keep the time of day, on the quarter hour
+  }
+  S.planned = true; S.day = d; setNight(); update();
+}
+function pickTime(v) {
+  if (v === 'now') goNow();
+  else {
+    const h = +v;
+    // Today at 9pm, "8am" means tomorrow morning (unless a day was picked first).
+    if (!S.planned && h < today.hour - 0.5) S.day = (today.day + 1) % 7;
+    S.planned = true; S.hour = h; setNight();
+  }
+  update();
+}
+function pickStay(v) {
+  S.night = v === 'night';
+  S.stay = S.night ? nightStay(S.hour) : +v;
   try { localStorage.setItem('kerb-stay', S.night ? 'night' : String(S.stay)); } catch { /* ignore */ }
   update();
-}));
-const timeIn = $('#time');
-timeIn.addEventListener('input', () => { S.hour = +timeIn.value; setNight(); update(true); });
-timeIn.addEventListener('change', () => update());
-// Tapping the sentence (or its Change button) unfolds the questions; Done folds them away again.
-// On phones they start folded so the map gets the screen; on desktop they're always shown.
-function setEdit(on) {
+}
+$('#setup').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.dow != null) pickDay(+b.dataset.dow);
+  else if (b.dataset.time != null) pickTime(b.dataset.time);
+  else if (b.dataset.stay != null) pickStay(b.dataset.stay);
+  else if (b.hasAttribute('data-when-done')) setEdit(false);
+});
+const timeIn = $('#timeIn');
+timeIn.addEventListener('change', () => { const m = /^(\d\d):(\d\d)/.exec(timeIn.value); if (m) pickTime(+m[1] + +m[2] / 60); });
+// Desktop browsers don't open the clock on a click into an invisible field; ask for it.
+timeIn.addEventListener('click', () => { try { timeIn.showPicker?.(); } catch { /* not allowed */ } });
+// The pill opens and closes the picker. mode: 'arrive' after a search, 'stay' after "Near me".
+const SETUP_TITLE = { arrive: 'When are you getting there?', stay: 'How long are you staying?' };
+function setEdit(on, mode) {
   S.edit = on;
   $('#dock').classList.toggle('editing', on);
   $('#ask').setAttribute('aria-expanded', String(on));
+  $('#setupTitle').textContent = SETUP_TITLE[mode] || 'When are you parking?';
   syncControls();
   setPeek();
   if (on && sheet === 'min') setSheet('peek');
-  if (on) drawRibbon();
+  if (!on) maybeLegend();
 }
 $('#ask').addEventListener('click', () => setEdit(!S.edit));
 
-function askHTML() {
-  const end = S.hour + S.stay, nextDay = end >= 24;
-  const how = S.night ? 'overnight' : stayWords(true).replace(/^an hour$/, '1 hour');
-  const when = isNow() ? 'now' : `${S.day === today.day ? 'today' : S.day === (today.day + 1) % 7 ? 'tomorrow' : DAYS[S.day]} ${fmtTime(S.hour)}`;
-  const until = `${fmtTime(end % 24)}${nextDay ? ` ${S.day === today.day ? 'tomorrow' : DAYS[(S.day + 1) % 7]}` : ''}`;
-  return `<span class="ask-icon"><i class="ph-fill ph-car-simple"></i></span><span class="ask-text">Parking <b>${how}</b>, from <b>${when}</b> until <b>${until}</b></span><span class="ask-edit">${S.edit ? 'Done' : 'Change'}</span>`;
-}
 function syncControls() {
+  $('#dayChips').querySelectorAll('[data-dow]').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.dow === S.day)));
+  let match = false;
+  $('#timeChips').querySelectorAll('[data-time]').forEach((b) => {
+    const on = b.dataset.time === 'now' ? !S.planned : S.planned && Math.abs(+b.dataset.time - S.hour) < 0.01;
+    match ||= on; b.setAttribute('aria-pressed', String(on));
+  });
+  const other = $('.timeother');
+  other.classList.toggle('on', !match);
+  $('#timeOtherTxt').textContent = match ? 'Other' : fmtTime(S.hour);
+  const H = Math.floor(S.hour), M = Math.round((S.hour - H) * 60);
+  timeIn.value = `${String(H % 24).padStart(2, '0')}:${String(M % 60).padStart(2, '0')}`;
   $('#staySeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(S.night ? b.dataset.v === 'night' : +b.dataset.v === S.stay)));
-  timeIn.value = S.hour;
-  $('#timeOut').textContent = fmtClock(S.hour);
-  daySel.value = isNow() ? 'now' : String(S.day);
-  $('#ask').innerHTML = askHTML();
-  const box = $('#stayBox');
-  box.style.left = `${(S.hour / 24) * 100}%`;
-  box.style.width = `${(Math.min(S.stay, 24 - S.hour) / 24) * 100}%`;
+  const ask = $('#ask');
+  ask.innerHTML = `<i class="ph ph-clock" aria-hidden="true"></i><span class="plan-txt"><b>${whenShort()}</b><span aria-hidden="true"> · </span>${stayShort()}</span><i class="ph ph-caret-${S.edit ? 'up' : 'down'} caret" aria-hidden="true"></i>`;
+  ask.setAttribute('aria-label', `Parking ${S.night ? 'overnight' : stayWords(true)}, ${S.planned ? `from ${dayName(S.day)} ${fmtTime(S.hour)}` : 'from now'}, ${untilText()}. Change`);
+  $('#planUntil').textContent = untilText();
 }
 
-/* ---------- ribbon: what the kerbs in view do across 24 hours ---------- */
-const canvas = $('#ribbonCanvas');
-function drawRibbon() {
-  const r = canvas.getBoundingClientRect();
-  if (!r.width) return;
-  const dpr = devicePixelRatio || 1;
-  canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
-  const g = canvas.getContext('2d');
-  g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  g.clearRect(0, 0, r.width, r.height);
-  const c = C();
-  g.fillStyle = css('--surface-2'); g.fillRect(0, 0, r.width, r.height);
-  if (!KERBS) return;
-  const colFor = { free: c.free, limit: c.free, meter: c.paid, restricted: c.restricted };
-  const W = r.width / 96;
-  const selKerb = typeof S.sel === 'number' ? byId.get(S.sel) : null;
-  const dayWord = S.day === today.day || S.day === (today.day + 1) % 7 ? dayName(S.day).toLowerCase() : DAYS[S.day];
-  $('#ribbonTitle').textContent = selKerb ? `${selKerb.properties.s}, ${dayWord}` : `Parking on this map, ${dayWord}`;
-  if (selKerb) {
-    for (const seg of dayTimeline(selKerb.properties, RULES, S.day)) {
-      if (!colFor[seg.kind]) continue;
-      g.fillStyle = colFor[seg.kind];
-      g.fillRect(seg.from * 4 * W, 0, (seg.to - seg.from) * 4 * W + 0.5, r.height);
-    }
-    return;
-  }
-  // Weighted by kerb length, so short no-stopping corners don't outweigh whole blocks of parking.
-  const inView = visibleKerbs().filter((f) => f.properties.k >= 0);
-  if (!inView.length) return;
-  const len = new Map(inView.map((f) => { const c = f.geometry.coordinates; let m = 0; for (let i = 1; i < c.length; i++) m += distM(c[i - 1], c[i]); return [f, Math.max(1, m)]; }));
-  const total = [...len.values()].reduce((a, b) => a + b, 0);
-  for (let q = 0; q < 96; q++) {
-    const n = { free: 0, meter: 0, restricted: 0, unknown: 0 };
-    for (const f of inView) { const kd = stateAt(f.properties, RULES, S.day, q / 4).kind; n[kd === 'limit' ? 'free' : kd] += len.get(f); }
-    let y = r.height;
-    for (const k of ['free', 'meter', 'restricted']) {
-      const h = (n[k] / total) * r.height;
-      g.fillStyle = colFor[k];
-      g.fillRect(q * W, y - h, W + 0.4, h);
-      y -= h;
-    }
-  }
+// "Now" moves with the clock: every minute, and when the app comes back from the background. The map is
+// recoloured when the quarter hour changes; the list and the card follow the minute.
+function refreshNow() {
+  const n = sydneyNow(), newDay = n.day !== today.day;
+  Object.assign(today, n);
+  if (newDay) buildDays();
+  if (S.planned) { syncControls(); return; }
+  const q0 = Math.floor(S.hour * 4), d0 = S.day;
+  S.day = n.day; S.hour = n.hour; setNight();
+  if (q0 !== Math.floor(S.hour * 4) || d0 !== S.day) update();
+  else { syncControls(); if (!panelTouch) renderBody(); }
 }
-function visibleKerbs() {
-  if (!KERBS) return [];
-  const b = map.getBounds();
-  return KERBS.features.filter((f) => { const m = mids.get(f.properties.id); return m[0] > b.getWest() && m[0] < b.getEast() && m[1] > b.getSouth() && m[1] < b.getNorth(); });
-}
+setInterval(() => { if (!document.hidden) refreshNow(); }, 60e3);
 
 /* ---------- options list ---------- */
 const body = $('#body');
-const spanText = (t) => `${S.night ? 'Overnight' : t}, ${DAYS[S.day]} ${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}${S.hour + S.stay >= 24 ? ` ${DAYS[(S.day + 1) % 7]}` : ''}`;
-const meterLine = (o) => (o.c.unknownRate ? `Nearest meter: <strong>${o.p.s}</strong> (the council doesn't publish its rate).` : `Cheapest meter: <strong>${o.p.s}</strong> at ${costText(o.c)}.`);
 function stayWords(long) {
   if (S.night) return long ? 'the night (until 8am)' : 'Overnight to 8am';
   if (long) return S.stay === 0.25 ? '15 minutes' : S.stay === 1 ? 'an hour' : `${S.stay} hours`;
@@ -588,24 +586,56 @@ const COVER = {
   bne: 'In Brisbane, Streety covers every Brisbane City Council parking meter (CBD, Spring Hill, Fortitude Valley, South Brisbane, West End, Woolloongabba, Newstead, Milton…) plus no stopping lines, bus and taxi zones and clearways in the inner suburbs.',
   per: 'In Perth, Streety covers every City of Perth on-street parking bay (CBD, Northbridge, East Perth, West Perth, Crawley) and the City of Perth car parks.',
 };
+// Busyness is an estimate from the area and the day, so it's worded as "usually".
+const BUSY_PLAIN = { easy: 'Usually spots free', moderate: 'Spots come and go', hard: 'Busy: hard to find a spot' };
+let listScroll = null, listSheet = null; // where the list was when a card opened, to come back to it
+let loadError = '';
+const FILTERS = [['all', 'All'], ['free', 'Free'], ['meters', 'Meters'], ['carparks', 'Car parks']];
+// Sort key: price for the stay (to the dollar), then how sure Streety is, then the walk.
+const byRank = (a, b) => Math.round(a.cost) - Math.round(b.cost) || a.cert - b.cert || a.d - b.d;
+function kerbRow(o) {
+  const c = o.c;
+  if (!c.ok) return { ...o, kind: 'kerb', g: 'no', cost: Infinity, cert: 0 };
+  if (c.permitOnly) return { ...o, kind: 'kerb', g: 'check', cost: 500, cert: 2 };
+  if (c.likely || (c.cost === 0 && !c.unknownRate && guessed(o.p))) return { ...o, kind: 'kerb', g: 'guess', cost: 0, cert: 1 };
+  if (c.unknownRate) return { ...o, kind: 'kerb', g: 'paid', cost: c.cost || 4, cert: 1 };
+  return { ...o, kind: 'kerb', g: c.cost === 0 ? 'free' : 'paid', cost: c.cost, cert: 0 };
+}
+function cpRank(cp, d) {
+  const price = carParkPrice(cp), pr = cp.kind === 'parkride';
+  if (pr) return { kind: 'cp', cp, d, cost: 0, cert: 1 };
+  if (price && !price.none) return { kind: 'cp', cp, d, cost: price.p, cert: 0 };
+  const est = !price ? estimateFor(cp) : null;
+  if (est) return { kind: 'cp', cp, d, cost: est.mid, cert: 1 };
+  return { kind: 'cp', cp, d, cost: 1000, cert: 2 };
+}
 function renderList() {
-  const keepScroll = body.dataset.mode === 'list' ? body.scrollTop : 0;
+  const keepScroll = body.dataset.mode === 'list' ? body.scrollTop : (listScroll ?? 0);
+  listScroll = null;
   body.dataset.mode = 'list';
   requestAnimationFrame(() => { if (body.dataset.mode === 'list') body.scrollTop = Math.min(keepScroll, body.scrollHeight); });
   body.replaceChildren();
-  if (!KERBS) { body.innerHTML = `<div class="empty"><strong>Loading the kerbs…</strong>Pulling in the kerbs for ${CITY.name}.</div>`; return; }
+  if (!KERBS) {
+    body.innerHTML = loadError ? `<div class="empty" role="alert"><strong>The parking rules didn't load</strong>Check your connection, then try again.<button type="button" class="cta retry" data-act="retry"><i class="ph ph-arrow-clockwise" aria-hidden="true"></i>Try again</button><small class="note">${loadError}</small></div>`
+      : `<div class="empty"><strong>Loading the parking rules…</strong>Getting ${CITY.name}'s streets and car parks ready.</div>`;
+    body.querySelector('[data-act=retry]')?.addEventListener('click', () => location.reload());
+    return;
+  }
+  welcomeCard();
   const centre = S.dest ? S.dest.at : map.getCenter().toArray();
   const nearM = S.dest ? S.walk * WALK_M_PER_MIN : NEAR_M;
   destBar();
   sessionCard();
+  const cpRadius = S.dest ? Math.max(400, nearM) : 1000;
+  const cps = CARPARKS.length && !S.hidden.has('carpark') ? CARPARKS.map((cp) => ({ cp, d: distM(cp.at, centre) })).filter((x) => x.d < cpRadius).map((x) => cpRank(x.cp, x.d)) : [];
   const inCoverage = KERBS.features.some((f) => { const m = mids.get(f.properties.id); return Math.abs(m[0] - centre[0]) < 0.015 && Math.abs(m[1] - centre[1]) < 0.012; });
   if (!inCoverage) {
     drawDest(S.dest ? { free: [], paid: [], likely: [] } : null);
     body.insertAdjacentHTML('beforeend', CITY_ID !== 'syd' ? `<div class="empty"><strong>Not covered yet</strong>${COVER[CITY_ID]}</div>` : `<div class="empty"><strong>Not covered yet</strong>Streety covers the City of Sydney (CBD out to Newtown, Glebe, Surry Hills and Potts Point), the Eastern Suburbs (Bondi, Bronte, Bondi Junction, Rose Bay, Double Bay, Paddington, Coogee, Randwick, Maroubra), Manly, Chatswood, and the Inner West's meters in Balmain, Rozelle and Leichhardt. More councils are on the way. Transport for NSW Park&Ride car parks show across Sydney.</div>`);
-    carParkRows();
+    cps.sort(byRank).forEach((r) => body.appendChild(cpRow(r.cp, r.d)));
     return;
   }
-  // Best kerb per street near the centre of the map.
+  // Best kerb per street and side near the centre of the map (or the destination).
   const best = new Map();
   for (const f of KERBS.features) {
     const p = f.properties;
@@ -619,81 +649,122 @@ function renderList() {
     const cur = best.get(key);
     if (!cur || score < cur.score) best.set(key, { f, p, c, d, score });
   }
-  const opts = [...best.values()].sort((a, b) => a.score - b.score);
-  const free = opts.filter((o) => o.c.ok && o.c.cost === 0 && !o.c.likely && !o.c.unknownRate && !o.c.permitOnly);
-  const permits = opts.filter((o) => o.c.permitOnly);
-  const likely = opts.filter((o) => o.c.likely);
-  const paid = opts.filter((o) => o.c.ok && (o.c.cost > 0 || o.c.unknownRate));
-  const no = opts.filter((o) => !o.c.ok);
+  const kerbs = [...best.values()].map(kerbRow);
+  const free = kerbs.filter((o) => o.g === 'free').sort(byRank), paid = kerbs.filter((o) => o.g === 'paid').sort(byRank), likely = kerbs.filter((o) => o.g === 'guess').sort(byRank);
+  const no = kerbs.filter((o) => o.g === 'no').sort((a, b) => a.d - b.d);
+  const ranked = [...kerbs.filter((o) => o.g !== 'no'), ...cps].sort(byRank);
+  const top = ranked.find((r) => r.kind === 'kerb' && r.g !== 'check') || ranked[0];
 
-  const sum = document.createElement('div');
+  const sum = document.createElement('p');
   sum.className = 'summary';
-  const stayTxt = stayWords(true);
-  if (free[0]) sum.innerHTML = `Free for ${stayTxt}: <strong>${free[0].p.s}</strong>, ${walkText(free[0].d)} ${S.dest ? `from ${S.dest.name}` : 'from the middle of the map'}.${paid[0] ? ` ${meterLine(paid[0])}` : ''}`;
-  else if (paid[0]) sum.innerHTML = `No free kerbs nearby for ${stayTxt}. ${meterLine(paid[0])}`;
-  else if (likely[0]) sum.innerHTML = `Probably free: <strong>${likely[0].p.s}</strong>, ${walkText(likely[0].d)} away. The council doesn't publish its signs here, so check before you park.`;
-  else if (permits[0]) sum.innerHTML = `The council doesn't publish the signs ${S.dest ? `near ${S.dest.name}` : 'here'}. The kerbs nearby are resident permit areas, where visitors are usually limited to 1 or 2 hours, so check the sign.`;
-  else sum.innerHTML = S.dest ? `No kerb data within a ${S.walk}-minute walk of ${S.dest.name}. Try a longer walk.` : `No kerb data near the middle of the map. Move the map to a street with coloured kerbs.`;
+  const stayTxt = stayWords(true), from = S.dest ? ` from ${S.dest.name}` : '';
+  if (!top) sum.innerHTML = S.dest ? `Nothing within a ${S.walk}-minute walk of ${S.dest.name} fits ${stayTxt}. Try a longer walk.` : 'No parking rules near the middle of the map. Move the map to a street with coloured lines.';
+  else if (top.kind === 'cp') sum.innerHTML = `Best for ${stayTxt}: <strong>${top.cp.name}</strong>, ${top.cert ? `about ${money(top.cost)} (estimate)` : money(top.cost)}, ${walkText(top.d)}${from}.`;
+  else if (top.g === 'free') sum.innerHTML = `Best for ${stayTxt}: <strong>${top.p.s}</strong>, free, ${walkText(top.d)}${from}.`;
+  else if (top.g === 'guess') sum.innerHTML = `<strong>${top.p.s}</strong> is probably free for ${stayTxt}, ${walkText(top.d)}${from}. Check the sign when you get there.`;
+  else if (top.g === 'paid') sum.innerHTML = `Cheapest for ${stayTxt}: <strong>${top.p.s}</strong>, ${costText(top.c)}${top.c.unknownRate ? ' (the council doesn\'t publish this meter\'s rate)' : ''}, ${walkText(top.d)}${from}.`;
+  else sum.innerHTML = `The council doesn't publish the signs ${S.dest ? `near ${S.dest.name}` : 'here'}. The streets nearby are resident permit areas, where visitors usually get 1 or 2 hours. Check the sign.`;
   body.appendChild(sum);
   compareLine(free, paid, centre, nearM);
   drawDest(S.dest ? { free, paid, likely } : null);
 
-  const group = (title, list, limit = 12) => {
-    if (!list.length) return;
-    const h = document.createElement('div'); h.className = 'group'; h.innerHTML = `<span>${title}</span><span class="num">${list.length}</span>`; body.appendChild(h);
-    list.slice(0, limit).forEach((o) => body.appendChild(optRow(o)));
-  };
-  savedRows(centre);
-  group('Free for your stay', free);
-  group('Meters', paid);
-  group('Probably free', likely, 8);
-  group('Permit areas: check the sign', permits, 8);
-  group(`Can't stay ${stayTxt}`, no, 6);
-  carParkRows();
+  // Filter chips: one list, narrowed when you want.
+  const fl = document.createElement('div'); fl.className = 'filters'; fl.setAttribute('role', 'group'); fl.setAttribute('aria-label', 'Show');
+  const count = { all: ranked.length, free: free.length + likely.length, meters: paid.length, carparks: cps.length };
+  fl.innerHTML = FILTERS.filter(([k]) => k !== 'carparks' || cps.length).map(([k, t]) => `<button type="button" data-filter="${k}" aria-pressed="${S.filter === k}">${t}<span class="num">${count[k]}</span></button>`).join('');
+  fl.querySelectorAll('[data-filter]').forEach((b) => (b.onclick = () => { S.filter = b.dataset.filter; S.more = false; body.dataset.mode = ''; renderList(); }));
+  body.appendChild(fl);
+
+  if (S.filter === 'all') savedRows(centre);
+  const shown = ranked.filter((r) => S.filter === 'all' || (S.filter === 'carparks' ? r.kind === 'cp' : r.kind === 'kerb' && (S.filter === 'free' ? r.g === 'free' || r.g === 'guess' : r.g === 'paid')));
+  const LIMIT = 20, list = S.more ? shown : shown.slice(0, LIMIT);
+  if (!list.length) body.insertAdjacentHTML('beforeend', `<p class="empty-row">Nothing ${S.filter === 'carparks' ? 'in car parks' : S.filter === 'free' ? 'free' : 'with a meter'} here for ${stayTxt}.</p>`);
+  const ul = document.createElement('div'); ul.className = 'rows';
+  for (const r of list) ul.appendChild(r.kind === 'cp' ? cpRow(r.cp, r.d) : optRow(r));
+  body.appendChild(ul);
+  if (shown.length > list.length) {
+    const more = document.createElement('button'); more.type = 'button'; more.className = 'morebtn';
+    more.textContent = `Show ${shown.length - list.length} more`;
+    more.onclick = () => { S.more = true; renderList(); };
+    body.appendChild(more);
+  }
+  if (no.length && S.filter !== 'carparks') {
+    const h = document.createElement('h3'); h.className = 'group'; h.innerHTML = `<span>Can't park here for ${stayTxt}</span><span class="num">${no.length}</span>`; body.appendChild(h);
+    const nl = document.createElement('div'); nl.className = 'rows';
+    no.slice(0, 6).forEach((o) => nl.appendChild(optRow(o)));
+    body.appendChild(nl);
+  }
   const foot = document.createElement('div'); foot.className = 'foot';
-  const upd = META ? new Date(META.fetchedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', timeZone: CITY.tz }) : '';
-  foot.innerHTML = CITY_ID !== 'syd' ? `${FOOT[CITY_ID]}${upd ? ` Refreshed nightly, last on ${upd}.` : ''} Councils don't publish every sign, so always read the sign before you park.` : `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey, Woollahra's resident permit areas, Randwick's resident permit kerbs, Randwick's and Inner West's published parking maps and meter lists, and street sign surveys for Manly (2020) and Chatswood, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so always read the sign before you park.`;
+  const upd = dataDate();
+  foot.innerHTML = CITY_ID !== 'syd' ? `${FOOT[CITY_ID]}${upd ? ` Refreshed nightly, last on ${upd}.` : ''} Councils don't publish every sign, so the sign on the street always wins.` : `Rules come from council open data: the City of Sydney's ${META ? META.meters.toLocaleString() : ''} parking meters, Waverley's kerb-by-kerb parking survey, Woollahra's resident permit areas, Randwick's resident permit kerbs, Randwick's and Inner West's published parking maps and meter lists, and street sign surveys for Manly (2020) and Chatswood, refreshed nightly${upd ? `, last on ${upd}` : ''}. Councils don't publish every sign, so the sign on the street always wins.`;
   foot.insertAdjacentHTML('beforeend', ' <a href="./parking/">Parking by area</a> · <a href="./terms.html">Terms</a> · <a href="./privacy.html">Privacy</a> · <a href="https://www.instagram.com/getstreety/" target="_blank" rel="noopener">Instagram</a>');
   body.appendChild(foot);
+}
+const dataDate = () => (META ? new Date(META.fetchedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', timeZone: CITY.tz }) : '');
+
+/* ---------- first open: one short welcome in the sheet, no sign-up ---------- */
+const flag = (k) => { try { return localStorage.getItem(k) === '1'; } catch { return true; } };
+const setFlag = (k) => { try { localStorage.setItem(k, '1'); } catch { /* private mode */ } };
+function welcomeCard() {
+  if (flag('streety-welcomed') || S.dest || LINK) return;
+  const el = document.createElement('section'); el.className = 'welcome'; el.setAttribute('aria-labelledby', 'wTitle');
+  el.innerHTML = `<h2 id="wTitle">Where are you driving to?</h2>
+    <p>Streety shows where you can park for your stay, what it costs, and what the sign should say when you get there.</p>
+    <button type="button" class="wsearch" data-welcome-search><i class="ph ph-magnifying-glass" aria-hidden="true"></i>Search a street or place</button>
+    <div class="wrow"><button type="button" class="cta" data-welcome-near><i class="ph ph-crosshair" aria-hidden="true"></i>Near me</button><button type="button" class="cta quiet" data-welcome-skip>Just the map</button></div>
+    <p class="note">No sign-up. Anything you save stays on this phone.</p>`;
+  el.querySelector('[data-welcome-search]').onclick = () => { endWelcome(); q.focus(); };
+  el.querySelector('[data-welcome-near]').onclick = () => { endWelcome(); locateMe(() => setEdit(true, 'stay')); };
+  el.querySelector('[data-welcome-skip]').onclick = () => { endWelcome(); maybeLegend(); };
+  body.appendChild(el);
+}
+function endWelcome() {
+  if (flag('streety-welcomed')) return;
+  setFlag('streety-welcomed');
+  body.dataset.mode = '';
+  renderList(); setPeek();
+}
+// The map key, once, after the first question is answered (never over a picker, a search or a dialog).
+function maybeLegend() {
+  if (flag('streety-legend') || !flag('streety-welcomed') || S.edit || DRIVE || document.querySelector('.snap') || document.activeElement === q) return;
+  setFlag('streety-legend');
+  toggleKey(true, true);
 }
 
 // What signs in this permit area usually say, from the council's decisions (never shown as the rule).
 const usual = (p) => (p.pa && META?.permitPatterns ? META.permitPatterns[String(p.pa).replace(/^(permit\s*)?area\s*/i, '').trim().toUpperCase()] : null);
 function usualHTML(p) {
   const u = usual(p);
-  return u ? `<div class="verdict est"><div><small>Usually, in ${p.pa}</small>${u.sign}, permit holders excepted</div></div><p class="plain">${u.n} of the council's ${u.of} recent sign decisions in ${p.pa} say this, so it's the likely sign here. Streety hasn't seen this kerb's own sign, so check before you leave the car.</p>` : '';
+  return u ? `<p class="plain"><b>Usually in ${p.pa}: ${u.sign}, permit holders excepted.</b> ${u.n} of the council's ${u.of} recent sign decisions in ${p.pa} say this, so it's the likely sign here. Streety hasn't seen this kerb's own sign, so check it before you leave the car.</p>` : '';
 }
+const TONE = { free: 'free', guess: 'likely', paid: 'paid', check: 'permit', no: 'restricted' };
 function optRow(o) {
-  const b = document.createElement('button'); b.type = 'button'; b.className = 'opt' + (o.c.ok ? '' : ' no');
+  const r = o.g ? o : kerbRow(o);
+  const b = document.createElement('button'); b.type = 'button'; b.className = `opt g-${r.g}`;
   const cat = category(o.p, RULES, S.day, S.hour, S.stay);
   const s = stateAt(o.p, RULES, S.day, S.hour);
-  const sub = o.c.ok
-    ? (o.c.yourPermit ? `Your permit area (${o.p.pa}): no time limit` : o.c.permitOnly ? (usual(o.p) ? `Permit ${o.p.pa}: usually ${usual(o.p).sign} for visitors` : `Resident permit ${o.p.pa}. Visitors usually time-limited`) : o.c.likely ? 'No permit scheme, check the sign' : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? (s.rule[0] >= 24 || s.rule[0] < 0 ? `${s.rule[7] || 'Free'} until ${fmtTime(s.rule[3])}` : `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}`) : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
-    : o.c.why;
+  const c = o.c;
+  const sub = c.ok
+    ? (c.yourPermit ? `Your permit area (${o.p.pa}): no time limit` : c.permitOnly ? (usual(o.p) ? `Permit ${o.p.pa}: usually ${usual(o.p).sign} for visitors` : `Resident permit ${o.p.pa}: visitors usually time-limited`) : c.likely ? 'No published sign. Check it when you park' : r.g === 'guess' ? `Probably free: ${s.why === 'before-hours' || s.why === 'night' ? `meters start ${fmtTime(s.until)}` : s.why === 'no-meter-day' ? `no meters on ${DAYS[S.day]}` : s.why === 'after-hours' ? 'the meters have finished' : 'outside the published sign'}` : s.kind === 'meter' ? `${pLabel(s.rule[0])} meter until ${fmtTime(s.rule[3])}` : s.kind === 'limit' ? (s.rule[0] >= 24 || s.rule[0] < 0 ? `${s.rule[7] || 'Free'} until ${fmtTime(s.rule[3])}` : `Free ${pLabel(s.rule[0])} until ${fmtTime(s.rule[3])}`) : s.why === 'unrestricted' ? 'No time limit' : s.until < 24 ? `Free until ${fmtTime(s.until)}` : 'Free for the rest of the day')
+    : c.why;
   const lv = busyLevel(busy(o.p, RULES, S.day, S.hour));
-  b.innerHTML = `<span class="bar" style="background:var(--${cat === 'short' ? 'paid' : cat})"></span>
-    <span style="min-width:0"><div class="name">${o.p.s}</div><div class="sub">${[o.p.sd, o.p.b].filter(Boolean).join(', ')}${o.p.sd || o.p.b ? '. ' : ''}${sub}</div></span>
-    <span class="right">${o.c.permitOnly ? '<span class="price">?</span>' : o.c.ok ? `<span class="price ${o.c.cost === 0 && !o.c.unknownRate ? 'free' : ''}">${costText(o.c)}</span>` : ''}<span class="walk">${walkText(o.d)}${liveCount(o.p) ? `, <b class="livetag">${liveCount(o.p).free} free now</b>` : o.c.ok ? `, ${BUSY_WORD[lv].toLowerCase()}` : ''}</span></span>`;
+  const tone = r.g === 'no' ? (cat === 'short' ? 'short' : 'restricted') : TONE[r.g];
+  const price = r.g === 'no' ? '<span class="price no">No</span>' : r.g === 'check' ? '<span class="price">Check</span>' : r.g === 'guess' ? '<span class="price guess">Free?</span>' : `<span class="price ${r.g === 'free' ? 'free' : ''}">${costText(c)}</span>`;
+  const live = liveCount(o.p);
+  b.innerHTML = `<span class="bar t-${tone}" aria-hidden="true"></span>
+    <span class="mid"><span class="name">${o.p.s}</span><span class="sub">${[o.p.sd, o.p.b].filter(Boolean).join(', ')}${o.p.sd || o.p.b ? '. ' : ''}${sub}</span>${live ? `<span class="busyline livetag">${live.free} free now</span>` : c.ok && lv === 'hard' ? `<span class="busyline"><i class="ph ph-users-three" aria-hidden="true"></i>${BUSY_PLAIN.hard}</span>` : ''}</span>
+    <span class="right">${price}<span class="walk">${walkText(o.d)}</span></span>`;
   b.onclick = () => select(o.p.id, true);
   return b;
 }
 
-function carParkRows() {
-  if (!CARPARKS.length || S.hidden.has('carpark')) return;
-  const centre = S.dest ? S.dest.at : map.getCenter().toArray();
-  const radius = S.dest ? Math.max(400, S.walk * WALK_M_PER_MIN) : 1500;
-  const near = CARPARKS.map((cp) => ({ cp, d: distM(cp.at, centre) })).filter((x) => x.d < radius).sort((a, b) => a.d - b.d);
-  if (!near.length) return;
-  const h = document.createElement('div'); h.className = 'group'; h.innerHTML = `<span>Car parks</span><span class="num">${near.length}</span>`; body.appendChild(h);
-  for (const { cp, d } of near) body.appendChild(cpRow(cp, d));
-}
 function cpRow(cp, d) {
   const price = carParkPrice(cp);
-  const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'opt g-cp';
   const pr = cp.kind === 'parkride', v = pr ? occAt(cp, S.day, S.hour) : null;
   const est = !price && !pr ? estimateFor(cp) : null;
-  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? (price.why === 'long' ? 'Price for this stay not published' : 'No rate for this time') : price ? price.k : est ? `Streety's estimate ${money(est.low)}-${money(est.high)}, not their real rates${cp.operator ? `. Run by ${cp.operator}` : ''}` : `Run by ${cp.operator}. Rates not published`;
-  b.innerHTML = `<span class="bar" style="background:var(--fg)"></span><span style="min-width:0"><div class="name">${cp.name}</div><div class="sub">${sub}</div></span><span class="right">${pr ? `<span class="price free">Free</span>` : price && !price.none ? `<span class="price${price.p === 0 ? ' free' : ''}">${money(price.p)}</span>` : est ? `<span class="price est">~${money(est.mid)}</span>` : ''}<span class="walk">${est ? 'estimate · ' : ''}${walkText(d)}</span></span>`;
+  const sub = pr ? `Free with an Opal trip${v == null ? '' : v >= 95 ? ', usually full now' : `, usually ~${spacesLeft(cp, v)} spaces left`}` : price?.none ? (price.why === 'long' ? 'Price for this stay not published' : 'No rate for this time') : price ? price.k : est ? `Streety's estimate ${money(est.low)}-${money(est.high)}, not their real rates` : `Run by ${cp.operator || 'a private operator'}. Rates not published`;
+  b.innerHTML = `<span class="bar t-cp" aria-hidden="true"><b>P</b></span><span class="mid"><span class="name">${cp.name}</span><span class="sub">Car park. ${sub}</span></span><span class="right">${pr ? '<span class="price free">Free</span>' : price && !price.none ? `<span class="price${price.p === 0 ? ' free' : ''}">${money(price.p)}</span>` : est ? `<span class="price est">~${money(est.mid)}</span>` : '<span class="price">Check</span>'}<span class="walk">${est ? 'estimate · ' : ''}${walkText(d)}</span></span>`;
   b.onclick = () => select(cp.id, true);
   return b;
 }
@@ -749,18 +820,19 @@ function setDest(d) {
   } else q.value = '';
   update();
 }
-// One tap back to the plain map: drop the street or car park, the destination, and lower the sheet.
-function closeAll() {
+// Closing a card goes back to the list where you left it. The destination stays until you clear it.
+function closeCard() {
   S.sel = null;
-  if (!isDesk()) setSheet('peek');
-  if (S.dest) setDest(null); else update();
+  if (!isDesk()) setSheet(listSheet || 'peek');
+  listSheet = null;
+  update();
 }
 function destBar() {
   if (!S.dest) return;
   const el = document.createElement('div'); el.className = 'dest';
-  el.innerHTML = `<div class="dest-top"><i class="ph-fill ph-map-pin" aria-hidden="true" style="color:#ea4335"></i><span>Near ${S.dest.name}</span><button type="button" aria-label="Clear destination"><i class="ph ph-x"></i></button></div>
-    <div class="walkseg" role="group" aria-label="Longest walk">Walk up to ${[2, 5, 10, 15, 20].map((w) => `<button type="button" data-w="${w}" aria-pressed="${w === S.walk}">${w} min</button>`).join('')}</div>`;
-  el.querySelector('.dest-top button').onclick = () => setDest(null);
+  el.innerHTML = `<div class="dest-top"><i class="ph-fill ph-map-pin" aria-hidden="true"></i><span>Near <b>${S.dest.name}</b></span><button type="button" class="iconx" data-act="cleardest" aria-label="Clear destination"><i class="ph ph-x"></i></button></div>
+    <div class="walkseg" role="group" aria-label="Longest walk"><span>Walk up to</span>${[2, 5, 10, 15, 20].map((w) => `<button type="button" data-w="${w}" aria-pressed="${w === S.walk}">${w} min</button>`).join('')}</div>`;
+  el.querySelector('[data-act=cleardest]').onclick = () => setDest(null);
   el.querySelectorAll('[data-w]').forEach((b) => (b.onclick = () => { S.walk = +b.dataset.w; try { localStorage.setItem('kerb-walk', String(S.walk)); } catch { /* ignore */ } renderList(); drawCarParks(); fitDest(); }));
   body.appendChild(el);
 }
@@ -772,11 +844,25 @@ function compareLine(free, paid, centre, nearM) {
   if (!cp) return;
   const kerb = free[0] ? { name: free[0].p.s, cost: 0 } : paid.find((o) => !o.c.unknownRate) ? { name: paid.find((o) => !o.c.unknownRate).p.s, cost: paid.find((o) => !o.c.unknownRate).c.cost } : null;
   const el = document.createElement('p'); el.className = 'compare';
-  if (!kerb) el.innerHTML = `Cheapest car park: <strong>${cp.cp.name}</strong>, ${money(cp.pr.p)} for ${stayWords(true)}.`;
+  if (!kerb) el.innerHTML = `Cheapest published car park: <strong>${cp.cp.name}</strong>, ${money(cp.pr.p)} for ${stayWords(true)}.`;
   else if (cp.pr.p > kerb.cost) el.innerHTML = `The street saves you <strong>${money(cp.pr.p - kerb.cost)}</strong> on the cheapest car park (${cp.cp.name}, ${money(cp.pr.p)}).`;
   else if (cp.pr.p < kerb.cost) el.innerHTML = `<strong>${cp.cp.name}</strong> is cheaper than the street: ${money(cp.pr.p)}, saving ${money(kerb.cost - cp.pr.p)}.`;
   else el.innerHTML = `<strong>${cp.cp.name}</strong> is also ${money(cp.pr.p)} for ${stayWords(true)}.`;
   body.appendChild(el);
+}
+
+// How sure Streety is: the kerb's own sign (council data or a sign survey), a driver's sign photo, or Streety's
+// reading of what the published signs leave out (meters finished for the night, no meter on Sundays).
+const INFER = new Set(['after-hours', 'before-hours', 'night', 'no-meter-day']);
+const isPhoto = (set) => /sign photo|driver's reading/i.test(set?.src || '');
+function guessed(p, day = S.day, h = S.hour, stay = S.stay) {
+  const set = p.k >= 0 ? RULES[p.k] : null;
+  if (!set || isPhoto(set)) return false;
+  for (let t = h; t < h + stay - 1e-9; t = Math.floor(t * 4 + 1e-6) / 4 + 0.25) {
+    const s = stateAt(p, RULES, (day + Math.floor(t / 24)) % 7, t % 24);
+    if (s.kind === 'free' && (INFER.has(s.why) || (s.why === 'outside-sign' && set.g === 'edges'))) return true;
+  }
+  return false;
 }
 
 // What a kerb costs for the chosen stay, including kerbs Streety only knows as a permit area or "probably free".
@@ -1078,21 +1164,14 @@ function busyHTML(p) {
   return `<div class="busy">${head}${rows}</div>`;
 }
 
-function estHTML(cp, e, stayTxt) {
-  return `<div class="verdict est"><div><small>${spanText(stayTxt)}</small>Streety's estimate</div><span class="big">~${money(e.mid)}</span></div>
-      <p class="plain">Probably ${money(e.low)} to ${money(e.high)}. ${cp.operator ? `${cp.operator} doesn't let us publish its rates, so this` : 'This'} is an estimate from what car parks nearby charge for the same time (${e.from.join(', ')}), adjusted for how the council's street meters here compare with theirs${e.meter ? ` (about ${money(e.meter)}/hr here)` : ''}.${S.stay >= 5 || S.night ? ` For a full day, Sydney car parks average ${NRMA_DAY}.` : ''}</p>
-      <p class="note">Not the real price. Busy CBD car parks often charge more, and early bird or online deals can be cheaper. The board at the entrance is what you'll pay.</p>`;
-}
 function prDetail(cp) {
   const v = occAt(cp, S.day, S.hour), full = prFullBy(cp, S.day);
   const now = v == null ? '' : v >= 95
     ? `Usually full at ${fmtTime(S.hour)} on ${DAYS_LONG[S.day]}s.`
     : `Usually about ${spacesLeft(cp, v)} of ${cp.spots} spaces free at ${fmtTime(S.hour)} on ${DAYS_LONG[S.day]}s.`;
-  return `<div class="verdict"><div><small>Park&amp;Ride, up to 18 hours</small>Free if you catch public transport</div><span class="big">Free</span></div>
-      <p class="plain">Tap on and off a train, bus, ferry or light rail trip with the same Opal or bank card, then tap out as you leave. Fees apply if you don't travel or you stay longer than 18 hours.</p>
-      ${cp.occ ? `<h3 class="h3">How full it gets on ${DAYS_LONG[S.day]}s</h3>${occHTML(cp)}
+  return `<section class="sect"><h3 class="h3">How full it gets on ${DAYS_LONG[S.day]}s</h3>${occHTML(cp)}
       <p class="plain">${now}${full != null && (v == null || v < 95) ? ` It's usually full by ${fmtTime(full)}.` : ''}</p>
-      <p class="note">From Transport for NSW's car park counters over the past week. Public holidays and school holidays will be quieter.</p>` : ''}`;
+      <p class="note">From Transport for NSW's car park counters over the past week. Public holidays and school holidays will be quieter.</p></section>`;
 }
 
 /* ---------- report a wrong sign or price: sent from inside the app, no email ---------- */
@@ -1175,10 +1254,75 @@ function fineHTML(p, set, c) {
   const lv = cn ? { 'very high': 'restricted', high: 'paid', medium: 'limit', low: 'free' }[cn.level] : '';
   return `<div class="fines"><h3 class="h3">Fines here</h3>
     ${rows.length ? `<div class="fine-rows">${rows.slice(0, 5).map((x) => `<div class="fine-row${x.now ? ' now' : ''}"><span>${x.label}${x.now ? ' <b>(right now)</b>' : ''}</span><b>${x.a}</b></div>`).join('')}</div>` : ''}
-    ${cn ? `<p class="plain"><span class="lvl" style="background:var(--${lv})">${cn.level[0].toUpperCase() + cn.level.slice(1)} ranger activity</span> ${cn.name} wrote ${cn.n.toLocaleString('en-AU')} parking fines in ${FINES.councilYear.replace('-20', '-')}, about ${cn.perKm2.toLocaleString('en-AU')} per square km (${cn.rank === 1 ? 'the most' : `number ${cn.rank}`} of ${FINES.of} Sydney councils).</p>` : ''}
+    ${cn ? `<p class="plain"><span class="lvl" style="border-color:var(--${lv});background:color-mix(in srgb, var(--${lv}) 16%, transparent)">${cn.level[0].toUpperCase() + cn.level.slice(1)} ranger activity</span> ${cn.name} wrote ${cn.n.toLocaleString('en-AU')} parking fines in ${FINES.councilYear.replace('-20', '-')}, about ${cn.perKm2.toLocaleString('en-AU')} per square km (${cn.rank === 1 ? 'the most' : `number ${cn.rank}`} of ${FINES.of} Sydney councils).</p>` : ''}
     ${set?.rules.some((r) => r[4] !== 0) ? `<p class="plain"><i class="ph ph-device-mobile" aria-hidden="true"></i> Paying by app? Some council apps add a service fee on top of the price on the sign. Paying at the meter, or with the NSW Government's Park'nPay app where the council takes it (it says it adds no fees), costs just the sign's price.</p>` : ''}
     <button type="button" class="linkbtn" data-act="proofs"><i class="ph ph-shield-check" aria-hidden="true"></i>Got a fine? Your parking records and how to ask for a review</button>
     <p class="note">Fine amounts from Revenue NSW's ${FINES.fineYear.replace('-20', '-')} penalty data (they usually go up a little each July). Two amounts mean it depends on the area. Fines by council from Revenue NSW open data.</p></div>`;
+}
+
+// The first screenful of a card answers "can I park here, what does it cost, why, how sure is Streety, how do I
+// get there", in that order. The sign to look for, fines, the week and busyness follow below.
+const VICON = { free: 'ph-fill ph-check-circle', guess: 'ph ph-question', paid: 'ph ph-currency-dollar', check: 'ph ph-warning', no: 'ph-fill ph-prohibit' };
+const spanShort = () => `${S.planned ? `${S.day === today.day ? 'today' : S.day === (today.day + 1) % 7 ? 'tomorrow' : DAYS[S.day]} ` : ''}${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}${S.hour + S.stay >= 24 ? ` ${DAYS[(S.day + 1) % 7]}` : ''}`;
+const forStay = () => `For ${S.night ? 'the night' : stayWords(true)}, ${spanShort()}`;
+function verdictHTML({ g, word, big, sub }) {
+  return `<div class="verdict v-${g}" role="group" aria-label="${plainText(`${word}${big && big !== word ? ` ${big}` : ''}. ${sub}`)}">
+    <span class="vicon" aria-hidden="true"><i class="${VICON[g]}"></i></span>
+    <span class="vtext"><span class="vword">${big || word}</span><span class="vsub">${big && big !== word ? `${word}. ` : ''}${sub}</span></span></div>`;
+}
+const SRC_NAME = { syd: 'City of Sydney meter data', mel: 'City of Melbourne data', bne: 'Brisbane City Council data', per: 'City of Perth data' };
+const isoDate = (iso) => { const d = iso && new Date(`${iso}T12:00:00`); return d && !isNaN(d) ? d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }) : ''; };
+function trustHTML(kind, text) {
+  const ic = { signed: 'ph-seal-check', photo: 'ph-camera', guess: 'ph-question' }[kind];
+  return `<p class="trust t-${kind}"><i class="ph ${ic}" aria-hidden="true"></i><span>${text}</span></p>`;
+}
+function kerbTrust(p, g) {
+  const set = p.k >= 0 ? RULES[p.k] : null, upd = dataDate();
+  if (set && isPhoto(set)) return trustHTML('photo', `From a driver's sign photo, ${isoDate(/(\d{4}-\d\d-\d\d)/.exec(set.src)?.[1]) || 'recently'}. Check it matches.`);
+  if (p.lk) return trustHTML('guess', "Streety's guess: no permit scheme here, and the council doesn't publish its signs. Check the sign.");
+  if (!set) return trustHTML('guess', "The council doesn't publish this sign. Check it before you leave the car.");
+  const src = set.src || SRC_NAME[CITY_ID];
+  if (g === 'guess') return trustHTML('guess', `Streety's reading: ${src} has no rule for this time${upd ? ` (updated ${upd})` : ''}. Check the sign.`);
+  if (g === 'check') return trustHTML('guess', `${src} doesn't cover this time. Check the sign.`);
+  return trustHTML('signed', `From ${src}${upd ? `, updated ${upd}` : ''}`);
+}
+function kerbVerdict(p, c, g, v) {
+  const sub = forStay();
+  if (g === 'no') {
+    const word = /limit/i.test(c.why || '') ? `Can't stay ${S.night ? 'overnight' : stayWords(true).replace('an hour', '1 hour')}` : String(c.why || 'No parking').replace(/\s+(\d|midnight|noon).*$/, '').replace(/^\w/, (x) => x.toUpperCase());
+    return { g, word, sub: `${c.why}. ${sub}` };
+  }
+  if (g === 'check') return { g, word: 'Check the sign', sub: c.permitOnly ? `Resident permit area: visitors usually get 1 or 2 hours. ${sub}` : sub };
+  if (g === 'guess') return { g, word: 'Probably free', sub };
+  if (g === 'free') return { g, word: c.quarterFree ? 'Free with a ticket' : c.waived > 0 && c.paidHours === 0 ? 'Free with your permit' : c.yourPermit ? 'Free in your permit area' : 'Free', sub };
+  return { g: 'paid', word: v.head, big: c.unknownRate && !(c.cost > 0) ? '' : costText(c), sub };
+}
+function whyLine(p, c, g, v) {
+  const end = fmtTime((S.hour + S.stay) % 24);
+  if (g === 'no') { const t = plainNow(p, RULES, S.day, S.hour); return /can't park/i.test(t) ? t : `${t} You'd be there until ${end}.`; }
+  let t = v.why || plainNow(p, RULES, S.day, S.hour);
+  if (c.ok && !/gone by|you leave/i.test(t)) t += ` You leave at ${end}.`;
+  return t + (p.f15 ? ' Free 15-minute zone: a ticket gets you the first quarter hour free.' : '');
+}
+// Car parks: the price for your stay, Streety's estimate, or "check the board".
+function cpVerdict(cp, price) {
+  const sub = forStay();
+  if (cp.kind === 'parkride') return { v: { g: 'free', word: 'Free', sub: 'With a public transport trip, up to 18 hours' }, trust: trustHTML('signed', 'Transport for NSW Park&Ride') };
+  const checked = cp.checked ? new Date(cp.checked).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+  const trust = cp.fromPhoto ? trustHTML('photo', `From your photo of the price board, ${isoDate(cp.fromPhoto) || cp.fromPhoto}`)
+    : checked ? trustHTML('signed', `Rates checked ${checked}${cp.rateSource ? ` on <a href="${cp.rateSource}" target="_blank" rel="noopener">the ${cp.operator || 'owner'}'s website</a>` : ''}. The board at the entrance wins.`)
+      : trustHTML('signed', 'Published rates. The board at the entrance wins.');
+  if (price && !price.none) return { v: { g: price.p === 0 ? 'free' : 'paid', word: price.k, big: money(price.p), sub }, trust };
+  if (price?.none) {
+    if (price.why === 'long') for (let s = Math.min(S.stay, 24) - 0.25; s >= 0.25; s -= 0.25) {
+      const q = carParkPrice(cp, S.day, S.hour, s);
+      if (q && !q.none) return { v: { g: 'check', word: `${stayWordsFor(s)} at most`, big: money(q.p), sub: `You picked ${stayWords(true)}. The longest stay from ${fmtTime(S.hour)} is ${stayWordsFor(s)}.` }, trust };
+    }
+    return { v: { g: 'check', word: price.why === 'long' ? 'Not for that long' : 'No rate at this time', sub }, trust };
+  }
+  const e = estimateFor(cp);
+  if (e) return { v: { g: 'guess', word: "Streety's estimate", big: `~${money(e.mid)}`, sub: `Probably ${money(e.low)} to ${money(e.high)}. ${sub}` }, trust: trustHTML('guess', `Not their real price: ${cp.operator ? `${cp.operator} doesn't let us publish its rates` : 'the rates aren\'t published'}. The board at the entrance wins.`) };
+  return { v: { g: 'check', word: 'Check the board', sub: `${cp.operator ? `Run by ${cp.operator}. ` : ''}The rates aren't published anywhere we can use yet.` }, trust: trustHTML('guess', 'Rates not published') };
 }
 
 function renderDetail() {
@@ -1187,73 +1331,82 @@ function renderDetail() {
   if (!f && !cp) { S.sel = null; renderList(); return; }
   body.replaceChildren();
   const d = document.createElement('div'); d.className = 'detail';
-  const stayTxt = stayWords(false);
+  const head = `<div class="dhead"><button class="back" type="button"><i class="ph ph-arrow-left" aria-hidden="true"></i>All options</button><button class="dclose" type="button" aria-label="Close this card"><i class="ph ph-x"></i></button></div>`;
   if (f) {
     const p = f.properties;
     const c = kerbCost(p);
     const set = p.k >= 0 ? RULES[p.k] : null;
     const lv = busyLevel(busy(p, RULES, S.day, S.hour));
     const v = verdictText(p, c);
-    d.innerHTML = `
-      <div class="dhead"><button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button><button class="dclose" type="button" aria-label="Close and show the whole map"><i class="ph ph-x"></i></button></div>
-      <div><h2>${p.s}</h2><div class="where">${[p.sd, p.b, p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} ${p.k >= 0 ? 'paid ' : ''}spaces` : ''].filter(Boolean).join(', ')}</div></div>
+    const g = c.ok === null ? 'check' : kerbRow({ p, c, d: 0 }).g;
+    const suburb = p.b && !/side$/i.test(p.b) ? p.b : '';
+    const extra = [p.pa ? `Permit ${p.pa}` : '', p.n ? `about ${p.n} ${p.k >= 0 ? 'paid ' : ''}spaces` : ''].filter(Boolean).join(', ');
+    d.innerHTML = `${head}
+      <div class="dtitle"><h2>${p.s}</h2><div class="where">${[p.sd, suburb].filter(Boolean).join(' · ') || 'This side of the street'}</div></div>
       ${liveCount(p) ? `<div class="live"><i class="ph-fill ph-broadcast" aria-hidden="true"></i><span><b>${liveText(liveCount(p))}</b><small>Live from the council's in-ground sensors, ${Math.max(1, Math.round((Date.now() - LIVE_AT) / 60000))} min ago</small></span></div>` : ''}
-      <div class="verdict"><div><small>${spanText(stayTxt)}</small>${v.head}</div>
-        ${p.lk ? `<span class="big" style="color:var(--free)">$0?</span>` : c.ok ? `<span class="big" style="color:var(--${c.cost === 0 && !c.unknownRate ? 'free' : 'fg'})">${costText(c)}</span>` : c.ok === false ? `<span class="no">${c.why}</span>` : ''}</div>
-      ${set ? `<div class="signhero"><div class="sh-cap">The sign${set.src ? '' : 's'} here</div><div class="plates big">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div></div>` : ''}
-      <p class="plain">${v.why || plainNow(p, RULES, S.day, S.hour)}${p.f15 ? ' This street is in a free 15-minute zone, so a ticket gets you the first quarter hour free.' : ''}</p>
+      ${verdictHTML(kerbVerdict(p, c, g, v))}
+      <p class="why">${whyLine(p, c, g, v)}</p>
+      ${kerbTrust(p, g)}
+      ${actionsHTML(kerbMid(f), p.id)}
+      <section class="arrive" aria-labelledby="arriveH">
+        <h3 class="h3" id="arriveH">${set ? 'When you arrive, check the sign says' : 'When you arrive, check the sign'}</h3>
+        ${set ? `<div class="plates big">${set.src ? (set.u ? '<p class="plain">No signs. Unrestricted parking.</p>' : mergeOvernight(set.rules).map(rulePlate).join('')) : set.text.split(';').filter((x) => x.trim()).map(plateHTML).join('')}</div>`
+          : `${usualHTML(p)}<p class="plain">${p.lk ? `Based on ${p.lks || 'Woollahra Council\'s resident permit areas'}: streets outside a permit scheme are usually unrestricted, but the council doesn't publish its signs.` : p.ps ? `Permit area from the ${p.ps}. The council doesn't publish the sign times, so visitors should check the sign for the time limit.` : 'Streety only shows rules the council publishes. This side of the street has no published signs yet.'}</p>
+        <button type="button" class="snapcta" id="snapHere"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>Snap the sign here</b><small>Streety reads it, tells you if you can park, and fills in this kerb.</small></span></button>`}
+        <p class="note">The sign on the street always wins.${extra ? ` ${extra.replace(/^\w/, (x) => x.toUpperCase())}.` : ''}</p>
+      </section>
       ${fineHTML(p, set, c)}
-      ${set ? `<h3 class="h3">Across the week</h3>${weekHTML(p)}
-      <h3 class="h3">How hard to find a spot: ${BUSY_WORD[lv].toLowerCase()} right now</h3>${busyHTML(p)}
-      <p class="note">Busyness is an estimate from the area and its time limits. It gets real once drivers start reporting.</p>
-      <p class="note">Source: ${set.src ? `${set.src}${/survey|committee|map|photo|decision/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : `City of Sydney parking meter data`}. Councils update signs from time to time, so the sign on the street always wins.</p>
-      ` : `${usualHTML(p)}<p class="note">${p.lk ? `Based on ${p.lks || 'Woollahra Council\'s resident permit areas'}: streets outside a permit scheme are usually unrestricted, but the council doesn't publish its signs.` : p.ps ? `Permit area from the ${p.ps}. The council doesn't publish the sign times, so visitors should check the sign for the time limit.` : 'Streety only shows rules the council publishes. This side of the street has no published signs yet.'}</p>
-      <button type="button" class="snapcta" id="snapHere"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>Snap the sign here</b><small>Streety reads it, tells you if you can park, and fills in this kerb.</small></span></button>`}
+      ${set ? `<section class="sect"><h3 class="h3">Across the week</h3>${weekHTML(p)}</section>
+      <section class="sect"><h3 class="h3">Finding a spot ${S.planned ? `${DAYS[S.day]} ${fmtTime(S.hour)}` : 'now'}: ${BUSY_PLAIN[lv].replace(/^Busy: /, '').toLowerCase()}</h3>${busyHTML(p)}
+      <p class="note">An estimate from the area, the day and the time limits, not live counts.</p></section>
+      <p class="note">Source: ${set.src ? `${set.src}${/survey|committee|map|photo|decision|reading/i.test(set.src) ? '' : ' parking survey'}${set.text ? `. Recorded as "${set.text}"` : ''}` : SRC_NAME[CITY_ID]}. Councils update signs from time to time, so the sign on the street always wins.</p>` : ''}
       ${streetViewHTML(p, mids.get(p.id))}
-      <button type="button" class="reportcta" id="reportBtn"><i class="ph ph-flag" aria-hidden="true"></i>Report a wrong sign</button>
       <div class="photos" id="signPhotos" hidden></div>
-      ${actionsHTML(mids.get(p.id), p.id)}`;
+      <button type="button" class="reportcta" id="reportBtn"><i class="ph ph-flag" aria-hidden="true"></i>Report a wrong sign</button>`;
   } else {
     const price = carParkPrice(cp);
-    d.innerHTML = `
-      <div class="dhead"><button class="back" type="button"><i class="ph ph-arrow-left"></i>All options</button><button class="dclose" type="button" aria-label="Close and show the whole map"><i class="ph ph-x"></i></button></div>
-      <div><h2>${cp.name}</h2><div class="where">${[cp.address, cp.entry ? `Entry from ${cp.entry}` : '', cp.spots ? `${cp.spots} spaces` : ''].filter(Boolean).join('. ')}.</div></div>
-      ${cp.kind === 'parkride' ? prDetail(cp) : price && !price.none ? `<div class="verdict"><div><small>${spanText(stayTxt)}</small>${price.k}</div><span class="big" style="color:var(--${price.p === 0 ? 'free' : 'fg'})">${money(price.p)}</span></div>`
-        : price?.none ? maxStayHTML(cp, price, stayTxt)
-        : estimateFor(cp) ? estHTML(cp, estimateFor(cp), stayTxt)
-        : `<p class="plain">${cp.operator ? `Run by ${cp.operator}. ` : ''}The rates aren't published anywhere we can use yet, so check the board at the entrance before you go in.</p>`}
-      ${cp.rates?.length ? `<h3 class="h3">Rates${cp.fromPhoto ? ` <small class="muted">from your photo, ${cp.fromPhoto}</small>` : ''}</h3>${rateBoard(cp)}` : ''}
+    const { v, trust } = cpVerdict(cp, price);
+    const e = !price && cp.kind !== 'parkride' ? estimateFor(cp) : null;
+    d.innerHTML = `${head}
+      <div class="dtitle"><h2>${cp.name}</h2><div class="where">${[cp.address, cp.entry ? `Entry from ${cp.entry}` : ''].filter(Boolean).join(' · ') || 'Car park'}</div></div>
+      ${verdictHTML(v)}
+      ${cp.kind === 'parkride' ? '<p class="why">Tap on and off a train, bus, ferry or light rail trip with the same Opal or bank card, then tap out as you leave. Fees apply if you don\'t travel or stay longer than 18 hours.</p>' : price?.none ? `<p class="why">${price.why === 'long' ? 'Longer stays aren\'t allowed or aren\'t published, so check the board at the entrance.' : 'It may be closed then, or the rate isn\'t published. Check the board at the entrance.'}</p>` : ''}
+      ${trust}
+      ${actionsHTML(cp.at, cp.id)}
+      ${cp.kind === 'parkride' && cp.occ ? prDetail(cp) : ''}
+      ${e ? `<p class="plain">This estimate comes from what car parks nearby charge for the same time (${e.from.join(', ')}), adjusted for how the council's street meters here compare with theirs${e.meter ? ` (about ${money(e.meter)}/hr here)` : ''}.${S.stay >= 5 || S.night ? ` For a full day, Sydney car parks average ${NRMA_DAY}.` : ''}</p><p class="note">Busy CBD car parks often charge more, and early bird or online deals can be cheaper.</p>` : ''}
+      ${cp.rates?.length ? `<section class="sect"><h3 class="h3">Rates${cp.fromPhoto ? ' from your photo' : ''}</h3>${rateBoard(cp)}</section>` : ''}
       ${cp.kind === 'parkride' ? '' : `<button type="button" class="snapcta" data-snapboard="${cp.id}"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>${cp.rates?.length ? 'Prices changed? Snap the board' : 'Snap the price board'}</b><small>At the entrance? Photograph the prices and Streety fills them in.</small></span></button>`}
-      ${price?.none ? `<p class="plain">${price.why === 'long' ? 'Longer stays aren\'t allowed or aren\'t published, so check the board at the entrance.' : 'It may be closed then, or the rate isn\'t published. Check the board at the entrance.'}</p>` : ''}
+      ${cp.spots ? `<p class="plain">${cp.spots} spaces.</p>` : ''}
       ${cp.hours ? `<p class="plain">Open ${cp.hours}.</p>` : ''}
       ${cp.note ? `<p class="plain">${cp.note}</p>` : ''}
       ${cp.hospital ? `<div class="concession"><i class="ph ph-first-aid-kit" aria-hidden="true"></i><span><b>Here often for treatment, or caring for a patient?</b> NSW public hospitals have concession parking for patients and carers who come often or for a long stay, and for people in financial hardship. Before you leave, take your ticket, photo ID and any concession card to the hospital's parking office and ask for the concession rate. <a href="https://www.service.nsw.gov.au/referral/claim-concession-car-parking-at-nsw-health-public-hospitals" target="_blank" rel="noopener">How it works</a></span></div>` : ''}
-      ${cp.phone ? `<p class="plain">Phone <span class="num">${cp.phone}</span></p>` : ''}
-      ${cp.url && !cp.rates?.length ? `<a class="cta" href="${cp.url}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i>Rates on ${cp.operator || 'the operator'}'s website</a>` : ''}
+      ${cp.phone ? `<p class="plain">Phone <a class="num" href="tel:${String(cp.phone).replace(/[^\d+]/g, '')}">${cp.phone}</a></p>` : ''}
+      ${cp.url && !cp.rates?.length ? `<a class="cta" href="${cp.url}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out" aria-hidden="true"></i>Rates on ${cp.operator || 'the operator'}'s website</a>` : ''}
       ${/2016/.test(cp.source || '') ? '<p class="note">From Transport for NSW\'s 2016 list of CBD car parks, so the operator or hours may have changed.</p>' : ''}
-      ${cp.checked ? `<p class="note">Rates checked ${new Date(cp.checked).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}${cp.rateSource ? ` on <a href="${cp.rateSource}" target="_blank" rel="noopener">the ${cp.operator || 'owner'}'s website</a>` : ''}. Rates change, so the board at the entrance always wins.</p>` : ''}
-      <button type="button" class="reportcta" id="reportBtn"><i class="ph ph-flag" aria-hidden="true"></i>Report a problem with this car park</button>
-      ${actionsHTML(cp.at, cp.id)}`;
+      <button type="button" class="reportcta" id="reportBtn"><i class="ph ph-flag" aria-hidden="true"></i>Report a problem with this car park</button>`;
   }
   body.appendChild(d);
-  // Stay where you were when the same detail just refreshes (time or stay changed); jump to the top for a new one.
+  // Stay where you were when the same card just refreshes (time or stay changed); jump to the top for a new one.
   if (body.dataset.mode !== `detail:${S.sel}`) body.scrollTop = 0;
   body.dataset.mode = `detail:${S.sel}`;
   if (f) loadSignPhotos(f, d.querySelector('#signPhotos'));
-  d.querySelector('.back').onclick = () => { S.sel = null; update(); };
-  d.querySelector('.dclose').onclick = closeAll;
+  d.querySelector('.back').onclick = closeCard;
+  d.querySelector('.dclose').onclick = closeCard;
   const id = S.sel;
+  const title = f ? `${f.properties.s}${f.properties.sd ? `, ${f.properties.sd.toLowerCase()}` : ''}` : cp.name;
+  d.querySelector('[data-act=directions]').onclick = () => directions(f ? kerbMid(f) : cp.at, title);
   d.querySelector('[data-act=save]').onclick = (e) => { toggleSaved(id); const on = isSaved(id); e.currentTarget.setAttribute('aria-pressed', String(on)); e.currentTarget.innerHTML = starInner(on); };
   d.querySelector('[data-act=share]').onclick = () => shareSel(f, cp);
   const pk = d.querySelector('[data-act=park]'); if (pk) pk.onclick = () => parkedNow(f);
   const pb = d.querySelector('[data-act=proofs]'); if (pb) pb.onclick = openProofList;
   const rb = d.querySelector('#reportBtn');
   if (rb) rb.onclick = () => (f
-    ? openReport({ id: f.properties.id, title: `${f.properties.s}${f.properties.sd ? `, ${f.properties.sd.toLowerCase()}` : ''}`, at: mids.get(f.properties.id), published: f.properties.k >= 0 ? RULES[f.properties.k]?.text || '' : '' })
+    ? openReport({ id: f.properties.id, title, at: mids.get(f.properties.id), published: f.properties.k >= 0 ? RULES[f.properties.k]?.text || '' : '' })
     : openReport({ carpark: true, id: cp.id, title: cp.name, at: cp.at }));
 }
 
-const starInner = (on) => `<i class="ph${on ? '-fill' : ''} ph-star"></i>${on ? 'Saved' : 'Save'}`;
+const starInner = (on) => `<i class="ph${on ? '-fill' : ''} ph-star" aria-hidden="true"></i>${on ? 'Saved' : 'Save'}`;
 // A link out to Google Street View at this kerb, facing the kerb, so drivers can read the sign themselves.
 // It's only a link (Google Maps URLs need no key and cost nothing); Streety never copies anything from Street View.
 const SIDE_BEARING = { North: 0, 'North-east': 45, East: 90, 'South-east': 135, South: 180, 'South-west': 225, West: 270, 'North-west': 315 };
@@ -1264,17 +1417,53 @@ function streetViewHTML(p, at) {
   const url = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}${h != null ? `&heading=${h}` : ''}`;
   return `<a class="snapcta" href="${url}" target="_blank" rel="noopener"><i class="ph-fill ph-binoculars" aria-hidden="true"></i><span><b>Check the sign in Street View</b><small>Opens Google Street View at this kerb. Photos can be a few years old, so the sign on the street wins.</small></span></a>`;
 }
+// One Directions button. The first tap asks which app (Google Maps, Apple Maps or Waze) and remembers it; My car
+// changes it. It always navigates to the middle of the kerb itself, never to the street name or suburb.
+const NAV = {
+  google: { name: 'Google Maps', url: ([lon, lat]) => `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&travelmode=driving` },
+  apple: { name: 'Apple Maps', url: ([lon, lat]) => `https://maps.apple.com/?daddr=${lat},${lon}&dirflg=d` },
+  waze: { name: 'Waze', url: ([lon, lat]) => `https://waze.com/ul?ll=${lat},${lon}&navigate=yes` },
+};
+const navApp = () => { try { const v = localStorage.getItem('streety-nav'); return NAV[v] ? v : ''; } catch { return ''; } };
+const setNavApp = (v) => { try { if (v) localStorage.setItem('streety-nav', v); else localStorage.removeItem('streety-nav'); } catch { /* private mode */ } };
+const appleFirst = () => /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
+// The point halfway along the kerb's line (the average of its ends can sit off a curved kerb).
+function kerbMid(f) {
+  const c = f.geometry.coordinates;
+  let total = 0; const seg = [];
+  for (let i = 1; i < c.length; i++) { const l = distM(c[i - 1], c[i]); seg.push(l); total += l; }
+  let half = total / 2;
+  for (let i = 0; i < seg.length; i++) {
+    if (half <= seg[i] && seg[i] > 0) { const k = half / seg[i]; return [c[i][0] + (c[i + 1][0] - c[i][0]) * k, c[i][1] + (c[i + 1][1] - c[i][1]) * k].map((v) => +v.toFixed(6)); }
+    half -= seg[i];
+  }
+  return mids.get(f.properties.id);
+}
+function directions(at, title) {
+  const app = navApp();
+  if (app) { window.open(NAV[app].url(at), '_blank', 'noopener'); return; }
+  const keys = appleFirst() ? ['apple', 'google', 'waze'] : ['google', 'apple', 'waze'];
+  const el = document.createElement('div'); el.className = 'snap'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-labelledby', 'navT');
+  el.innerHTML = `<div class="snap-card navpick"><div class="snap-top"><b id="navT">Open directions in</b><button type="button" class="snap-x" aria-label="Close"><i class="ph ph-x"></i></button></div>
+    <div class="snap-body"><p class="snap-status">To <b>${title}</b>. Streety remembers your choice. You can change it in My car.</p>
+      <div class="navlist">${keys.map((k) => `<a class="navopt" data-nav="${k}" href="${NAV[k].url(at)}" target="_blank" rel="noopener"><span>${NAV[k].name}</span><i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>`).join('')}</div>
+    </div></div>`;
+  document.body.appendChild(el);
+  const close = () => el.remove();
+  el.querySelector('.snap-x').onclick = close;
+  el.onclick = (e) => { if (e.target === el) close(); };
+  el.querySelectorAll('[data-nav]').forEach((a) => (a.onclick = () => { setNavApp(a.dataset.nav); setTimeout(() => { close(); renderBody(); }, 50); }));
+  el.querySelector('.navopt').focus();
+}
 function actionsHTML(at, id) {
-  const [lon, lat] = at.map((v) => +v.toFixed(6)), on = isSaved(id);
+  const on = isSaved(id), app = navApp(), kerb = typeof id === 'number';
   return `<div class="actions">
-      <button class="cta" type="button" data-act="save" aria-pressed="${on}">${starInner(on)}</button>
-      <button class="cta" type="button" data-act="share"><i class="ph ph-share-network"></i>Share</button>
-      ${typeof id === 'number' ? '<button class="cta" type="button" data-act="park"><i class="ph ph-car-simple"></i>I parked here</button>' : ''}
-    </div>
-    <div class="actions"><span class="nav-label">Drive there with</span>
-      <a class="cta" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank" rel="noopener"><i class="ph ph-navigation-arrow"></i>Google Maps</a>
-      <a class="cta" href="https://maps.apple.com/?daddr=${lat},${lon}&dirflg=d" target="_blank" rel="noopener"><i class="ph ph-map-trifold"></i>Apple Maps</a>
-      <a class="cta" href="https://waze.com/ul?ll=${lat},${lon}&navigate=yes" target="_blank" rel="noopener"><i class="ph ph-car"></i>Waze</a>
+      <button type="button" class="primary" data-act="directions"><i class="ph-fill ph-navigation-arrow" aria-hidden="true"></i><span>Directions</span>${app ? `<small>${NAV[app].name}</small>` : ''}</button>
+      <div class="acts2${kerb ? ' three' : ''}">
+        ${kerb ? '<button class="cta" type="button" data-act="park"><i class="ph ph-car-simple" aria-hidden="true"></i>I parked here</button>' : ''}
+        <button class="cta" type="button" data-act="save" aria-pressed="${on}">${starInner(on)}</button>
+        <button class="cta" type="button" data-act="share"><i class="ph ph-share-network" aria-hidden="true"></i>Share</button>
+      </div>
     </div>`;
 }
 async function shareSel(f, cp) {
@@ -1339,8 +1528,11 @@ async function fetchSignPhotos(f) {
 }
 
 function select(id, fly) {
+  // Remember where the list was, so Back returns to the same row.
+  if (S.sel == null && body.dataset.mode === 'list') { listScroll = body.scrollTop; listSheet = sheet; }
   S.sel = id;
-  // Like Google Maps: a tapped street opens as a card at the bottom, with the map still in view. Swipe up for more.
+  // Like Google Maps: a tapped street opens as a card at the bottom, tall enough to show its answer and Directions,
+  // with the map still in view above it. Swipe up for the rest.
   if (id != null && !isDesk()) { if (S.edit) setEdit(false); setSheet('peek'); }
   if (fly && id != null) {
     const at = typeof id === 'number' ? mids.get(id) : CARPARKS.find((c) => c.id === id)?.at;
@@ -1353,7 +1545,6 @@ function select(id, fly) {
 }
 
 /* ---------- legend ---------- */
-const LEGEND = [['free', 'Free'], ['likely', 'Probably free'], ['paid', 'Meter'], ['short', 'Too short'], ['restricted', 'No parking'], ['permit', 'Permit area'], ['carpark', 'Car parks']];
 function renderLegend() {
   const lg = $('#legend'); lg.replaceChildren();
   const chip = (cls, pressed, html, title, onclick) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.setAttribute('aria-pressed', String(pressed)); b.innerHTML = html; b.title = title; b.onclick = onclick; lg.appendChild(b); return b; };
@@ -1362,7 +1553,7 @@ function renderLegend() {
   const carBits = [BEN.vehicle === 'moto' ? 'Motorbike' : BEN.vehicle === 'ev' ? 'Electric' : '', BEN.permit ? `Permit ${BEN.permit.replace(/^.*Area\s*/i, '')}` : '', BEN.mps ? 'Mobility' : ''].filter(Boolean);
   chip('perm', carBits.length > 0, `<i class="ph ph-${BEN.vehicle === 'moto' ? 'motorcycle' : 'car-profile'}" aria-hidden="true"></i>${carBits.length ? carBits.join(' · ') : 'My car'}`, 'My car: vehicle, resident permit, mobility permit', () => toggleCar());
   chip('perm', !!DRIVE, `<i class="ph ph-steering-wheel" aria-hidden="true"></i>${DRIVE ? 'Driving' : 'Drive'}`, 'Drive mode: Streety follows you and says where to park', () => (DRIVE ? stopDrive() : startDrive()));
-  chip('keybtn', false, '<i class="ph ph-swatches" aria-hidden="true"></i>Key', 'What the colours mean', () => toggleKey());
+  chip('keybtn', false, '<i class="ph ph-swatches" aria-hidden="true"></i>Map key', 'What the lines mean', () => toggleKey());
 }
 // My car: the answers change to fit the driver (motorbike bays, EV bays, their own permit area, mobility permit).
 function saveCar() {
@@ -1379,20 +1570,31 @@ function toggleCar(force) {
     <div class="seg" role="radiogroup" aria-label="Vehicle">${veh.map(([k, n, ic]) => `<button type="button" role="radio" data-veh="${k}" aria-checked="${BEN.vehicle === k}"><i class="ph ph-${ic}"></i>${n}</button>`).join('')}</div>
     ${areas.length ? `<label class="kp-field"><span>Resident parking permit</span><select id="permitSel"><option value="">None</option>${areas.map((a) => `<option${a === BEN.permit ? ' selected' : ''}>${a}</option>`).join('')}</select></label>` : ''}
     ${CITY_ID === 'syd' ? `<label class="kp-row"><i class="ph ph-wheelchair" style="background:none;width:auto;height:auto;font-size:18px"></i><span>NSW mobility parking permit</span><input type="checkbox" id="mpsBox"${BEN.mps ? ' checked' : ''}></label>` : ''}
+    <label class="kp-field"><span>Directions open in</span><select id="navSel"><option value="">Ask me each time</option>${Object.entries(NAV).map(([k, n]) => `<option value="${k}"${navApp() === k ? ' selected' : ''}>${n.name}</option>`).join('')}</select></label>
     <p class="kp-note">Streety then shows motorbike or EV bays as yours, your permit area without visitor time limits, and mobility permit concessions. Saved on this phone only.</p>`;
+  pop.querySelector('#navSel').onchange = (e) => { setNavApp(e.target.value); if (S.sel != null) renderDetail(); };
   pop.querySelector('.kp-top button').onclick = () => pop.remove();
   pop.querySelectorAll('[data-veh]').forEach((b) => (b.onclick = () => { BEN.vehicle = b.dataset.veh; saveCar(); pop.querySelectorAll('[data-veh]').forEach((x) => x.setAttribute('aria-checked', String(x === b))); renderLegend(); update(); }));
   const sel = pop.querySelector('#permitSel'); if (sel) sel.onchange = () => { BEN.permit = sel.value; saveCar(); renderLegend(); update(); };
   const mb = pop.querySelector('#mpsBox'); if (mb) mb.onchange = () => { BEN.mps = mb.checked; try { localStorage.setItem('kerb-mps', BEN.mps ? '1' : '0'); } catch { /* private mode */ } renderLegend(); update(); };
 }
-// The colour key, out of the way until asked for. Each colour can still be hidden from here.
-function toggleKey(force) {
+// The map key, out of the way until asked for (and shown once on first open). Each line is drawn with the same
+// pattern as on the map, so it works without colour. Each state can still be hidden from here.
+const KEY_LINE = {
+  free: ['--free', 5, '', 'round'], likely: ['--free', 4, '10 3 3 3', 'butt'], paid: ['--paid', 4.5, '12 4', 'butt'],
+  short: ['--paid', 3, '4 4', 'butt'], restricted: ['--restricted', 3, '0.1 5', 'round'], permit: ['--permit', 3, '6 6', 'butt'],
+};
+const keySwatch = (k) => { const [c, w, d, cap] = KEY_LINE[k]; return `<svg class="ksw" viewBox="0 0 44 12" aria-hidden="true"><line x1="4" y1="6" x2="40" y2="6" style="stroke:var(${c});stroke-width:${w};stroke-linecap:${cap}${d ? `;stroke-dasharray:${d}` : ''}"/>${k === 'paid' ? '<text x="22" y="4" text-anchor="middle" style="fill:var(--paid-ink);font:800 8px var(--font)">$</text>' : ''}</svg>`; };
+function toggleKey(force, intro) {
   let pop = $('#keyPop');
   if (pop && force !== true) { pop.remove(); return; }
-  if (!pop) { pop = document.createElement('div'); pop.id = 'keyPop'; pop.className = 'keypop'; $('#app').appendChild(pop); }
-  const WHAT = { free: 'Free for your whole stay', likely: 'Probably free (no published signs)', paid: 'Meter: you pay', short: 'Time limit shorter than your stay', restricted: 'No parking or no stopping', permit: 'Resident permit area: visitors time-limited' };
-  pop.innerHTML = `<div class="kp-top"><b>Map key</b><button type="button" aria-label="Close"><i class="ph ph-x"></i></button></div>${LEGEND.filter(([k]) => k !== 'carpark').map(([k]) => `<label class="kp-row"><i class="${k === 'short' ? 'dash' : k === 'likely' ? 'dash-free' : k === 'permit' ? 'dash-permit' : ''}" style="background:var(--${k === 'short' ? 'paid' : k === 'likely' ? 'free' : k})"></i><span>${WHAT[k]}</span><input type="checkbox" data-k="${k}"${S.hidden.has(k) ? '' : ' checked'} aria-label="Show ${WHAT[k]}"></label>`).join('')}<p class="kp-note">Untick a colour to hide it from the map.</p>`;
+  $('#carPop')?.remove();
+  if (!pop) { pop = document.createElement('div'); pop.id = 'keyPop'; pop.className = 'keypop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-labelledby', 'kpT'); $('#app').appendChild(pop); }
+  const WHAT = { free: 'Free for your whole stay', likely: 'Probably free: check the sign', paid: 'Meter: you pay', short: 'Time limit shorter than your stay', restricted: 'No parking or no stopping', permit: 'Resident permit area: visitors time-limited' };
+  pop.innerHTML = `<div class="kp-top"><b id="kpT">${intro ? 'What the lines mean' : 'Map key'}</b><button type="button" class="iconx" aria-label="Close"><i class="ph ph-x"></i></button></div>${Object.keys(KEY_LINE).map((k) => `<label class="kp-row">${keySwatch(k)}<span>${WHAT[k]}</span>${intro ? '' : `<input type="checkbox" data-k="${k}"${S.hidden.has(k) ? '' : ' checked'} aria-label="Show ${WHAT[k]}">`}</label>`).join('')}
+    <p class="kp-note">${intro ? 'Lines change with your day, time and stay. The sign on the street always wins.' : 'Untick a line to hide it from the map.'}</p>${intro ? '<button type="button" class="snap-save" data-act="keydone">Got it</button>' : ''}`;
   pop.querySelector('.kp-top button').onclick = () => pop.remove();
+  pop.querySelector('[data-act=keydone]')?.addEventListener('click', () => pop.remove());
   pop.querySelectorAll('input[data-k]').forEach((cb) => (cb.onchange = () => { const k = cb.dataset.k; cb.checked ? S.hidden.delete(k) : S.hidden.add(k); if (map.isStyleLoaded()) kerbLayers(); renderBody(); }));
 }
 
@@ -1412,10 +1614,14 @@ function setPeek() {
   sizeSheet();
   const dock = $('#dock').getBoundingClientRect().height;
   const row = $('.dock-row').getBoundingClientRect().height;
-  // A street or car park card shows down to its answer (the price or "no parking"); the list shows its first line.
+  // A card shows its whole first screenful: the answer, why, how sure, and the Directions row. The list shows its
+  // one-line answer and the best option (or the welcome, the first time).
+  const card = body.dataset.mode?.startsWith('detail');
+  const target = card ? body.querySelector('.detail .actions') : body.querySelector('.welcome') || body.querySelector('.rows .opt') || body.querySelector('.summary, .empty');
+  const avail = px('--sheet-h') - dock - 22;
   let extra = 64;
-  const v = body.dataset.mode?.startsWith('detail') && body.querySelector('.detail .verdict, .detail .plain');
-  if (v) extra = Math.min(300, Math.round(v.getBoundingClientRect().bottom - body.getBoundingClientRect().top + body.scrollTop + 14));
+  if (target) extra = Math.round(target.getBoundingClientRect().bottom - body.getBoundingClientRect().top + body.scrollTop + (card ? 16 : 6));
+  extra = Math.max(64, Math.min(extra, card || body.querySelector('.welcome') ? avail : Math.min(avail, innerHeight * 0.42)));
   root.style.setProperty('--peek', `${Math.round(dock + 22 + extra)}px`);
   root.style.setProperty('--min', `${Math.round(row + 22 + 12)}px`);
   setSheet(sheet);
@@ -1434,7 +1640,6 @@ function setSheet(state) {
   const fb = $('#fullBtn');
   if (fb) { fb.setAttribute('aria-pressed', String(state === 'min')); fb.innerHTML = state === 'min' ? '<i class="ph ph-arrows-in-simple"></i>' : '<i class="ph ph-arrows-out-simple"></i>'; fb.setAttribute('aria-label', state === 'min' ? 'Show the options' : 'Full screen map'); }
 }
-function setOpen(v) { setSheet(v ? 'open' : 'peek'); }
 (() => {
   // One drag model for the handle, the dock and the list: the panel follows the finger, the map buttons ride
   // on its top edge (never left floating), and on release it settles on the nearest of open / peek / min
@@ -1478,7 +1683,7 @@ function setOpen(v) { setSheet(v ? 'open' : 'peek'); }
   const grab = [$('#handle'), $('#dock')];
   for (const el of grab) {
     el.addEventListener('pointerdown', (e) => {
-      if (isDesk() || e.button > 0 || (el.id === 'dock' && e.target.closest('input, select, textarea, .stay, .arrive, .ribbon, .setup'))) return;
+      if (isDesk() || e.button > 0 || (el.id === 'dock' && e.target.closest('input, select, textarea, .setup'))) return;
       begin(e.clientY);
       try { el.setPointerCapture(e.pointerId); } catch { /* not supported */ }
     });
@@ -1535,8 +1740,8 @@ const fitCanvas = () => {
 try { new ResizeObserver(() => requestAnimationFrame(fitCanvas)).observe($('#map')); } catch { /* old browsers */ }
 [300, 1000, 2500].forEach((t) => setTimeout(fitCanvas, t));
 addEventListener('focus', fitCanvas);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { settle(); fitCanvas(); map.triggerRepaint(); } });
-addEventListener('pageshow', settle);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { settle(); fitCanvas(); map.triggerRepaint(); refreshNow(); } });
+addEventListener('pageshow', () => { settle(); refreshNow(); });
 map.on('webglcontextlost', () => toast('The map paused. It will come back in a moment.'));
 map.on('webglcontextrestored', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); destLayers(); recolour(); } if (S.sat) setSat(true); });
 
@@ -1603,7 +1808,10 @@ function pick(item) {
   if (item.kind === 'carpark') { setDest(null); q.value = item.title; select(item.id, true); return; }
   q.blur(); setSheet('peek'); // keep the map in view so the options can be seen; the list is one swipe up
   { const other = !inBox(item.at, CITY.box) && Object.keys(CITIES).find((k) => inBox(item.at, CITIES[k].box)); if (other) { goToCity(other, item.at); return; } }
+  if (!flag('streety-welcomed')) setFlag('streety-welcomed');
   setDest({ at: item.at, name: item.sub && item.kind === 'street' ? `${item.title}, ${item.sub}` : item.title });
+  // Then ask when, right there in the sheet (one tap on Now, or a day and a time).
+  setEdit(true, 'arrive');
 }
 function showResults(local, places, loading) {
   results.replaceChildren();
@@ -1653,16 +1861,19 @@ async function runSearch() {
 
 /* ---------- locate ---------- */
 let meMarker = null;
-$('#locate').onclick = () => {
+// Location is only asked for when you tap the locate button or "Near me".
+function locateMe(then) {
   if (!navigator.geolocation) return toast("This browser can't share your location.");
   navigator.geolocation.getCurrentPosition((pos) => {
     const at = [pos.coords.longitude, pos.coords.latitude];
     { const other = !inBox(at, CITY.box) && Object.keys(CITIES).find((k) => inBox(at, CITIES[k].box)); if (other) { toast(`Opening Streety for ${CITIES[other].name}…`); goToCity(other, at); return; } }
-    if (!meMarker) { const el = document.createElement('div'); el.style.cssText = `width:16px;height:16px;border-radius:50%;background:${C().accent};border:3px solid #fff;box-shadow:0 0 0 6px color-mix(in srgb, ${C().accent} 25%, transparent)`; meMarker = new maplibregl.Marker({ element: el }); }
+    if (!meMarker) { const el = document.createElement('div'); el.className = 'me-dot'; meMarker = new maplibregl.Marker({ element: el }); }
     meMarker.setLngLat(at).addTo(map);
     map.flyTo({ center: at, zoom: 16.2, duration: 900 });
-  }, () => toast('Location is off. Allow location for this site to use it.'), { enableHighAccuracy: true, timeout: 10000 });
-};
+    then?.();
+  }, () => { toast('Location is off. Allow location for this site to use it.'); maybeLegend(); }, { enableHighAccuracy: true, timeout: 10000 });
+}
+$('#locate').onclick = () => locateMe();
 
 /* ---------- drive mode: the map follows you and a voice says where you can park ahead ---------- */
 // Uses the real clock. Looks for kerbs within ~350 m, ahead of you (from your heading), that fit your stay:
@@ -1675,8 +1886,16 @@ function say(text) {
 function startDrive() {
   if (!navigator.geolocation) return toast("This browser can't share your location.");
   DRIVE = { at: null, heading: null, best: null, saidAt: 0, saidKey: '', lock: null, hud: document.createElement('div') };
-  DRIVE.hud.className = 'drivehud'; DRIVE.hud.innerHTML = '<div class="dh-main"><b>Finding your location…</b><small>Drive mode</small></div><button type="button" class="dh-stop" aria-label="Stop drive mode"><i class="ph ph-x"></i></button>';
+  DRIVE.hud.className = 'drivehud'; DRIVE.hud.innerHTML = '<div class="dh-row"><div class="dh-main"><b>Finding your location…</b><small>Drive mode</small></div><button type="button" class="dh-stop" aria-label="Stop drive mode"><i class="ph ph-x"></i></button></div>';
   DRIVE.hud.querySelector('.dh-stop').onclick = stopDrive;
+  // Once: the law on phones while driving. Learner and P-plate drivers can't touch a phone at all.
+  if (!flag('streety-drive-note')) {
+    const law = CITY_ID === 'syd'
+      ? 'In NSW, learner and P-plate drivers can\'t touch a phone at all while driving, even in a cradle. Full licence holders can only use one in a fixed cradle, for navigation.'
+      : 'Learner and P-plate drivers usually can\'t touch a phone at all while driving. Full licence holders can only use one in a fixed cradle, for navigation.';
+    DRIVE.hud.insertAdjacentHTML('beforeend', `<div class="dh-note" role="note"><p><b>Set up your trip before you drive.</b> ${law} Streety speaks, so you don't need to look.</p><button type="button" class="dh-ok">Got it</button></div>`);
+    DRIVE.hud.querySelector('.dh-ok').onclick = (e) => { setFlag('streety-drive-note'); e.currentTarget.parentElement.remove(); };
+  }
   $('#app').appendChild(DRIVE.hud);
   $('#app').classList.add('driving');
   setSheet('min');
@@ -1702,7 +1921,7 @@ function onDrivePos(pos) {
   const at = [pos.coords.longitude, pos.coords.latitude];
   if (DRIVE.at && distM(DRIVE.at, at) > 8) DRIVE.heading = Number.isFinite(pos.coords.heading) && pos.coords.speed > 1 ? pos.coords.heading : bearingOf(DRIVE.at, at);
   if (!DRIVE.at || distM(DRIVE.at, at) > 8) DRIVE.at = at;
-  if (!meMarker) { const el = document.createElement('div'); el.style.cssText = `width:16px;height:16px;border-radius:50%;background:${C().accent};border:3px solid #fff;box-shadow:0 0 0 6px color-mix(in srgb, ${C().accent} 25%, transparent)`; meMarker = new maplibregl.Marker({ element: el }); }
+  if (!meMarker) { const el = document.createElement('div'); el.className = 'me-dot'; meMarker = new maplibregl.Marker({ element: el }); }
   meMarker.setLngLat(at).addTo(map);
   map.easeTo({ center: at, zoom: Math.max(map.getZoom(), 16.4), duration: 800 });
   // What's around, for a stay starting now.
@@ -1743,7 +1962,7 @@ let raf = 0;
 let lastMode = '';
 function renderBody() {
   try { S.sel != null ? renderDetail() : renderList(); } finally {
-    const m = body.dataset.mode || '';
+    const m = `${body.dataset.mode || ''}|${!!body.querySelector('.welcome')}|${!!body.querySelector('.rows .opt')}|${!!body.querySelector('.dest')}|${navApp()}`;
     if (m !== lastMode) { lastMode = m; if (!isDesk()) setPeek(); }
   }
 }
@@ -1754,7 +1973,6 @@ function update(light) {
     raf = 0;
     recolour();
     if (map.getLayer('kerb-sel')) map.setFilter('kerb-sel', ['==', ['get', 'id'], typeof S.sel === 'number' ? S.sel : -1]);
-    drawRibbon();
     if (!light) { drawCarParks(); renderBody(); }
     else if (S.sel == null) renderBody();
     else renderDetail();
@@ -1772,16 +1990,20 @@ let pickMode = null;
 map.on('click', (e) => {
   if (pickMode) {
     const cb = pickMode; pickMode = null;
-    const hit = map.queryRenderedFeatures([[e.point.x - 12, e.point.y - 12], [e.point.x + 12, e.point.y + 12]], { layers: ['kerb-line', 'kerb-short', 'kerb-faint'].filter((l) => map.getLayer(l)) })[0];
+    const hit = map.queryRenderedFeatures([[e.point.x - 16, e.point.y - 16], [e.point.x + 16, e.point.y + 16]], { layers: KERB_LAYERS.filter((l) => map.getLayer(l)) })[0];
     cb(e.lngLat.toArray(), hit ? hit.properties.id : null);
     return;
   }
   if (map.getLayer('cp-pill') && map.queryRenderedFeatures(e.point, { layers: ['cp-cluster', 'cp-pill', 'cp-sel'] }).length) return;
-  const hits = map.queryRenderedFeatures([[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]], { layers: ['kerb-line', 'kerb-short', 'kerb-faint'].filter((l) => map.getLayer(l)) });
-  if (hits.length) select(hits[0].properties.id, false);
-  else if (S.sel != null) { S.sel = null; if (!isDesk()) setSheet('peek'); update(); }
+  // A 32 px box around the finger, nearest kerb first (a fingertip covers more than a thin line).
+  const hits = map.queryRenderedFeatures([[e.point.x - 16, e.point.y - 16], [e.point.x + 16, e.point.y + 16]], { layers: KERB_LAYERS.filter((l) => map.getLayer(l)) });
+  if (hits.length) {
+    const ll = e.lngLat.toArray();
+    hits.sort((a, b) => distM(mids.get(a.properties.id) || ll, ll) - distM(mids.get(b.properties.id) || ll, ll));
+    select(hits[0].properties.id, false);
+  } else if (S.sel != null) closeCard();
 });
-for (const l of ['kerb-line', 'kerb-short', 'kerb-faint']) {
+for (const l of KERB_LAYERS) {
   map.on('mouseenter', l, () => (map.getCanvas().style.cursor = 'pointer'));
   map.on('mouseleave', l, () => (map.getCanvas().style.cursor = ''));
 }
@@ -1792,10 +2014,10 @@ map.on('dragstart', () => {
   if (sheet === 'open') setSheet('peek');
 });
 let moveTimer = null;
-map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { drawRibbon(); if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
+map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
 
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); destLayers(); } if (S.sat) setSat(true); drawRibbon(); });
-addEventListener('resize', () => { setPeek(); drawRibbon(); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); destLayers(); } if (S.sat) setSat(true); });
+addEventListener('resize', () => setPeek());
 
 /* ---------- live bays (Melbourne's in-ground sensors) ---------- */
 const LIVE_URL = 'https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets/on-street-parking-bay-sensors/exports/json?select=kerbsideid,status_description';
@@ -1838,7 +2060,7 @@ renderLegend();
 syncControls();
 setPeek();
 renderList();
-const dataReady = loadData().catch((e) => { body.innerHTML = `<div class="empty"><strong>The parking data didn't load</strong>Check your connection and reload the page. (${e.message})</div>`; throw e; });
+const dataReady = loadData().catch((e) => { loadError = e.message; renderList(); setPeek(); throw e; });
 // Sign photos saved on this phone become kerbs on its map.
 let snapMade = new Map();
 function applySnaps() {
@@ -1884,9 +2106,11 @@ dataReady.then(() => {
     let best = null, bd = 30;
     for (const f of KERBS.features) { const d = distM(mids.get(f.properties.id), LINK); if (d < bd) { bd = d; best = f.properties.id; } }
     for (const cp of CARPARKS) { const d = distM(cp.at, LINK); if (d < bd) { bd = d; best = cp.id; } }
-    if (best != null) { S.sel = best; setOpen(true); }
+    if (best != null) { S.sel = best; setSheet('peek'); }
   }
   update();
+  requestAnimationFrame(() => requestAnimationFrame(() => { setPeek(); root.dataset.ready = '1'; }));
+  document.fonts?.ready.then(() => setPeek());
 }, () => {});
 map.on('style.load', async () => {
   restyleBase();
