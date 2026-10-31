@@ -2,9 +2,10 @@
   {
     "id": "smvvqwsvf",
     "note": "Glebe: both ticket signs have the 1/4P FREE badge; the pole is on Glebe Point Road, not Lombard Lane (Guy, 31 Oct 2026)",
-    "move": { "street": "Glebe Point Road" },
+    "move": { "street": "Glebe Point Road", "onKerb": true, "kerb": [151.18501, -33.87717] },
     "set": {
       "q": 1,
+      "rules": [[2, [0, 1, 2, 3, 4, 5, 6], 8, 18, 7, 1, 0, ""], [4, [0, 1, 2, 3, 4, 5, 6], 18, 22, 7, 1, 0, ""]],
       "text": "2P ticket 8am-6pm every day, first 15 min free; 4P ticket 6pm-10pm every day, first 15 min free"
     }
   },
