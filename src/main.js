@@ -38,6 +38,8 @@ const CITY_ID = (() => {
   return 'syd';
 })();
 const CITY = CITIES[CITY_ID];
+// Someone who used Streety before this version skips the first-open welcome (checked before kerb-city is written).
+try { if (!localStorage.getItem('streety-welcomed') && ['kerb-city', 'kerb-stay', 'kerb-saved', 'kerb-parked', 'kerb-snaps', 'kerb-recent', 'kerb-car', 'streety-proofs'].some((k) => localStorage.getItem(k) != null)) localStorage.setItem('streety-welcomed', '1'); } catch { /* storage unavailable */ }
 try { localStorage.setItem('kerb-city', CITY_ID); } catch { /* storage unavailable */ }
 document.documentElement.dataset.city = CITY_ID;
 document.title = `Streety · ${CITY.name} parking`;
@@ -456,7 +458,13 @@ function rateLines(cp) {
     return [`${r.label || 'Flat rate'} ${money(r.price)}`, `${days}, in ${hm(r.enter[0])}-${hm(r.enter[1])}${r.exitAfter != null ? `, out after ${hm(r.exitAfter)}` : ''}${r.exitBy != null ? `, out by ${hm(r.exitBy)}${r.exitBy < r.enter[0] ? ' next day' : ''}` : ''}`];
   });
 }
-const stayWordsFor = (h) => (h < 1 ? `${Math.round(h * 60)} min` : `${+h.toFixed(2)} hr${h === 1 ? '' : 's'}`);
+// A length of time in words, to the minute: "45 min", "1 hour", "2 hours", "1 hr 7 min".
+function durWords(h) {
+  const m = Math.round(h * 60), H = Math.floor(m / 60), M = m % 60;
+  if (!H) return `${M} min`;
+  return M ? `${H} hr ${M} min` : `${H} hour${H === 1 ? '' : 's'}`;
+}
+const stayWordsFor = durWords;
 function rateBoard(cp) {
   return `<div class="rateboard">${rateLines(cp).map(([t, sub, bands]) => `<div class="rl"><div class="rt">${t}</div><div class="rs">${sub}</div>${bands ? `<div class="rb">${bands}</div>` : ''}</div>`).join('')}</div>`;
 }
@@ -483,21 +491,21 @@ $('#timeChips').innerHTML = TIMES.map(([v, t]) => `<button type="button" data-ti
 $('#staySeg').innerHTML = STAYS.map(([v, b, u, l]) => `<button type="button" data-stay="${v}" data-v="${v}" aria-label="${l}"><b>${b}</b><small>${u}</small></button>`).join('');
 function goNow() {
   Object.assign(today, sydneyNow());
-  S.planned = false; S.day = today.day; S.hour = today.hour; setNight();
+  S.planned = false; S.dayPicked = false; S.day = today.day; S.hour = today.hour; setNight();
 }
 function pickDay(d) {
   if (!S.planned) {
     if (d === today.day) return;
     S.hour = (Math.ceil(today.hour * 4) / 4) % 24; // keep the time of day, on the quarter hour
   }
-  S.planned = true; S.day = d; setNight(); update();
+  S.planned = true; S.dayPicked = true; S.day = d; setNight(); update();
 }
 function pickTime(v) {
   if (v === 'now') goNow();
   else {
     const h = +v;
     // Today at 9pm, "8am" means tomorrow morning (unless a day was picked first).
-    if (!S.planned && h < today.hour - 0.5) S.day = (today.day + 1) % 7;
+    if (!S.dayPicked && S.day === today.day && h < today.hour - 0.5) S.day = (today.day + 1) % 7;
     S.planned = true; S.hour = h; setNight();
   }
   update();
@@ -563,7 +571,7 @@ function refreshNow() {
   const q0 = Math.floor(S.hour * 4), d0 = S.day;
   S.day = n.day; S.hour = n.hour; setNight();
   if (q0 !== Math.floor(S.hour * 4) || d0 !== S.day) update();
-  else { syncControls(); if (!panelTouch) renderBody(); }
+  else { syncControls(); if (!panelTouch && !body.contains(document.activeElement)) renderBody(); }
 }
 setInterval(() => { if (!document.hidden) refreshNow(); }, 60e3);
 
@@ -589,6 +597,7 @@ const COVER = {
 // Busyness is an estimate from the area and the day, so it's worded as "usually".
 const BUSY_PLAIN = { easy: 'Usually spots free', moderate: 'Spots come and go', hard: 'Busy: hard to find a spot' };
 let listScroll = null, listSheet = null; // where the list was when a card opened, to come back to it
+let listAt = null; // the list's centre while a card is open (flying to a street mustn't reshuffle the list)
 let loadError = '';
 const FILTERS = [['all', 'All'], ['free', 'Free'], ['meters', 'Meters'], ['carparks', 'Car parks']];
 // Sort key: price for the stay (to the dollar), then how sure Streety is, then the walk.
@@ -622,7 +631,7 @@ function renderList() {
     return;
   }
   welcomeCard();
-  const centre = S.dest ? S.dest.at : map.getCenter().toArray();
+  const centre = S.dest ? S.dest.at : listAt || map.getCenter().toArray();
   const nearM = S.dest ? S.walk * WALK_M_PER_MIN : NEAR_M;
   destBar();
   sessionCard();
@@ -653,17 +662,20 @@ function renderList() {
   const free = kerbs.filter((o) => o.g === 'free').sort(byRank), paid = kerbs.filter((o) => o.g === 'paid').sort(byRank), likely = kerbs.filter((o) => o.g === 'guess').sort(byRank);
   const no = kerbs.filter((o) => o.g === 'no').sort((a, b) => a.d - b.d);
   const ranked = [...kerbs.filter((o) => o.g !== 'no'), ...cps].sort(byRank);
-  const top = ranked.find((r) => r.kind === 'kerb' && r.g !== 'check') || ranked[0];
+  // The summary names the list's first row, whatever it is, in words that match how sure Streety is.
+  const top = ranked[0];
+  const sure = top && (top.g === 'guess' || top.cert > 0) ? ranked.find((r) => r.cert === 0 && (r.kind === 'cp' || r.g === 'free' || r.g === 'paid')) : null;
+  const priceOf = (r) => (r.kind === 'cp' ? (r.cert ? `about ${money(r.cost)} (estimate)` : r.cp.kind === 'parkride' ? 'free with an Opal trip' : money(r.cost)) : r.g === 'free' ? 'free' : costText(r.c));
+  const nameOf = (r) => (r.kind === 'cp' ? r.cp.name : r.p.s);
 
   const sum = document.createElement('p');
   sum.className = 'summary';
   const stayTxt = stayWords(true), from = S.dest ? ` from ${S.dest.name}` : '';
   if (!top) sum.innerHTML = S.dest ? `Nothing within a ${S.walk}-minute walk of ${S.dest.name} fits ${stayTxt}. Try a longer walk.` : 'No parking rules near the middle of the map. Move the map to a street with coloured lines.';
-  else if (top.kind === 'cp') sum.innerHTML = `Best for ${stayTxt}: <strong>${top.cp.name}</strong>, ${top.cert ? `about ${money(top.cost)} (estimate)` : money(top.cost)}, ${walkText(top.d)}${from}.`;
-  else if (top.g === 'free') sum.innerHTML = `Best for ${stayTxt}: <strong>${top.p.s}</strong>, free, ${walkText(top.d)}${from}.`;
-  else if (top.g === 'guess') sum.innerHTML = `<strong>${top.p.s}</strong> is probably free for ${stayTxt}, ${walkText(top.d)}${from}. Check the sign when you get there.`;
-  else if (top.g === 'paid') sum.innerHTML = `Cheapest for ${stayTxt}: <strong>${top.p.s}</strong>, ${costText(top.c)}${top.c.unknownRate ? ' (the council doesn\'t publish this meter\'s rate)' : ''}, ${walkText(top.d)}${from}.`;
-  else sum.innerHTML = `The council doesn't publish the signs ${S.dest ? `near ${S.dest.name}` : 'here'}. The streets nearby are resident permit areas, where visitors usually get 1 or 2 hours. Check the sign.`;
+  else if (top.kind === 'kerb' && top.g === 'check') sum.innerHTML = `The council doesn't publish the signs ${S.dest ? `near ${S.dest.name}` : 'here'}. The streets nearby are resident permit areas, where visitors usually get 1 or 2 hours. Check the sign.`;
+  else if (top.kind === 'kerb' && top.g === 'guess') sum.innerHTML = `<strong>${top.p.s}</strong> is probably free for ${stayTxt}, ${walkText(top.d)}${from}. Check the sign when you get there.`;
+  else sum.innerHTML = `${top.cost < 0.005 ? 'Best' : 'Cheapest'} for ${stayTxt}: <strong>${nameOf(top)}</strong>${top.kind === 'cp' ? ' (car park)' : ''}, ${priceOf(top)}, ${walkText(top.d)}${from}.`;
+  if (sure && sure !== top) sum.insertAdjacentHTML('beforeend', ` For a sure answer: <strong>${nameOf(sure)}</strong>, ${priceOf(sure)}, ${walkText(sure.d)}.`);
   body.appendChild(sum);
   compareLine(free, paid, centre, nearM);
   drawDest(S.dest ? { free, paid, likely } : null);
@@ -854,14 +866,18 @@ function compareLine(free, paid, centre, nearM) {
 
 // How sure Streety is: the kerb's own sign (council data or a sign survey), a driver's sign photo, or Streety's
 // reading of what the published signs leave out (meters finished for the night, no meter on Sundays).
+// Data that lists every sign plate on the kerb (Melbourne's parking zones) is signed fact outside its times too;
+// a council decision or a meter list only covers part of the sign, so outside it is a guess.
 const INFER = new Set(['after-hours', 'before-hours', 'night', 'no-meter-day']);
 const isPhoto = (set) => /sign photo|driver's reading/i.test(set?.src || '');
+const allPlates = (set) => /parking zones/i.test(set?.src || '');
+const isOsm = (set) => /openstreetmap/i.test(set?.src || '');
 function guessed(p, day = S.day, h = S.hour, stay = S.stay) {
   const set = p.k >= 0 ? RULES[p.k] : null;
   if (!set || isPhoto(set)) return false;
   for (let t = h; t < h + stay - 1e-9; t = Math.floor(t * 4 + 1e-6) / 4 + 0.25) {
     const s = stateAt(p, RULES, (day + Math.floor(t / 24)) % 7, t % 24);
-    if (s.kind === 'free' && (INFER.has(s.why) || (s.why === 'outside-sign' && set.g === 'edges'))) return true;
+    if (s.kind === 'free' && (INFER.has(s.why) || (s.why === 'outside-sign' && set.g === 'edges' && !allPlates(set)))) return true;
   }
   return false;
 }
@@ -878,23 +894,30 @@ function kerbCost(p) {
 // Uses the real clock, not the time picker. How long you can legally stay is worked out from the kerb's rules.
 function parkedNow(f) {
   const now = sydneyNow(), p = f.properties;
-  let legal = null;
-  if (p.k >= 0) {
-    legal = 0;
-    for (let st = 0.25; st <= 24; st += 0.25) { if (costFor(p, RULES, now.day, now.hour, st).ok) legal = st; else break; }
-    if (legal === 0) { toast("You can't park here right now. Check the sign."); return; }
-  }
+  const legal = p.k >= 0 ? legalStay(p, now.day, now.hour) : null;
+  if (legal === 0) { toast("You can't park here right now. Check the sign."); return; }
   const hours = legal == null ? S.stay : legal;
-  // The rules are checked in quarter hours from the start of this quarter, so the limit counts from there too
-  // (parked at 12:13 with no stopping from 7am: move by 7:00, not 7:13).
-  const d0 = new Date(), intoQuarter = legal != null ? ((d0.getMinutes() % 15) * 60 + d0.getSeconds()) * 1e3 : 0;
-  const sess = { at: mids.get(p.id), name: p.s, side: p.sd || '', start: Date.now(), until: Date.now() + hours * 3600e3 - intoQuarter, legal: legal != null && legal < 24, planned: legal == null, ...proofFrom(p, now) };
+  // From the exact minute you parked: parked 7:16 on a 2P meter from 8am, move by 10am.
+  const t0 = Math.floor(Date.now() / 60e3) * 60e3;
+  const sess = { at: mids.get(p.id), name: p.s, side: p.sd || '', start: Date.now(), until: t0 + Math.round(hours * 60) * 60e3, legal: legal != null && legal < 24, planned: legal == null, ...proofFrom(p, now) };
   store.set('kerb-parked', sess);
   setSessionMarker(); parkedPill(); toast(legal != null && legal < 24 ? `Saved. Move by ${clockAt(sess.until)}.` : 'Saved where you parked.');
   try { if (sess.legal && 'Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch { /* not supported */ }
   S.sel = null; update();
 }
-const clockAt = (ms) => new Date(ms).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', timeZone: CITY.tz }).replace(' ', '').toLowerCase();
+// The longest legal stay from this exact minute, to the minute (24 means no limit today). Signs change on quarter
+// hours, so it steps to each quarter-hour end, then finds the minute a time limit runs out between two of them.
+function legalStay(p, day, h) {
+  let legal = 0;
+  for (let end = Math.floor(h * 4 + 1e-6) / 4 + 0.25; end - h <= 24 + 1e-9; end += 0.25) {
+    if (costFor(p, RULES, day, h, end - h).ok) legal = end - h; else break;
+  }
+  if (legal >= 24 - 1e-9) return 24;
+  let best = legal;
+  for (let m = 1; m < 15; m++) { const st = legal + m / 60; if (costFor(p, RULES, day, h, st).ok) best = st; else break; }
+  return Math.round(best * 60) / 60;
+}
+const clockAt = (ms) => { const p = new Intl.DateTimeFormat('en-AU', { timeZone: CITY.tz, hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date(ms)); const g = (t) => +(p.find((x) => x.type === t) || {}).value || 0; return fmtTime((g('hour') % 24) + g('minute') / 60); };
 const dayAt = (ms) => new Date(ms).toLocaleDateString('en-AU', { weekday: 'short', timeZone: CITY.tz });
 let carMarker = null;
 function setSessionMarker() {
@@ -1124,11 +1147,12 @@ function verdictText(p, c) {
   if (!c.ok) return { head: "You can't stay that long", why: '' };
   if (c.quarterFree) return { head: 'Free with a ticket', why: 'The first 15 minutes are free. Grab a ticket from the meter.' };
   const end = S.hour + S.stay;
-  if (c.waived > 0 && c.paidHours === 0) return { head: 'Free with your mobility permit', why: `The meter normally charges ${money(stateAt(p, RULES, S.day, S.hour).rule?.[4] || c.rate || 0)} an hour here. Mobility parking permit holders park free at council and street meters in NSW, and time limits over 30 minutes don't apply. Display the permit.` };
-  if (c.paidHours === 0) {
+  const EPS = 1e-6, partGuess = c.ok && c.freeHours > EPS && guessed(p);
+  if (c.waived > EPS && c.paidHours < EPS) return { head: 'Free with your mobility permit', why: `The meter normally charges ${money(stateAt(p, RULES, S.day, S.hour).rule?.[4] || c.rate || 0)} an hour here. Mobility parking permit holders park free at council and street meters in NSW, and time limits over 30 minutes don't apply. Display the permit.` };
+  if (c.paidHours < EPS) {
     const s = stateAt(p, RULES, S.day, S.hour);
     if (s.kind === 'limit' && (s.rule[0] >= 24 || s.rule[0] < 0)) return { head: `Free for you: ${(s.rule[7] || 'your bay').toLowerCase()}`, why: `${s.rule[7] || 'This bay'} ${s.rule[2] === 0 && s.rule[3] === 24 ? 'at all times' : `from ${fmtTime(s.rule[2])} to ${fmtTime(s.rule[3])}`}.${s.rule[0] < 0 ? ' Check the sign for any time limit.' : ''}` };
-    if (s.kind === 'limit') return { head: 'Free, within the time limit', why: `It's a free ${pLabel(s.rule[0])} zone ${s.rule[2] === 0 && s.rule[3] === 24 ? 'at all times' : `from ${fmtTime(s.rule[2])} to ${fmtTime(s.rule[3])}`}, so your ${S.stay === 0.25 ? '15 minutes fit' : `${S.stay} hour${S.stay > 1 ? 's fit' : ' fits'}`}.${s.rule[7] ? ` ${s.rule[7]}.` : ''}` };
+    if (s.kind === 'limit') return { head: 'Free, within the time limit', why: `It's a free ${pLabel(s.rule[0])} zone ${s.rule[2] === 0 && s.rule[3] === 24 ? 'at all times' : `from ${fmtTime(s.rule[2])} to ${fmtTime(s.rule[3])}`}, so your ${S.night ? 'night fits' : `${durWords(S.stay)} fit${S.stay > 1 + EPS ? '' : 's'}`}.${s.rule[7] ? ` ${s.rule[7]}.` : ''}` };
     if (s.why === 'unrestricted') return { head: 'Free, no time limit', why: 'Unrestricted parking. No sign limits this kerb.' };
     if (s.why === 'permit') return { head: 'Free for you: your permit area', why: `The sign's time limit has "permit holders excepted" for ${BEN.permit}, your resident permit area. Display your permit.` };
     if (s.why === 'outside-sign') return { head: 'Free the whole time', why: plainNow(p, RULES, S.day, S.hour) };
@@ -1138,9 +1162,10 @@ function verdictText(p, c) {
         : `There are no meter hours on ${DAYS_LONG[S.day]}s.`;
     return { head: 'Free the whole time', why };
   }
-  if (c.unknownRate) return { head: c.freeHours > 0 && c.firstPaidAt > S.hour ? `Free until ${fmtTime(c.firstPaidAt)}, then pay at the meter` : 'Pay at the meter', why: `It's a metered kerb, but the council doesn't publish the rate. The meter shows it, and the Park'nPay app does too.` };
-  if (c.freeHours > 0 && c.firstPaidAt > S.hour) return { head: `Free until ${fmtTime(c.firstPaidAt)}, then pay`, why: `The meter starts at ${fmtTime(c.firstPaidAt)}, so you pay for ${c.paidHours === 1 ? '1 hour' : `${c.paidHours} hours`} at ${money(c.rate)} an hour.` };
-  if (c.freeHours > 0) return { head: 'Pay, then free', why: `You pay ${money(c.rate)} an hour until the meter finishes, then the rest is free.` };
+  if (c.unknownRate) return { head: c.freeHours > EPS && c.firstPaidAt > S.hour + EPS ? `Free until ${fmtTime(c.firstPaidAt)}, then pay at the meter` : 'Pay at the meter', why: `It's a metered kerb, but the council doesn't publish the rate. The meter shows it, and the Park'nPay app does too.` };
+  // Part paid, part free: when the free part is only Streety's reading of the meter hours, say so.
+  if (c.freeHours > EPS && c.firstPaidAt > S.hour + EPS) return { head: `${partGuess ? 'Probably free' : 'Free'} until ${fmtTime(c.firstPaidAt)}, then pay`, why: `The meter starts at ${fmtTime(c.firstPaidAt)}, so you pay for ${durWords(c.paidHours)} at ${money(c.rate)} an hour.${partGuess ? ' Before then is Streety\'s reading of the meter hours, not a sign, so check it.' : ''}` };
+  if (c.freeHours > EPS) return { head: partGuess ? 'Pay, then probably free' : 'Pay, then free', why: `You pay ${money(c.rate)} an hour for ${durWords(c.paidHours)}, until the meter finishes.${partGuess ? ' After that it\'s probably free: the council doesn\'t publish later rules here, so check the sign.' : ' The rest is free.'}` };
   return { head: `${money(c.rate)} an hour`, why: '' };
 }
 
@@ -1263,7 +1288,7 @@ function fineHTML(p, set, c) {
 
 // The first screenful of a card answers "can I park here, what does it cost, why, how sure is Streety, how do I
 // get there", in that order. The sign to look for, fines, the week and busyness follow below.
-const VICON = { free: 'ph-fill ph-check-circle', guess: 'ph ph-question', paid: 'ph ph-currency-dollar', check: 'ph ph-warning', no: 'ph-fill ph-prohibit' };
+const VICON = { est: 'ph ph-question', free: 'ph-fill ph-check-circle', guess: 'ph ph-question', paid: 'ph ph-currency-dollar', check: 'ph ph-warning', no: 'ph-fill ph-prohibit' };
 const spanShort = () => `${S.planned ? `${S.day === today.day ? 'today' : S.day === (today.day + 1) % 7 ? 'tomorrow' : DAYS[S.day]} ` : ''}${fmtTime(S.hour)} to ${fmtTime((S.hour + S.stay) % 24)}${S.hour + S.stay >= 24 ? ` ${DAYS[(S.day + 1) % 7]}` : ''}`;
 const forStay = () => `For ${S.night ? 'the night' : stayWords(true)}, ${spanShort()}`;
 function verdictHTML({ g, word, big, sub }) {
@@ -1277,15 +1302,20 @@ function trustHTML(kind, text) {
   const ic = { signed: 'ph-seal-check', photo: 'ph-camera', guess: 'ph-question' }[kind];
   return `<p class="trust t-${kind}"><i class="ph ${ic}" aria-hidden="true"></i><span>${text}</span></p>`;
 }
+// The source in plain words, with a date only when it's the data's own (a decision's date, a photo's date, or a
+// live council feed Streety reads every night). A survey from 2020 never looks freshly checked.
 function kerbTrust(p, g) {
-  const set = p.k >= 0 ? RULES[p.k] : null, upd = dataDate();
+  const set = p.k >= 0 ? RULES[p.k] : null;
   if (set && isPhoto(set)) return trustHTML('photo', `From a driver's sign photo, ${isoDate(/(\d{4}-\d\d-\d\d)/.exec(set.src)?.[1]) || 'recently'}. Check it matches.`);
   if (p.lk) return trustHTML('guess', "Streety's guess: no permit scheme here, and the council doesn't publish its signs. Check the sign.");
   if (!set) return trustHTML('guess', "The council doesn't publish this sign. Check it before you leave the car.");
-  const src = set.src || SRC_NAME[CITY_ID];
-  if (g === 'guess') return trustHTML('guess', `Streety's guess from ${src}${upd ? `, updated ${upd}` : ''}. Check the sign.`);
+  const src = (set.src || SRC_NAME[CITY_ID]).replace(/\s*\((open data|open data, CC BY)\)/i, '');
+  const live = /open data/i.test(set.src || SRC_NAME[CITY_ID]) && !/survey|\d{4}/i.test(set.src || '') ? dataDate() : '';
+  if (isOsm(set)) return trustHTML('guess', 'From OpenStreetMap volunteer mapping, not the council. Check the sign.');
+  if (g === 'guess') return trustHTML('guess', `Streety's guess from ${src}. Check the sign.`);
   if (g === 'check') return trustHTML('guess', `${src} doesn't cover this time. Check the sign.`);
-  return trustHTML('signed', `From ${src}${upd ? `, updated ${upd}` : ''}`);
+  if (g === 'paid' && guessed(p)) return trustHTML('guess', `Meter from ${src}. The free part is Streety's guess, so check the sign.`);
+  return trustHTML('signed', `From ${src}${live ? `, checked ${live}` : ''}`);
 }
 function kerbVerdict(p, c, g, v) {
   const sub = forStay();
@@ -1295,7 +1325,7 @@ function kerbVerdict(p, c, g, v) {
   }
   if (g === 'check') return { g, word: 'Check the sign', sub: c.permitOnly ? `Resident permit area: visitors usually get 1 or 2 hours. ${sub}` : sub };
   if (g === 'guess') return { g, word: 'Probably free', sub };
-  if (g === 'free') return { g, word: c.quarterFree ? 'Free with a ticket' : c.waived > 0 && c.paidHours === 0 ? 'Free with your permit' : c.yourPermit ? 'Free in your permit area' : 'Free', sub };
+  if (g === 'free') return { g, word: c.quarterFree ? 'Free with a ticket' : c.waived > 1e-6 && c.paidHours < 1e-6 ? 'Free with your permit' : c.yourPermit ? 'Free in your permit area' : 'Free', sub };
   return { g: 'paid', word: v.head, big: c.unknownRate && !(c.cost > 0) ? '' : costText(c), sub };
 }
 // Why Streety thinks a kerb is free when no sign says so, in hedged words (never as fact).
@@ -1307,7 +1337,7 @@ function guessWhy(p) {
     if (s.why === 'after-hours') return `The meters finish before you get there, and the council doesn't publish any night rules here, so it's probably free.`;
     if (s.why === 'before-hours' || s.why === 'night') return `The meters don't start until ${fmtTime(s.until)}, and the council doesn't publish what applies before then, so it's probably free.`;
     if (s.why === 'no-meter-day') return `There are no meters here on ${DAYS_LONG[d]}s, and the council doesn't publish other ${DAYS_LONG[d]} rules, so it's probably free.`;
-    if (s.why === 'outside-sign' && set.g === 'edges') return `The published sign doesn't cover this time${s.until < 24 ? ` (it starts again at ${fmtTime(s.until)})` : ''}, so there's probably no limit.`;
+    if (s.why === 'outside-sign' && set.g === 'edges' && !allPlates(set)) return `The published sign doesn't cover this time${s.until < 24 ? ` (it starts again at ${fmtTime(s.until)})` : ''}, so there's probably no limit.`;
   }
   return '';
 }
@@ -1336,7 +1366,7 @@ function cpVerdict(cp, price) {
     return { v: { g: 'check', word: price.why === 'long' ? 'Not for that long' : 'No rate at this time', sub }, trust };
   }
   const e = estimateFor(cp);
-  if (e) return { v: { g: 'guess', word: "Streety's estimate", big: `~${money(e.mid)}`, sub: `Probably ${money(e.low)} to ${money(e.high)}. ${sub}` }, trust: trustHTML('guess', `Not their real price: ${cp.operator ? `${cp.operator} doesn't let us publish its rates` : 'the rates aren\'t published'}. The board at the entrance wins.`) };
+  if (e) return { v: { g: 'est', word: "Streety's estimate", big: `~${money(e.mid)}`, sub: `Probably ${money(e.low)} to ${money(e.high)}. ${sub}` }, trust: trustHTML('guess', `Not their real price: ${cp.operator ? `${cp.operator} doesn't let us publish its rates` : 'the rates aren\'t published'}. The board at the entrance wins.`) };
   return { v: { g: 'check', word: 'Check the board', sub: `${cp.operator ? `Run by ${cp.operator}. ` : ''}The rates aren't published anywhere we can use yet.` }, trust: trustHTML('guess', 'Rates not published') };
 }
 
@@ -1369,6 +1399,7 @@ function renderDetail() {
           : `${usualHTML(p)}<p class="plain">${p.lk ? `Based on ${p.lks || 'Woollahra Council\'s resident permit areas'}: streets outside a permit scheme are usually unrestricted, but the council doesn't publish its signs.` : p.ps ? `Permit area from the ${p.ps}. The council doesn't publish the sign times, so visitors should check the sign for the time limit.` : 'Streety only shows rules the council publishes. This side of the street has no published signs yet.'}</p>
         <button type="button" class="snapcta" id="snapHere"><i class="ph-fill ph-camera" aria-hidden="true"></i><span><b>Snap the sign here</b><small>Streety reads it, tells you if you can park, and fills in this kerb.</small></span></button>`}
         <p class="note">The sign on the street always wins.${extra ? ` ${extra.replace(/^\w/, (x) => x.toUpperCase())}.` : ''}</p>
+        ${set ? '<button type="button" class="linkbtn" id="snapHere" data-act="snap"><i class="ph ph-camera" aria-hidden="true"></i>Sign looks different? Snap it</button>' : ''}
       </section>
       ${fineHTML(p, set, c)}
       ${set ? `<section class="sect"><h3 class="h3">Across the week</h3>${weekHTML(p)}</section>
@@ -1410,7 +1441,7 @@ function renderDetail() {
   d.querySelector('.dclose').onclick = closeCard;
   const id = S.sel;
   const title = f ? `${f.properties.s}${f.properties.sd ? `, ${f.properties.sd.toLowerCase()}` : ''}` : cp.name;
-  d.querySelector('[data-act=directions]').onclick = () => directions(f ? kerbMid(f) : cp.at, title);
+  d.querySelector('[data-act=directions]').onclick = (e) => { if (e.currentTarget.tagName !== 'A') directions(f ? kerbMid(f) : cp.at, title); };
   d.querySelector('[data-act=save]').onclick = (e) => { toggleSaved(id); const on = isSaved(id); e.currentTarget.setAttribute('aria-pressed', String(on)); e.currentTarget.innerHTML = starInner(on); };
   d.querySelector('[data-act=share]').onclick = () => shareSel(f, cp);
   const pk = d.querySelector('[data-act=park]'); if (pk) pk.onclick = () => parkedNow(f);
@@ -1475,8 +1506,10 @@ function directions(at, title) {
 }
 function actionsHTML(at, id) {
   const on = isSaved(id), app = navApp(), kerb = typeof id === 'number';
+  at = at.map((v) => +v.toFixed(6));
   return `<div class="actions">
-      <button type="button" class="primary" data-act="directions"><i class="ph-fill ph-navigation-arrow" aria-hidden="true"></i><span>Directions</span>${app ? `<small>${NAV[app].name}</small>` : ''}</button>
+      ${app ? `<a class="primary" data-act="directions" href="${NAV[app].url(at)}" target="_blank" rel="noopener"><i class="ph-fill ph-navigation-arrow" aria-hidden="true"></i><span>Directions</span><small>${NAV[app].name}</small></a>`
+    : '<button type="button" class="primary" data-act="directions"><i class="ph-fill ph-navigation-arrow" aria-hidden="true"></i><span>Directions</span></button>'}
       <div class="acts2${kerb ? ' three' : ''}">
         ${kerb ? '<button class="cta" type="button" data-act="park"><i class="ph ph-car-simple" aria-hidden="true"></i>I parked here</button>' : ''}
         <button class="cta" type="button" data-act="save" aria-pressed="${on}">${starInner(on)}</button>
@@ -1546,20 +1579,28 @@ async function fetchSignPhotos(f) {
   return out;
 }
 
+let pendingFit = null;
+// Show the selected kerb (or car park) in the map left above the card and below the top bar, clear of the chips.
+// Runs once the card's height is known. A kerb you tapped on the map only moves if it ended up hidden.
+function fitSel(force) {
+  const id = S.sel;
+  if (id == null || !map.isStyleLoaded()) return;
+  const coords = typeof id === 'number' ? byId.get(id)?.geometry.coordinates : [CARPARKS.find((c) => c.id === id)?.at].filter(Boolean);
+  if (!coords?.length) return;
+  const desk = isDesk(), H = map.getCanvas().clientHeight, W = map.getCanvas().clientWidth;
+  const pad = desk ? { top: 90, bottom: 60, left: Math.round(panel.getBoundingClientRect().right) + 40, right: 70 } : { top: 76, bottom: Math.min(px('--vis') + (root.classList.contains('sheet-tall') ? 16 : 64), H - 76 - 70), left: 36, right: 64 };
+  if (!force && coords.every((c) => { const q = map.project(c); return q.x > pad.left - 20 && q.x < W - pad.right + 20 && q.y > pad.top && q.y < H - pad.bottom; })) return;
+  const xs = coords.map((c) => c[0]), ys = coords.map((c) => c[1]);
+  map.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: pad, maxZoom: Math.max(Math.min(map.getZoom(), 17.5), 16.5), duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 600 });
+}
 function select(id, fly) {
   // Remember where the list was, so Back returns to the same row.
-  if (S.sel == null && body.dataset.mode === 'list') { listScroll = body.scrollTop; listSheet = sheet; }
+  if (S.sel == null && body.dataset.mode === 'list') { listScroll = body.scrollTop; listSheet = sheet; listAt = listAt || map.getCenter().toArray(); }
   S.sel = id;
   // Like Google Maps: a tapped street opens as a card at the bottom, tall enough to show its answer and Directions,
   // with the map still in view above it. Swipe up for the rest.
   if (id != null && !isDesk()) { if (S.edit) setEdit(false); setSheet('peek'); }
-  if (fly && id != null) {
-    const at = typeof id === 'number' ? mids.get(id) : CARPARKS.find((c) => c.id === id)?.at;
-    if (at) {
-      const desk = innerWidth >= 900;
-      map.easeTo({ center: at, zoom: Math.max(map.getZoom(), 16.5), padding: desk ? { left: 430, top: 0, right: 0, bottom: 0 } : { bottom: Math.min(innerHeight * 0.55, px('--vis') + 30), top: 70, left: 0, right: 0 }, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 600 });
-    }
-  }
+  if (id != null) pendingFit = { force: !!fly };
   update();
 }
 
@@ -1636,7 +1677,7 @@ function setPeek() {
   // A card shows its whole first screenful: the answer, why, how sure, and the Directions row. The list shows its
   // one-line answer and the best option (or the welcome, the first time).
   const card = body.dataset.mode?.startsWith('detail');
-  const target = card ? body.querySelector('.detail .actions') : body.querySelector('.welcome') || body.querySelector('.rows .opt') || body.querySelector('.summary, .empty');
+  const target = card ? body.querySelector(innerHeight < 740 ? '.detail .actions .primary' : '.detail .actions') : body.querySelector('.welcome') || body.querySelector('.rows .opt') || body.querySelector('.summary, .empty');
   const avail = px('--sheet-h') - dock - 22;
   let extra = 64;
   if (target) extra = Math.round(target.getBoundingClientRect().bottom - body.getBoundingClientRect().top + body.scrollTop + (card ? 16 : 6));
@@ -1987,6 +2028,7 @@ function renderBody() {
   try { S.sel != null ? renderDetail() : renderList(); } finally {
     const m = `${body.dataset.mode || ''}|${!!body.querySelector('.welcome')}|${!!body.querySelector('.rows .opt')}|${!!body.querySelector('.dest')}|${navApp()}`;
     if (m !== lastMode) { lastMode = m; if (!isDesk()) setPeek(); }
+    if (pendingFit && S.sel != null) { const f = pendingFit; pendingFit = null; requestAnimationFrame(() => fitSel(f.force)); }
   }
 }
 function update(light) {
@@ -2021,8 +2063,18 @@ map.on('click', (e) => {
   // A 32 px box around the finger, nearest kerb first (a fingertip covers more than a thin line).
   const hits = map.queryRenderedFeatures([[e.point.x - 16, e.point.y - 16], [e.point.x + 16, e.point.y + 16]], { layers: KERB_LAYERS.filter((l) => map.getLayer(l)) });
   if (hits.length) {
-    const ll = e.lngLat.toArray();
-    hits.sort((a, b) => distM(mids.get(a.properties.id) || ll, ll) - distM(mids.get(b.properties.id) || ll, ll));
+    // The kerb whose line passes closest to the finger (not the one whose middle is closest).
+    const toLine = (id) => {
+      const c = byId.get(id)?.geometry.coordinates || [];
+      let best = Infinity;
+      for (let i = 1; i < c.length; i++) {
+        const a = map.project(c[i - 1]), b = map.project(c[i]), dx = b.x - a.x, dy = b.y - a.y, l2 = dx * dx + dy * dy;
+        const t = l2 ? Math.max(0, Math.min(1, ((e.point.x - a.x) * dx + (e.point.y - a.y) * dy) / l2)) : 0;
+        best = Math.min(best, Math.hypot(a.x + t * dx - e.point.x, a.y + t * dy - e.point.y));
+      }
+      return best;
+    };
+    hits.sort((a, b) => toLine(a.properties.id) - toLine(b.properties.id));
     select(hits[0].properties.id, false);
   } else if (S.sel != null) closeCard();
 });
@@ -2032,11 +2084,13 @@ for (const l of KERB_LAYERS) {
 }
 // Touching the map means you want the map: lower a raised sheet and fold the questions away.
 map.on('dragstart', () => {
+  listAt = null; // you moved the map yourself: the list follows it again
   if (isDesk()) return;
   if (S.edit) setEdit(false);
   if (sheet === 'open') setSheet('peek');
 });
 let moveTimer = null;
+map.on('zoomstart', (e) => { if (e.originalEvent) listAt = null; });
 map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { if (S.sel != null) return; if (panelTouch) pendingList = true; else renderList(); }, 120); });
 
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { restyleBase(); if (KERBS) { kerbLayers(); cpLayers(); destLayers(); } if (S.sat) setSat(true); });
@@ -2129,7 +2183,7 @@ dataReady.then(() => {
     let best = null, bd = 30;
     for (const f of KERBS.features) { const d = distM(mids.get(f.properties.id), LINK); if (d < bd) { bd = d; best = f.properties.id; } }
     for (const cp of CARPARKS) { const d = distM(cp.at, LINK); if (d < bd) { bd = d; best = cp.id; } }
-    if (best != null) { S.sel = best; setSheet('peek'); }
+    if (best != null) { S.sel = best; setSheet('peek'); pendingFit = { force: false }; }
   }
   update();
   requestAnimationFrame(() => requestAnimationFrame(() => { setPeek(); root.dataset.ready = '1'; }));

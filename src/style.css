@@ -209,6 +209,10 @@ button:active, .cta:active, a.snapcta:active, .navopt:active { transform: scale(
 .v-guess .vicon { color: var(--free-ink); background: color-mix(in srgb, var(--free) 13%, var(--surface)); }
 .v-guess .vword { color: var(--fg); }
 .v-paid .vicon { color: var(--paid-ink); }
+/* A car park estimate: dashed like a guess, but neutral, never the green of "free". */
+.v-est { background: transparent; border: 1.5px dashed var(--line); }
+.v-est .vicon { color: var(--paid-ink); background: var(--surface-2); }
+a.primary { text-decoration: none; }
 .v-check { background: transparent; border: 1.5px dashed var(--line); }
 .v-check .vicon { color: var(--paid-ink); background: var(--surface-2); }
 .v-check .vword { font-size: 22px; }
@@ -473,6 +477,20 @@ button.brand { font: inherit; cursor: pointer; position: relative; }
   .acts2.three { grid-template-columns: 1fr 1fr 1fr; }
   .acts2 .cta { font-size: 13.5px; }
 }
+/* Short phones (an iPhone SE is 667 px): a tighter card so its answer and Directions leave some map showing. */
+@media (max-height: 740px) and (max-width: 899px) {
+  .detail { gap: 9px; }
+  .detail h2 { font-size: 23px; }
+  .verdict { padding: 9px 12px 9px 10px; gap: 10px; }
+  .vicon { width: 38px; height: 38px; font-size: 21px; }
+  .vword { font-size: 24px; }
+  .vsub, .trust { font-size: 13px; }
+  .why { font-size: 14px; line-height: 1.4; }
+  .actions .primary { min-height: 50px; }
+  /* In the lowered sheet the why line stops at 3 lines; pull the sheet up to read the rest. */
+  .panel:not(.open) .why { display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .plan { min-height: 46px; font-size: 16px; }
+}
 @media (max-height: 700px) and (max-width: 899px) {
   .dock { gap: 8px; }
   .seg7 button { min-height: 46px; }
@@ -512,7 +530,7 @@ button.brand { font: inherit; cursor: pointer; position: relative; }
 .drivehud small { font-size: 14px; opacity: .85; }
 .me-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent); }
 .drivehud .dh-stop { all: unset; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--surface) 18%, transparent); font-size: 20px; }
-.driving .snapbtn, .driving .satbtn, .sheet-tall .snapbtn, .sheet-tall .satbtn { display: none; }
+.driving .snapbtn, .driving .satbtn, .sheet-tall .snapbtn, .sheet-tall .satbtn, .sheet-tall .legend { display: none; }
 
 /* Parked countdown pill */
 .parkedpill { all: unset; cursor: pointer; position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); top: calc(env(safe-area-inset-top, 0px) + 72px); display: flex; align-items: center; gap: 8px; max-width: calc(100% - 120px); min-height: 44px; box-sizing: border-box; padding: 0 16px; border-radius: 999px; background: var(--surface); color: var(--fg); box-shadow: var(--shadow); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
