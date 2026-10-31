@@ -94,8 +94,10 @@ for (const f of fixes) {
       KERBS ??= await (await fetch(`${SITE}/data/kerbs.json`)).json();
       RULESETS ??= await (await fetch(`${SITE}/data/rules.json`)).json();
       const near = KERBS.features.filter((x) => x.properties.s === f.move.street).map((x) => ({ x, d: Math.min(...x.geometry.coordinates.map((c) => metres(c, v.at))) })).sort((a, b) => a.d - b.d);
-      for (const { x, d } of near.slice(0, 6)) console.log(`::notice title=${f.move.street} kerb ${x.properties.id}::${Math.round(d)} m from the photo; side ${x.properties.sd || x.properties.b || '?'}; ${x.geometry.coordinates.length} points; src ${x.properties.src}; pa ${x.properties.pa}; rules ${JSON.stringify(RULESETS[x.properties.k] ?? null).slice(0, 600)}`);
-      const hit = near[0];
+      for (const { x, d } of near.slice(0, 6)) console.log(`::notice title=${f.move.street} kerb ${x.properties.id}::${Math.round(d)} m from the photo; side ${x.properties.sd || x.properties.b || '?'}; ${x.geometry.coordinates.length} points ${JSON.stringify(x.geometry.coordinates)}; k ${x.properties.k}; src ${x.properties.src}; pa ${x.properties.pa}; rules ${JSON.stringify(RULESETS[x.properties.k] ?? null).slice(0, 400)}`);
+      // "kerb": a kerb picked from the map by where it is (one of its points), when the nearest isn't the one.
+      const pinned = f.move.kerb && near.find(({ x }) => x.geometry.coordinates.some((c) => metres(c, f.move.kerb) < 3));
+      const hit = pinned || near[0];
       if (!hit || hit.d > 80) throw new Error(`no ${f.move.street} kerb within 80 m of the photo`);
       Object.assign(v, { street: f.move.street, side: hit.x.properties.sd || hit.x.properties.b || '', line: hit.x.geometry.coordinates, ids: [hit.x.properties.id] });
       console.log(`${f.id}: put on ${f.move.street} kerb ${hit.x.properties.id} (${Math.round(hit.d)} m from the photo)`);
