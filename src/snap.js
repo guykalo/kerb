@@ -200,8 +200,11 @@ function streetsNear(at, current) {
 /* ---------- the panel ---------- */
 const LIMITS = [['0.25', '15 min (¼P)'], ['0.5', '30 min (½P)'], ['1', '1P'], ['2', '2P'], ['3', '3P'], ['4', '4P'], ['6', '6P'], ['8', '8P'], ['nopark', 'No parking'], ['nostop', 'No stopping'], ['zone:Loading Zone', 'Loading zone'], ['zone:Bus Zone', 'Bus zone']];
 const hours = Array.from({ length: 49 }, (_, i) => i / 2);
-const hOpt = (sel) => hours.map((h) => `<option value="${h}"${h === sel ? ' selected' : ''}>${h === 24 ? 'midnight' : fmtTime(h)}</option>`).join('');
-function kindValue(p) { return p.kind === 'limit' ? String(p.hours) : p.kind === 'zone' ? `zone:${p.head.replace(/\b\w+/g, (w) => w[0] + w.slice(1).toLowerCase())}` : p.kind === 'works' ? 'nopark' : p.kind; }
+const hOpt = (sel, ph) => (sel == null ? `<option value="" selected disabled>${ph}</option>` : '') + hours.map((h) => `<option value="${h}"${h === sel ? ' selected' : ''}>${h === 24 ? 'midnight' : fmtTime(h)}</option>`).join('');
+function kindValue(p) { return !p.kind ? '' : p.kind === 'limit' ? String(p.hours) : p.kind === 'zone' ? `zone:${p.head.replace(/\b\w+/g, (w) => w[0] + w.slice(1).toLowerCase())}` : p.kind === 'works' ? 'nopark' : p.kind; }
+// A sign part the driver is filling in by hand starts empty: Streety never fills in a sign it didn't read.
+const blankPanel = () => ({ kind: '', head: '', times: [[null, null, []]] });
+const complete = (p) => !!p.kind && p.times.length > 0 && p.times.every(([f, t, d]) => f != null && t != null && d.length);
 
 async function openSnap(file, getWhere, fromKerb) {
   const el = document.createElement('div');
@@ -224,23 +227,23 @@ async function openSnap(file, getWhere, fromKerb) {
     read = await readPhoto(img, (m) => ($('.snap-status').textContent = m));
     ({ keep: panels, other: leftOff } = splitByArrow(readSign(read.text).panels));
   } catch (e) { $('.snap-status').textContent = `${e.message}. You can still type in what the sign says.`; }
-  $('.snap-status').innerHTML = panels.length
+  const typed = !panels.length;
+  $('.snap-status').innerHTML = !typed
     ? `Here's what Streety read${read?.by === 'ai' ? '' : ' (on your phone)'}. <b>Check it against the sign</b> and fix anything that's wrong.${leftOff.length ? ` The ${leftOff.map((p) => describePanel(p).split(' ').slice(0, 2).join(' ')).join(' and ')} sign points the other way, so it's left off this kerb.` : ''}`
-    : "Streety couldn't read this one. Set what the sign says below. Tip: get closer so the sign fills most of the photo.";
-  if (!panels.length) panels = [{ kind: 'limit', hours: 2, head: '2P', times: [[8, 18, [1, 2, 3, 4, 5]]] }];
+    : "<b>Streety couldn't read this sign.</b> If you can see it, add what it says below: it'll be saved as your entry, not as something read from the photo. Tip: get closer so the sign fills most of the photo.";
 
   const render = () => {
     $('.snap-panels').innerHTML = panels.map((p, i) => `<div class="sp" data-i="${i}">
-      <div class="sp-row"><select class="sp-kind" aria-label="Sign type">${LIMITS.map(([v, t]) => `<option value="${v}"${v === kindValue(p) ? ' selected' : ''}>${t}</option>`).join('')}</select>
+      <div class="sp-row"><select class="sp-kind" aria-label="Sign type">${p.kind ? '' : '<option value="" selected disabled>Choose the sign type</option>'}${LIMITS.map(([v, t]) => `<option value="${v}"${v === kindValue(p) ? ' selected' : ''}>${t}</option>`).join('')}</select>
         ${p.kind === 'limit' ? `<label class="sp-chk"><input type="checkbox" class="sp-ticket"${p.ticket ? ' checked' : ''}> Ticket</label>` : ''}
         ${p.kind === 'limit' && p.ticket ? `<label class="sp-chk"><input type="checkbox" class="sp-q"${p.free15 ? ' checked' : ''}> ¼P free</label>` : ''}
-        ${panels.length > 1 ? '<button type="button" class="sp-del" aria-label="Remove this part"><i class="ph ph-trash"></i></button>' : ''}</div>
-      ${p.times.map(([f, t, d], j) => `<div class="sp-time" data-j="${j}"><select class="sp-f" aria-label="From">${hOpt(f)}</select><span>to</span><select class="sp-t" aria-label="To">${hOpt(t)}</select>
+        ${panels.length > 1 || typed ? '<button type="button" class="sp-del" aria-label="Remove this part"><i class="ph ph-trash"></i></button>' : ''}</div>
+      ${p.times.map(([f, t, d], j) => `<div class="sp-time" data-j="${j}"><select class="sp-f" aria-label="From">${hOpt(f, 'From')}</select><span>to</span><select class="sp-t" aria-label="To">${hOpt(t, 'To')}</select>
         <div class="sp-days">${[1, 2, 3, 4, 5, 6, 0].map((x) => `<button type="button" data-d="${x}" aria-pressed="${d.includes(x)}">${DAYS[x][0]}${DAYS[x][1]}</button>`).join('')}</div>
         ${p.times.length > 1 ? '<button type="button" class="sp-tdel" aria-label="Remove this time"><i class="ph ph-x"></i></button>' : ''}</div>`).join('')}
       <div class="sp-row"><button type="button" class="sp-addt">+ Another time</button>
         ${p.kind === 'limit' ? `<label class="sp-chk"><input type="checkbox" class="sp-permit"${p.permit ? ' checked' : ''}> Permit holders excepted</label>${p.permit ? `<input class="sp-area" placeholder="Area" value="${p.permit !== 'yes' ? p.permit : ''}" aria-label="Permit area">` : ''}` : ''}</div>
-      <p class="sp-say">${describePanel(p)}</p></div>`).join('') + '<button type="button" class="sp-add">+ Another sign on this pole</button>';
+      <p class="sp-say">${complete(p) ? describePanel(p) : 'Pick the sign type, the times and the days it shows.'}</p></div>`).join('') + `<button type="button" class="sp-add">${panels.length ? '+ Another sign on this pole' : '+ Add what the sign says'}</button>`;
     $('.snap-panels').querySelectorAll('.sp').forEach((box) => {
       const p = panels[+box.dataset.i];
       box.querySelector('.sp-kind').onchange = (e) => { const v = e.target.value; if (/^\d|^0/.test(v)) { p.kind = 'limit'; p.hours = +v; } else if (v.startsWith('zone:')) { p.kind = 'zone'; p.head = v.slice(5).toUpperCase(); } else p.kind = v; render(); };
@@ -249,7 +252,7 @@ async function openSnap(file, getWhere, fromKerb) {
       box.querySelector('.sp-permit')?.addEventListener('change', (e) => { p.permit = e.target.checked ? 'yes' : undefined; render(); });
       box.querySelector('.sp-area')?.addEventListener('change', (e) => { p.permit = e.target.value.trim().toUpperCase() || 'yes'; render(); });
       box.querySelector('.sp-del')?.addEventListener('click', () => { panels.splice(+box.dataset.i, 1); render(); });
-      box.querySelector('.sp-addt').onclick = () => { p.times.push([8, 18, [1, 2, 3, 4, 5]]); render(); };
+      box.querySelector('.sp-addt').onclick = () => { p.times.push([null, null, []]); render(); };
       box.querySelectorAll('.sp-time').forEach((row) => {
         const tm = p.times[+row.dataset.j];
         row.querySelector('.sp-f').onchange = (e) => { tm[0] = +e.target.value; render(); };
@@ -258,28 +261,31 @@ async function openSnap(file, getWhere, fromKerb) {
         row.querySelector('.sp-tdel')?.addEventListener('click', () => { p.times.splice(+row.dataset.j, 1); render(); });
       });
     });
-    $('.sp-add').onclick = () => { panels.push({ kind: 'limit', hours: 2, head: '2P', times: [[8, 18, [1, 2, 3, 4, 5]]] }); render(); };
+    $('.sp-add').onclick = () => { panels.push(blankPanel()); render(); };
     verdict();
   };
   const rulesNow = () => {
     const out = [];
-    for (const p of panels) for (const t of p.times) if (t[2].length) out.push(...readSign(`${p.kind === 'limit' ? `${p.hours}P` : p.kind === 'nostop' ? 'NO STOPPING' : p.kind === 'nopark' ? 'NO PARKING' : p.head} ${fmtSpan(t)}${p.ticket ? ' TICKET' : ''}${p.permit ? ` PERMIT HOLDERS EXCEPTED${p.permit !== 'yes' ? ` AREA ${p.permit}` : ''}` : ''}`).rules);
+    for (const p of panels) if (complete(p)) for (const t of p.times) if (t[2].length) out.push(...readSign(`${p.kind === 'limit' ? `${p.hours}P` : p.kind === 'nostop' ? 'NO STOPPING' : p.kind === 'nopark' ? 'NO PARKING' : p.head} ${fmtSpan(t)}${p.ticket ? ' TICKET' : ''}${p.permit ? ` PERMIT HOLDERS EXCEPTED${p.permit !== 'yes' ? ` AREA ${p.permit}` : ''}` : ''}`).rules);
     return out;
   };
   // "¼P FREE" on a ticket sign: the first 15 minutes are free with a ticket (the app's q flag on a rule set).
   const qNow = () => (panels.some((p) => p.kind === 'limit' && p.ticket && p.free15) ? 1 : 0);
   const verdict = () => {
     const rules = rulesNow(), S = C.S, set = [{ rules, q: qNow(), text: '' }], props = { k: 0 };
-    const v = $('.snap-verdict'); v.hidden = false;
-    if (!rules.length) { v.innerHTML = ''; return; }
+    const v = $('.snap-verdict');
+    const ready = panels.length > 0 && panels.every(complete);
+    $('.snap-save').disabled = !ready;
+    // No answer until every part of the sign is filled in: half a sign would give a wrong "yes".
+    if (!ready || !rules.length) { v.hidden = true; v.innerHTML = ''; return; }
+    v.hidden = false;
     const c = costFor(props, set, S.day, S.hour, S.stay);
     const st = stateAt(props, set, S.day, S.hour);
     const now = st.kind === 'free' ? `The sign doesn't apply on ${DAYS_LONG[S.day]} at ${fmtTime(S.hour)}, so there's no limit right now.${st.until < 24 ? ` It starts again at ${fmtTime(st.until)}.` : ''}` : plainNow(props, set, S.day, S.hour);
     v.className = `snap-verdict ${c.ok ? 'yes' : 'no'}`;
-    v.innerHTML = `<b>${c.ok ? `Yes, you can park here for ${C.stayWords()}` : `No, not for ${C.stayWords()}`}</b><span>${c.ok ? `${c.cost > 0 ? `About ${money(c.cost)}. ` : c.unknownRate ? 'Pay at the meter. ' : ''}${now}` : `${c.why}.`}</span><small>${C.when()}. The sign on the street always wins.</small>`;
+    v.innerHTML = `<b>${c.ok ? `Yes, you can park here for ${C.stayWords()}` : `No, not for ${C.stayWords()}`}</b><span>${c.ok ? `${c.cost > 0 ? `About ${money(c.cost)}. ` : c.unknownRate ? 'Pay at the meter. ' : ''}${now}` : `${c.why}.`}</span><small>${C.when()}.${typed ? ' From your entry, not read from the photo.' : ''} The sign on the street always wins.</small>`;
   };
   render();
-  $('.snap-save').disabled = false;
 
   // Where is it?
   const whereBox = $('.snap-where');
@@ -328,7 +334,7 @@ async function openSnap(file, getWhere, fromKerb) {
   $('.snap-save').onclick = async () => {
     if (!place) { pick(); return; }
     const rules = rulesNow();
-    if (!rules.length) return;
+    if (!rules.length || !panels.every(complete)) return;
     // Kerbs numbered 9,000,000 and up only exist on this phone (drawn from earlier photos), so a shared reading
     // can't point at them: save that kerb's line instead.
     let ids = (place.ids || []).filter((x) => x < 9000000), line = place.line || null;
