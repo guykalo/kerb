@@ -1032,6 +1032,8 @@ function verdictText(p, c) {
   if (p.lk) return { head: 'Probably free', why: '' };
   if (c.yourPermit) return { head: 'Free for you: your permit area', why: `${p.pa} is your resident permit area, so the time limits for visitors don't apply to you. Display your permit. Meters, no parking and no stopping times on the sign still apply.` };
   if (c.ok === null) return c.partial ? { head: 'Check the sign', why: plainNow(p, RULES, S.day, S.hour) } : { head: 'No published rules', why: '' };
+  // A resident permit street whose sign times aren't published: no meters, but visitors usually get a limit.
+  if (c.permitOnly) return { head: 'No meters, check the sign for a time limit', why: `${p.pa} is a resident permit area. Visitors usually get a time limit here (often 1P or 2P), so check the sign.` };
   if (!c.ok) return { head: "You can't stay that long", why: '' };
   if (c.quarterFree) return { head: 'Free with a ticket', why: 'The first 15 minutes are free. Grab a ticket from the meter.' };
   const end = S.hour + S.stay;

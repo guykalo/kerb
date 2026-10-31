@@ -24,6 +24,6 @@
   {
     "id": "smvvr3sma",
     "note": "Snapped on Gottenham Street, but the phone put it on Marlborough Street; Guy showed the kerb on the map (31 Oct 2026)",
-    "move": { "street": "Gottenham Street", "onKerb": true }
+    "move": { "street": "Gottenham Street", "onKerb": true, "kerb": [151.18772, -33.87798] }
   }
 ]
