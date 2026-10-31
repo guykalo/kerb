@@ -15,14 +15,14 @@ const NOW = new Date('2026-11-04T10:00:00+11:00');
 const GLEBE = '#at=-33.87755,151.18527';
 const TASKS = [
   { name: 'start', fresh: true, url: '', steps: [['shot'], ['tap', ['[data-welcome-skip]']], ['wait', 600], ['shot']] },
-  { name: 'list', url: '', steps: [['tap', ['#handle']], ['shot']] },
+  { name: 'list', url: '', steps: [['tap', ['#handle']], ['shot'], ['tap', ['[data-filter=carparks]']], ['shot'], ['tap', ['.rows .opt']], ['wait', 700], ['shot']] },
   { name: 'street', url: GLEBE, steps: [['wait', 800], ['visible', '[data-act=directions]'], ['visible', '.trust'], ['shot'], ['tap', ['#handle']], ['shot'], ['scroll', '#body'], ['shot']] },
   { name: 'option', url: '', steps: [['tap', ['#handle']], ['tap', ['.rows .opt', '.opt']], ['wait', 700], ['visible', '[data-act=directions]'], ['shot'], ['scroll', '#body'], ['shot']] },
   { name: 'search', url: '', steps: [['tap', ['#q']], ['type', 'Glebe Point Road'], ['wait', 2500], ['shot'], ['key', 'Enter'], ['wait', 2500], ['shot']] },
   { name: 'when', url: '', steps: [['tap', ['[data-when]', '#ask']], ['wait', 600], ['shot']] },
   // Sat 7pm for 2 hours from the pill: pill, Sat, 7pm (2 hours is the default; tapped anyway to be sure).
   { name: 'plan', url: '', steps: [['tap', ['[data-when]']], ['tap', ['[data-dow="6"]']], ['tap', ['[data-time="19"]']], ['tap', ['[data-stay="2"]']], ['shot'], ['tap', ['[data-when-done]']], ['tap', ['#handle']], ['shot'], ['tap', ['.rows .opt']], ['wait', 700], ['shot']] },
-  { name: 'directions', url: GLEBE, steps: [['tap', ['[data-act=directions]']], ['wait', 600], ['shot']] },
+  { name: 'directions', url: GLEBE, steps: [['tap', ['[data-act=directions]']], ['wait', 600], ['shot'], ['key', 'Escape'], ['wait', 300], ['tap', ['[data-act=park]']], ['wait', 900], ['shot']] },
   // Contrast check in the dark theme.
   { name: 'dark', dark: true, url: GLEBE, steps: [['shot'], ['tap', ['#handle']], ['scroll', '#body'], ['shot']] },
 ];

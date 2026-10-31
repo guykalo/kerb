@@ -1283,7 +1283,7 @@ function kerbTrust(p, g) {
   if (p.lk) return trustHTML('guess', "Streety's guess: no permit scheme here, and the council doesn't publish its signs. Check the sign.");
   if (!set) return trustHTML('guess', "The council doesn't publish this sign. Check it before you leave the car.");
   const src = set.src || SRC_NAME[CITY_ID];
-  if (g === 'guess') return trustHTML('guess', `Streety's reading: ${src} has no rule for this time${upd ? ` (updated ${upd})` : ''}. Check the sign.`);
+  if (g === 'guess') return trustHTML('guess', `Streety's guess from ${src}${upd ? `, updated ${upd}` : ''}. Check the sign.`);
   if (g === 'check') return trustHTML('guess', `${src} doesn't cover this time. Check the sign.`);
   return trustHTML('signed', `From ${src}${upd ? `, updated ${upd}` : ''}`);
 }
@@ -1464,7 +1464,10 @@ function directions(at, title) {
       <div class="navlist">${keys.map((k) => `<a class="navopt" data-nav="${k}" href="${NAV[k].url(at)}" target="_blank" rel="noopener"><span>${NAV[k].name}</span><i class="ph ph-arrow-square-out" aria-hidden="true"></i></a>`).join('')}</div>
     </div></div>`;
   document.body.appendChild(el);
-  const close = () => el.remove();
+  const back = document.activeElement;
+  const close = () => { el.remove(); removeEventListener('keydown', esc); back?.focus?.(); };
+  const esc = (e) => { if (e.key === 'Escape') close(); };
+  addEventListener('keydown', esc);
   el.querySelector('.snap-x').onclick = close;
   el.onclick = (e) => { if (e.target === el) close(); };
   el.querySelectorAll('[data-nav]').forEach((a) => (a.onclick = () => { setNavApp(a.dataset.nav); setTimeout(() => { close(); renderBody(); }, 50); }));
