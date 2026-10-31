@@ -55,13 +55,25 @@ const HEAD = /(\b\d{1,2}(?:\/\d)?\s?P\b|\bP\s?\d{1,2}\b(?!\s?(?:AM|PM))|NO STOPP
 const TIME = /\b(\d{1,2}(?::\d\d)?(?:AM|PM))-(\d{1,2}(?::\d\d)?(?:AM|PM))\b/g;
 const DAYS = /\b((?:MON|TUE|WED|THU|FRI|SAT|SUN)[A-Z]*(?:\s*(?:-|&|,|AND)\s*(?:MON|TUE|WED|THU|FRI|SAT|SUN)[A-Z]*)*)/g;
 
-// Returns { panels: [{ head, kind, hours, times: [[from, to, days]], permit, ticket, rate, ph, text }], rules: [...tuples] }
+// "1/4P FREE" badge on ticket signs (first 15 minutes free with a ticket), including common OCR slips.
+// It is not a 15-minute limit of its own, so it comes out before the headers are found.
+const QUARTER_FREE = /\(?\s*(?:1\/4|1\s?\/\s?4|I\/4|L\/4|V4|Y4|%)\s?P\s*FREE\s*\)?|\bFIRST 15 ?MIN(?:UTE)?S? FREE\b|\bFREE\b/g;
+const ARROW_L = /<-|←|<—|<=/, ARROW_R = /->|→|—>|=>/;
+
+// Returns { panels: [{ head, kind, hours, times: [[from, to, days]], permit, ticket, rate, ph, text, free15, arrow }], rules: [...tuples], q }
 export function readSign(raw) {
-  const txt = cleanSignText(raw).replace(/\(?\s*1\/4\s?P\s+FREE\s*\)?/g, ' ').replace(/\b(?:NO PARKING|NO STOPPING|TAXI ZONE|LOADING ZONE|BUS ZONE)\s*;?\s*OTHER TIMES\b/g, ' ');
+  const cleaned = cleanSignText(raw);
+  const quarterFree = QUARTER_FREE.test(cleaned); QUARTER_FREE.lastIndex = 0;
+  const txt = cleaned.replace(QUARTER_FREE, ' ').replace(/\b(?:NO PARKING|NO STOPPING|TAXI ZONE|LOADING ZONE|BUS ZONE)\s*;?\s*OTHER TIMES\b/g, ' ');
   const heads = [...txt.matchAll(HEAD)];
   const panels = [];
+  // "TICKET" (or METER) is printed above the header on NSW signs, so it belongs to the sign below it.
+  const TICKET_ABOVE = /\b(?:TICKET|METER|PAY)\b[^0-9:]{0,12}$/;
   heads.forEach((h, i) => {
-    const body = txt.slice(h.index, i + 1 < heads.length ? heads[i + 1].index : undefined);
+    const end = i + 1 < heads.length ? heads[i + 1].index : undefined;
+    const ticketAbove = TICKET_ABOVE.test(txt.slice(Math.max(0, h.index - 20), h.index));
+    let body = txt.slice(h.index, end);
+    if (end !== undefined) body = body.replace(TICKET_ABOVE, ' ');
     const head = h[1].replace(/\s/g, ' ').trim();
     // "No Parking, Authorised Car Share Vehicles Excepted" is one sign: a car share bay.
     if (/CAR ?SHARE/.test(head) && i > 0 && /NO PARKING/.test(heads[i - 1][1]) && h.index - heads[i - 1].index < 50) return;
@@ -78,7 +90,10 @@ export function readSign(raw) {
     if (p.kind === 'limit' && /ELECTRIC VEHICLES?|\bEV\b|WHILE CHARGING/.test(body)) { p.kind = 'zone'; p.head = 'EV CHARGING ONLY'; }
     if (p.kind === 'limit' && /MOBILITY PARKING|DISABILITY PARKING|DISABLED/.test(body)) { p.kind = 'zone'; p.head = 'MOBILITY PARKING ONLY'; }
     if (p.kind === 'limit' && /\b(?:MOTOR ?CYCLES?|MOTORBIKES?) ONLY\b/.test(body)) { p.kind = 'zone'; p.head = 'MOTORBIKES ONLY'; }
-    if (/TICKET|METER|PAY\b|PARKMETER|\$/.test(body) && p.kind === 'limit') p.ticket = true;
+    if ((ticketAbove || /TICKET|METER|PAY\b|PARKMETER|\$/.test(body)) && p.kind === 'limit') p.ticket = true;
+    // The 1/4P FREE badge only appears on ticket parking.
+    if (p.kind === 'limit' && quarterFree && p.hours > 0.25) { p.ticket = true; p.free15 = true; }
+    if (ARROW_L.test(body) && !ARROW_R.test(body)) p.arrow = 'L'; else if (ARROW_R.test(body) && !ARROW_L.test(body)) p.arrow = 'R';
     const rate = /\$\s?(\d+(?:\.\d\d)?)\s*(?:\/|PER)\s*(?:HR|HOUR)/.exec(body);
     if (rate) p.rate = +rate[1];
     const permit = /PERMIT HOLDERS? EXCEPTED(?:\s*(?:AREA|ZONE)\s*([A-Z0-9]{1,6}(?:\s*(?:&|AND|,)\s*(?:AREA\s*)?[A-Z0-9]{1,6})*))?/.exec(body);
@@ -99,7 +114,17 @@ export function readSign(raw) {
     if (!p.times.length) p.times.push([0, 24, ALL]);
     panels.push(p);
   });
-  return { panels, rules: panels.flatMap(panelRules), text: txt.trim() };
+  return { panels, rules: panels.flatMap(panelRules), text: txt.trim(), q: panels.some((p) => p.free15) ? 1 : 0 };
+}
+
+// Signs on one pole can point opposite ways ("2P <-" beside "BUS ZONE ->"): they cover different stretches of
+// kerb. Keep the panels pointing the same way as the first parking sign; say which ones were left off.
+export function splitByArrow(panels) {
+  const lead = panels.find((p) => p.kind === 'limit' && p.arrow) || panels.find((p) => p.arrow);
+  if (!lead) return { keep: panels, other: [] };
+  const keep = [], other = [];
+  for (const p of panels) (p.arrow && p.arrow !== lead.arrow ? other : keep).push(p);
+  return { keep, other };
 }
 
 const NOTE = { nostop: 'No stopping', nopark: 'No parking', works: 'Works zone' };
@@ -124,5 +149,5 @@ export function describePanel(p) {
   const dw = (d) => (d.length === 7 ? 'every day' : d.join() === '1,2,3,4,5' ? 'Mon-Fri' : d.join() === '1,2,3,4,5,6' ? 'Mon-Sat' : d.join() === '0,6' ? 'Sat-Sun' : d.map((x) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][x]).join(', '));
   const when = p.times.map(([f, t, d]) => (f === 0 && t === 24 ? `all day ${dw(d)}` : `${hm(f)}-${hm(t)} ${dw(d)}`)).join(', ');
   const what = p.kind === 'limit' ? `${p.hours < 1 ? `${Math.round(p.hours * 60)} min` : `${p.hours}P`}${p.ticket ? ' ticket' : ''}` : p.kind === 'zone' ? titleWords(p.head) : NOTE[p.kind];
-  return `${what} ${when}${p.permit && p.permit !== 'only' ? `, permit holders excepted${p.permit !== 'yes' ? ` (area ${p.permit})` : ''}` : ''}`;
+  return `${what} ${when}${p.kind === 'limit' && p.ticket && p.free15 ? ', first 15 min free' : ''}${p.permit && p.permit !== 'only' ? `, permit holders excepted${p.permit !== 'yes' ? ` (area ${p.permit})` : ''}` : ''}`;
 }

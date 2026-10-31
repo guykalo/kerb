@@ -3,7 +3,7 @@
 // a server reads the photo instead (Claude vision, see server/worker.js) and the phone is the fallback.
 // Readings are saved on this phone and drawn on its map; with VITE_SNAP_SHARE_URL set they're also sent
 // to a shared store so other drivers get them after the next nightly build.
-import { readSign, describePanel } from '../scripts/lib/sign-words.mjs';
+import { readSign, describePanel, splitByArrow } from '../scripts/lib/sign-words.mjs';
 import { costFor, plainNow, stateAt, fmtTime, money, DAYS, DAYS_LONG } from './rules.js';
 
 const READ_URL = import.meta.env.VITE_SIGN_READ_URL || '';
@@ -64,18 +64,73 @@ async function readPhoto(img, progress) {
   }
   progress('Getting the sign reader ready (first time only)…');
   const T = await tesseract();
-  const worker = await T.createWorker('eng', 1, { logger: (m) => { if (m.status === 'recognizing text') progress(`Reading the sign… ${Math.round(m.progress * 100)}%`); } });
+  let pass = 0;
+  const worker = await T.createWorker('eng', 1, { logger: (m) => { if (m.status === 'recognizing text') progress(`Reading the sign… ${Math.round(((pass + m.progress) / 4) * 100)}%`); } });
   try {
-    const cv = toCanvas(img, 1800, true);
-    let { data } = await worker.recognize(cv);
-    let text = data.text;
-    if (!readSign(text).panels.length) { // signs are sparse text: try again treating it that way
-      await worker.setParameters({ tessedit_pageseg_mode: '11' });
-      ({ data } = await worker.recognize(cv));
-      if (readSign(data.text).panels.length) text = data.text;
+    // A photo of a pole is mostly shopfronts, sky and wood. Read just the white sign plates, in black and
+    // white at a size the reader likes, then the whole photo as a fallback; keep the reading that makes most sense.
+    const plates = signCrop(img);
+    const tries = [];
+    for (const [cv, psm] of [[plates, '6'], [plates, '11'], [toCanvas(img, 1800, true), '3'], [toCanvas(img, 1800, true), '11']]) {
+      if (!cv) { pass++; continue; }
+      await worker.setParameters({ tessedit_pageseg_mode: psm });
+      const { data } = await worker.recognize(cv);
+      const text = fixOcr(data.text);
+      tries.push({ text, score: score(text) });
+      pass++;
+      if (tries[tries.length - 1].score >= 6) break; // a header and a time: good enough
     }
-    return { text, by: 'phone' };
+    tries.sort((a, b) => b.score - a.score);
+    return { text: tries[0]?.text || '', by: 'phone' };
   } finally { worker.terminate(); }
+}
+// How much of a parking sign this reading looks like: headers, times and days that parse.
+function score(text) {
+  const { panels } = readSign(text);
+  return panels.reduce((s, p) => s + 2 + p.times.filter(([f, t]) => !(f === 0 && t === 24)).length * 2 + (p.ticket ? 1 : 0) + (p.permit ? 1 : 0), 0);
+}
+// Slips the phone reader makes on NSW signs, where AM/PM are printed small and low beside the hour:
+// "8AM-6PM" comes back as "8.7 6..." and "6PM-10PM" as "6.710.,". Only used on the phone's reading.
+export function fixOcr(raw) {
+  return String(raw || '')
+    .replace(/\b(\d{1,2})\s?[.,·]{1,3}\s?[7~—–-]\s?(\d{1,2})\s?[.,·]{1,3}/g, (m, a, b) => (+a <= 12 && +b <= 12 ? `${a}-${b}PM ` : m));
+}
+// Find the white sign plates (bright, colourless, filled rectangles) and return just them, in black and white.
+function signCrop(img) {
+  const S = 6, big = toCanvas(img, 1800, false), W = Math.floor(big.width / S), H = Math.floor(big.height / S);
+  if (W < 20 || H < 20) return null;
+  const sm = document.createElement('canvas'); sm.width = W; sm.height = H;
+  const sg = sm.getContext('2d'); sg.drawImage(big, 0, 0, W, H);
+  const px = sg.getImageData(0, 0, W, H).data, n = W * H, mn = new Uint8Array(n), sat = new Uint8Array(n);
+  for (let i = 0; i < n; i++) { const r = px[i * 4], g = px[i * 4 + 1], b = px[i * 4 + 2]; mn[i] = Math.min(r, g, b); sat[i] = Math.max(r, g, b) - mn[i]; }
+  const sorted = Array.from(mn).sort((a, b) => a - b), cut = Math.max(150, sorted[Math.floor(n * 0.92)] - 25);
+  const on = new Uint8Array(n); for (let i = 0; i < n; i++) on[i] = mn[i] > cut && sat[i] < 45 ? 1 : 0;
+  const seen = new Uint8Array(n), boxes = [];
+  for (let s = 0; s < n; s++) {
+    if (!on[s] || seen[s]) continue;
+    const q = [s]; seen[s] = 1; let x0 = W, y0 = H, x1 = 0, y1 = 0, cnt = 0;
+    while (q.length) {
+      const c = q.pop(), x = c % W, y = (c - x) / W; cnt++;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      for (const d of [c - 1, c + 1, c - W, c + W]) if (d >= 0 && d < n && on[d] && !seen[d] && Math.abs((d % W) - x) <= 1) { seen[d] = 1; q.push(d); }
+    }
+    const w = x1 - x0 + 1, h = y1 - y0 + 1;
+    if (cnt > n * 0.004 && cnt / (w * h) > 0.45 && w / h > 0.25 && w / h < 4) boxes.push([x0, y0, x1 + 1, y1 + 1]);
+  }
+  if (!boxes.length) return null;
+  const x0 = Math.max(0, Math.min(...boxes.map((b) => b[0])) - 1) * S, y0 = Math.max(0, Math.min(...boxes.map((b) => b[1])) - 1) * S;
+  const x1 = Math.min(W, Math.max(...boxes.map((b) => b[2])) + 1) * S, y1 = Math.min(H, Math.max(...boxes.map((b) => b[3])) + 1) * S;
+  // About 700 px wide: big sign letters read better smaller. Then black and white (Otsu's threshold).
+  const k = 700 / (x1 - x0), cv = document.createElement('canvas'); cv.width = 700; cv.height = Math.round((y1 - y0) * k);
+  const g = cv.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(big, x0, y0, x1 - x0, y1 - y0, 0, 0, cv.width, cv.height);
+  const d = g.getImageData(0, 0, cv.width, cv.height), p = d.data, hist = new Array(256).fill(0);
+  for (let i = 0; i < p.length; i += 4) { const v = Math.min(p[i], p[i + 1], p[i + 2]); p[i] = v; hist[v]++; }
+  let total = p.length / 4, sum = 0, sumB = 0, wB = 0, best = 0, t = 128;
+  for (let i = 0; i < 256; i++) sum += i * hist[i];
+  for (let i = 0; i < 256; i++) { wB += hist[i]; if (!wB) continue; const wF = total - wB; if (!wF) break; sumB += i * hist[i]; const mB = sumB / wB, mF = (sum - sumB) / wF, v = wB * wF * (mB - mF) ** 2; if (v > best) { best = v; t = i; } }
+  for (let i = 0; i < p.length; i += 4) { const v = p[i] > t ? 255 : 0; p[i] = p[i + 1] = p[i + 2] = v; }
+  g.putImageData(d, 0, 0);
+  return cv;
 }
 
 /* ---------- placing it on a kerb ---------- */
@@ -90,12 +145,14 @@ function nearestKerbs(at) {
   return { ids, street: p.s, side: p.sd || p.b || '', d: Math.round(bd) };
 }
 // No kerb drawn here yet: take the street from the base map and draw a 40 m kerb on the side you're standing.
-async function kerbFromRoad(at) {
+async function kerbFromRoad(at, onlyName) {
   const { map } = C;
   if (C.distM(map.getCenter().toArray(), at) > 60 || map.getZoom() < 16.5) { map.jumpTo({ center: at, zoom: 17.2 }); await new Promise((r) => { map.once('idle', r); setTimeout(r, 2500); }); }
   const pt = map.project(at);
-  const feats = map.queryRenderedFeatures([[pt.x - 60, pt.y - 60], [pt.x + 60, pt.y + 60]]).filter((f) => f.sourceLayer === 'transportation' && f.geometry.type.includes('LineString') && !/path|track|rail|ferry|bridleway/.test(f.properties.class || ''));
   const names = map.queryRenderedFeatures([[pt.x - 80, pt.y - 80], [pt.x + 80, pt.y + 80]]).filter((f) => f.sourceLayer === 'transportation_name' && f.properties.name);
+  // A street the driver picked by name: use that street's own line, even if another road is nearer.
+  const feats = onlyName ? names.filter((f) => f.properties.name === onlyName && f.geometry.type.includes('LineString'))
+    : map.queryRenderedFeatures([[pt.x - 60, pt.y - 60], [pt.x + 60, pt.y + 60]]).filter((f) => f.sourceLayer === 'transportation' && f.geometry.type.includes('LineString') && !/path|track|rail|ferry|bridleway/.test(f.properties.class || ''));
   const k = Math.cos((at[1] * Math.PI) / 180) * 111320, m = (a) => [(a[0] - at[0]) * k, (a[1] - at[1]) * 110540], back = (x, y) => [at[0] + x / k, at[1] + y / 110540];
   let best = null;
   for (const f of feats) {
@@ -107,15 +164,37 @@ async function kerbFromRoad(at) {
       if (!best || d < best.d) best = { d, px, py, ux: dx / Math.sqrt(l2), uy: dy / Math.sqrt(l2), f };
     }
   }
-  if (!best || best.d > 25) return null;
+  if (!best || best.d > (onlyName ? 60 : 25)) return null;
   // Which side of the street is the phone on? Offset the kerb that way.
   const side = Math.sign(best.ux * -best.py + best.uy * best.px) || 1;
   const nx = -best.uy * side, ny = best.ux * side, off = 4;
   const line = [-20, 0, 20].map((s) => back(best.px + best.ux * s + nx * off, best.py + best.uy * s + ny * off));
   const near = names.map((f) => ({ f, d: Math.hypot(...m(f.geometry.type === 'Point' ? f.geometry.coordinates : f.geometry.coordinates[0])) })).sort((a, b) => a.d - b.d)[0];
-  const street = best.f.properties.name || near?.f.properties.name || 'This street';
+  const street = onlyName || best.f.properties.name || near?.f.properties.name || 'This street';
   const compass = Math.abs(nx) > Math.abs(ny) ? (nx > 0 ? 'East side' : 'West side') : ny > 0 ? 'North side' : 'South side';
   return { line, street, side: compass };
+}
+// Other streets close to where the photo was taken. Near a corner the phone's position often lands on the
+// cross street, so these are offered as one-tap switches. Kerbs Streety knows first, then the base map's names.
+function streetsNear(at, current) {
+  const out = new Map();
+  const K = C.kerbs();
+  if (K && at) for (const f of K.features) {
+    const p = f.properties;
+    if (!p.s || p.s === current || p.id >= 9000000) continue;
+    const d = C.distM(C.mids.get(p.id), at);
+    if (d < 60 && (!out.has(p.s) || d < out.get(p.s).d)) out.set(p.s, { d, id: p.id });
+  }
+  try {
+    const pt = C.map.project(at), c = C.map.getCanvas();
+    if (pt.x > 0 && pt.y > 0 && pt.x < c.clientWidth && pt.y < c.clientHeight) {
+      for (const f of C.map.queryRenderedFeatures([[pt.x - 70, pt.y - 70], [pt.x + 70, pt.y + 70]])) {
+        const s = f.sourceLayer === 'transportation_name' && f.properties.name;
+        if (s && s !== current && !out.has(s)) out.set(s, { d: 99, id: null });
+      }
+    }
+  } catch { /* map not ready */ }
+  return [...out].sort((a, b) => a[1].d - b[1].d).slice(0, 3).map(([street, v]) => ({ street, ...v }));
 }
 
 /* ---------- the panel ---------- */
@@ -140,13 +219,13 @@ async function openSnap(file, getWhere, fromKerb) {
   let img;
   try { img = await loadImage(file); } catch { $('.snap-status').textContent = "That photo couldn't be opened. Try again."; return; }
   $('.snap-img').src = img.src;
-  let panels = [], read = null;
+  let panels = [], read = null, leftOff = [];
   try {
     read = await readPhoto(img, (m) => ($('.snap-status').textContent = m));
-    panels = readSign(read.text).panels;
+    ({ keep: panels, other: leftOff } = splitByArrow(readSign(read.text).panels));
   } catch (e) { $('.snap-status').textContent = `${e.message}. You can still type in what the sign says.`; }
   $('.snap-status').innerHTML = panels.length
-    ? `Here's what Streety read${read?.by === 'ai' ? '' : ' (on your phone)'}. <b>Check it against the sign</b> and fix anything that's wrong.`
+    ? `Here's what Streety read${read?.by === 'ai' ? '' : ' (on your phone)'}. <b>Check it against the sign</b> and fix anything that's wrong.${leftOff.length ? ` The ${leftOff.map((p) => describePanel(p).split(' ').slice(0, 2).join(' ')).join(' and ')} sign points the other way, so it's left off this kerb.` : ''}`
     : "Streety couldn't read this one. Set what the sign says below. Tip: get closer so the sign fills most of the photo.";
   if (!panels.length) panels = [{ kind: 'limit', hours: 2, head: '2P', times: [[8, 18, [1, 2, 3, 4, 5]]] }];
 
@@ -154,6 +233,7 @@ async function openSnap(file, getWhere, fromKerb) {
     $('.snap-panels').innerHTML = panels.map((p, i) => `<div class="sp" data-i="${i}">
       <div class="sp-row"><select class="sp-kind" aria-label="Sign type">${LIMITS.map(([v, t]) => `<option value="${v}"${v === kindValue(p) ? ' selected' : ''}>${t}</option>`).join('')}</select>
         ${p.kind === 'limit' ? `<label class="sp-chk"><input type="checkbox" class="sp-ticket"${p.ticket ? ' checked' : ''}> Ticket</label>` : ''}
+        ${p.kind === 'limit' && p.ticket ? `<label class="sp-chk"><input type="checkbox" class="sp-q"${p.free15 ? ' checked' : ''}> ¼P free</label>` : ''}
         ${panels.length > 1 ? '<button type="button" class="sp-del" aria-label="Remove this part"><i class="ph ph-trash"></i></button>' : ''}</div>
       ${p.times.map(([f, t, d], j) => `<div class="sp-time" data-j="${j}"><select class="sp-f" aria-label="From">${hOpt(f)}</select><span>to</span><select class="sp-t" aria-label="To">${hOpt(t)}</select>
         <div class="sp-days">${[1, 2, 3, 4, 5, 6, 0].map((x) => `<button type="button" data-d="${x}" aria-pressed="${d.includes(x)}">${DAYS[x][0]}${DAYS[x][1]}</button>`).join('')}</div>
@@ -165,6 +245,7 @@ async function openSnap(file, getWhere, fromKerb) {
       const p = panels[+box.dataset.i];
       box.querySelector('.sp-kind').onchange = (e) => { const v = e.target.value; if (/^\d|^0/.test(v)) { p.kind = 'limit'; p.hours = +v; } else if (v.startsWith('zone:')) { p.kind = 'zone'; p.head = v.slice(5).toUpperCase(); } else p.kind = v; render(); };
       box.querySelector('.sp-ticket')?.addEventListener('change', (e) => { p.ticket = e.target.checked; render(); });
+      box.querySelector('.sp-q')?.addEventListener('change', (e) => { p.free15 = e.target.checked; render(); });
       box.querySelector('.sp-permit')?.addEventListener('change', (e) => { p.permit = e.target.checked ? 'yes' : undefined; render(); });
       box.querySelector('.sp-area')?.addEventListener('change', (e) => { p.permit = e.target.value.trim().toUpperCase() || 'yes'; render(); });
       box.querySelector('.sp-del')?.addEventListener('click', () => { panels.splice(+box.dataset.i, 1); render(); });
@@ -185,8 +266,10 @@ async function openSnap(file, getWhere, fromKerb) {
     for (const p of panels) for (const t of p.times) if (t[2].length) out.push(...readSign(`${p.kind === 'limit' ? `${p.hours}P` : p.kind === 'nostop' ? 'NO STOPPING' : p.kind === 'nopark' ? 'NO PARKING' : p.head} ${fmtSpan(t)}${p.ticket ? ' TICKET' : ''}${p.permit ? ` PERMIT HOLDERS EXCEPTED${p.permit !== 'yes' ? ` AREA ${p.permit}` : ''}` : ''}`).rules);
     return out;
   };
+  // "¼P FREE" on a ticket sign: the first 15 minutes are free with a ticket (the app's q flag on a rule set).
+  const qNow = () => (panels.some((p) => p.kind === 'limit' && p.ticket && p.free15) ? 1 : 0);
   const verdict = () => {
-    const rules = rulesNow(), S = C.S, set = [{ rules, q: 0, text: '' }], props = { k: 0 };
+    const rules = rulesNow(), S = C.S, set = [{ rules, q: qNow(), text: '' }], props = { k: 0 };
     const v = $('.snap-verdict'); v.hidden = false;
     if (!rules.length) { v.innerHTML = ''; return; }
     const c = costFor(props, set, S.day, S.hour, S.stay);
@@ -200,13 +283,24 @@ async function openSnap(file, getWhere, fromKerb) {
 
   // Where is it?
   const whereBox = $('.snap-where');
-  let place = null;
+  let place = null, alts = [];
   const showWhere = () => {
     whereBox.hidden = false;
+    alts = place?.at ? streetsNear(place.at, place.street) : [];
     whereBox.innerHTML = place
-      ? `<i class="ph ph-map-pin" aria-hidden="true"></i><span>On <b>${place.street}</b>${place.side ? `, ${place.side.toLowerCase()}` : ''}${place.d != null ? `, ${place.d} m from you` : ''}</span><button type="button" class="snap-pick">Change</button>`
+      ? `<i class="ph ph-map-pin" aria-hidden="true"></i><span>On <b>${place.street}</b>${place.side ? `, ${place.side.toLowerCase()}` : ''}${place.d != null ? `, ${place.d} m from you` : ''}</span><button type="button" class="snap-pick">Change</button>
+        ${alts.length ? `<div class="snap-alts"><span>Not this street?</span>${alts.map((a, i) => `<button type="button" class="snap-alt" data-a="${i}">${a.street}</button>`).join('')}</div>` : ''}`
       : `<i class="ph ph-map-pin" aria-hidden="true"></i><span>Streety couldn't tell where you are.</span><button type="button" class="snap-pick">Pick the kerb</button>`;
     whereBox.querySelector('.snap-pick').onclick = pick;
+    whereBox.querySelectorAll('.snap-alt').forEach((b) => (b.onclick = async () => {
+      const a = alts[+b.dataset.a], at = place.at;
+      let next = a.id != null ? nearestKerbs(C.mids.get(a.id)) : null;
+      if (next && next.street !== a.street) next = null;
+      if (!next) { const k = await kerbFromRoad(at, a.street); if (k) next = { ...k, ids: [] }; }
+      if (!next) { C.toast(`Tap the kerb on ${a.street}`); pick(); return; }
+      place = { ...next, d: null, at };
+      showWhere();
+    }));
   };
   const locate = async () => {
     if (fromKerb != null && C.mids.get(fromKerb)) { place = nearestKerbs(C.mids.get(fromKerb)); if (place) { place.d = null; place.at = C.mids.get(fromKerb); } showWhere(); return; }
@@ -235,7 +329,12 @@ async function openSnap(file, getWhere, fromKerb) {
     if (!place) { pick(); return; }
     const rules = rulesNow();
     if (!rules.length) return;
-    const snap = { id: `s${Date.now().toString(36)}`, date: new Date().toISOString().slice(0, 10), street: place.street, side: place.side || '', at: place.at, ids: place.ids || [], line: place.line || null, rules, text: panels.map(describePanel).join('; '), read: read?.text?.slice(0, 400) || '', thumb: toCanvas(img, 360).toDataURL('image/jpeg', 0.7) };
+    // Kerbs numbered 9,000,000 and up only exist on this phone (drawn from earlier photos), so a shared reading
+    // can't point at them: save that kerb's line instead.
+    let ids = (place.ids || []).filter((x) => x < 9000000), line = place.line || null;
+    const tmp = (place.ids || []).find((x) => x >= 9000000);
+    if (tmp != null && !ids.length && !line) line = C.byId.get(tmp)?.geometry.coordinates || null;
+    const snap = { id: `s${Date.now().toString(36)}`, date: new Date().toISOString().slice(0, 10), street: place.street, side: place.side || '', at: place.at, ids, line, rules, q: qNow(), text: panels.map(describePanel).join('; '), read: read?.text?.slice(0, 400) || '', by: read?.by || 'typed', thumb: toCanvas(img, 360).toDataURL('image/jpeg', 0.7) };
     const list = loadSnaps().filter((s) => !(s.ids.length && s.ids.some((x) => snap.ids.includes(x))));
     list.unshift(snap);
     if (!saveSnaps(list.slice(0, 60))) saveSnaps(list.slice(0, 20).map((s) => ({ ...s, thumb: '' })));
@@ -272,8 +371,10 @@ export function snapsToKerbs(K, RULES, byId, mids) {
   const mine = loadSnaps();
   const all = [...SHARED.filter((x) => !mine.some((m) => m.ids?.some((i) => x.ids?.includes(i)))).map((x) => ({ ...x, shared: true })), ...mine.slice().reverse()];
   for (const s of all) {
-    const k = RULES.push({ rules: s.rules, q: 0, text: s.text, src: s.shared ? `A Streety driver's reading of the sign, ${s.date}` : `Your sign photo, ${s.date}` }) - 1;
-    if (s.ids?.length) { for (const id of s.ids) { const f = byId.get(id); if (f) { if (!f.properties.snap) f.properties.k0 = f.properties.k; f.properties.k = k; f.properties.snap = 1; } } continue; }
+    const k = RULES.push({ rules: s.rules, q: s.q ? 1 : 0, text: s.text, src: s.shared ? `A Streety driver's reading of the sign, ${s.date}` : `Your sign photo, ${s.date}` }) - 1;
+    // Ids from 9,000,000 are kerbs drawn on someone's phone; they mean nothing here (older readings saved them).
+    const ids = (s.ids || []).filter((x) => x < 9000000);
+    if (ids.length) { for (const id of ids) { const f = byId.get(id); if (f) { if (!f.properties.snap) f.properties.k0 = f.properties.k; f.properties.k = k; f.properties.snap = 1; } } continue; }
     if (!s.line) continue;
     const id = next++;
     const f = { type: 'Feature', properties: { id, s: s.street, b: '', sd: s.side, k, z: 2, pa: '', f15: 0, n: 0, snap: 1 }, geometry: { type: 'LineString', coordinates: s.line } };

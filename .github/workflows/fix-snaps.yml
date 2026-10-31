@@ -1,0 +1,23 @@
+name: Fix shared sign readings
+# Applies server/snap-fixes.json to the drivers' shared sign readings on the Streety server.
+# Runs when that file changes, or by hand from the Actions tab.
+on:
+  push:
+    branches: [main]
+    paths: ['server/snap-fixes.json', 'server/fix-snaps.mjs']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply the fixes
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node server/fix-snaps.mjs

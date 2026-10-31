@@ -17,6 +17,10 @@ const PROMPT = `This is a photo of one or more Australian (NSW) parking signs on
 2P 8AM-6PM MON-FRI PERMIT HOLDERS EXCEPTED AREA 22
 NO STOPPING
 1/2P TICKET 8:30AM-6PM MON-FRI 8:30AM-12:30PM SAT
+1/4P FREE TICKET 2P 8AM-6PM <-
+Signs often print AM and PM small beside the hour ("8 AM - 6 PM"): write them as one time range like 8AM-6PM.
+A small box saying "1/4P FREE" (first 15 minutes free) belongs to the sign it is on: start that sign's line with 1/4P FREE.
+Write permit wording in full, including the area letter or number (PERMIT HOLDERS EXCEPTED AREA G).
 Include arrows as "<-" or "->" at the end of a line if shown. Only write what is printed on the signs. If you can't read part of it, write "?" there. If there is no parking sign, reply NONE.`;
 
 export default {
@@ -25,6 +29,13 @@ export default {
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url);
     if (url.pathname === '/read' && req.method === 'POST') {
+      if (!env.ANTHROPIC_API_KEY) return json({ error: 'reader off' }, 503);
+      // Only the app's own pages, and a daily cap so a stranger can't run up the reading bill.
+      const o = req.headers.get('origin') || '';
+      if (!ORIGINS.includes(o) && !o.endsWith('.streety.pages.dev')) return json({ error: 'not allowed' }, 403);
+      const ck = `read:${new Date().toISOString().slice(0, 10)}`, used = +((await env.SNAPS.get(ck)) || 0);
+      if (used >= (+env.READ_CAP || 300)) return json({ error: 'reader busy today' }, 429);
+      await env.SNAPS.put(ck, String(used + 1), { expirationTtl: 172800 });
       const { image } = await req.json();
       const m = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(image || '');
       if (!m || m[2].length > 6_000_000) return json({ error: 'Send a JPEG or PNG under 4 MB' }, 400);
@@ -62,7 +73,7 @@ export default {
       return json(rows.filter(Boolean));
     }
     if (url.pathname === '/snaps' && req.method === 'GET') {
-      const list = { keys: (await env.SNAPS.list({ limit: 1000 })).keys.filter((k) => !k.name.startsWith('report:')) };
+      const list = { keys: (await env.SNAPS.list({ limit: 1000 })).keys.filter((k) => !/^(report|read):/.test(k.name)) };
       const rows = await Promise.all(list.keys.map((k) => env.SNAPS.get(k.name, 'json')));
       return json(rows.filter(Boolean));
     }

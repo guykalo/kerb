@@ -1,0 +1,28 @@
+[
+  {
+    "id": "smvvqwsvf",
+    "note": "Glebe: both ticket signs have the 1/4P FREE badge (Guy's photo, 31 Oct 2026)",
+    "set": {
+      "q": 1,
+      "text": "2P ticket 8am-6pm every day, first 15 min free; 4P ticket 6pm-10pm every day, first 15 min free"
+    }
+  },
+  {
+    "id": "smvvr036q",
+    "note": "Saved onto a kerb that only existed on Guy's phone, so it had no real place; Guy snapped it again",
+    "delete": true
+  },
+  {
+    "id": "smvvr1ubc",
+    "note": "The sign also says permit holders excepted, Area G (Guy, 31 Oct 2026)",
+    "set": {
+      "rules": [[4, [0, 1, 2, 3, 4, 5, 6], 8, 22, 0, 0, 0, "Permit holders excepted, area G"]],
+      "text": "4P 8am-10pm every day, permit holders excepted (area G)"
+    }
+  },
+  {
+    "id": "smvvr3sma",
+    "note": "Snapped on Gottenham Street, but the phone put it on Marlborough Street (Guy, 31 Oct 2026)",
+    "move": { "street": "Gottenham Street" }
+  }
+]

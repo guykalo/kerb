@@ -40,3 +40,15 @@ try { await api('/workers/scripts/streety/subdomain', { method: 'POST', body: JS
 const url = `https://streety.${sub}.workers.dev`;
 console.log(`server: ${url}`);
 if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `url=${url}\n`);
+
+// 5. The AI sign reader (POST /read) needs an Anthropic API key on the worker. From the repo secret
+//    ANTHROPIC_API_KEY when it's set; the app only switches the reader on when the key is there.
+const K = process.env.ANTHROPIC_API_KEY;
+if (K) {
+  try { await api('/workers/scripts/streety/secrets', { method: 'PUT', body: JSON.stringify({ name: 'ANTHROPIC_API_KEY', text: K, type: 'secret_text' }) }); }
+  catch (e) { console.log(`reader key: ${e.message}`); }
+}
+let reader = false;
+try { reader = (await api('/workers/scripts/streety/secrets')).some((s) => s.name === 'ANTHROPIC_API_KEY'); } catch { /* can't tell: leave it off */ }
+console.log(`sign reader: ${reader ? 'on (Claude reads sign photos)' : 'off (add the ANTHROPIC_API_KEY repo secret to switch it on)'}`);
+if (process.env.GITHUB_OUTPUT) await appendFile(process.env.GITHUB_OUTPUT, `reader=${reader ? 'yes' : ''}\n`);
