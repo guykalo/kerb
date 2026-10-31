@@ -9,6 +9,8 @@ const views = [['syd', '?city=syd'], ['mel', '?city=mel'], ['bne', '?city=bne'],
 let md = '\n## Browser\n';
 for (const [name, q] of views) {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  // A returning visitor: skip the first-open welcome and map key so they don't cover what's being checked.
+  await p.addInitScript(() => { try { localStorage.setItem('streety-welcomed', '1'); localStorage.setItem('streety-legend', '1'); } catch { /* no storage */ } });
   const errs = [], failed = [];
   p.on('pageerror', (e) => errs.push(e.message));
   p.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
@@ -21,7 +23,7 @@ for (const [name, q] of views) {
     await p.screenshot({ path: `audit/shots/${name}-map.png` });
     try { await p.click('#handle', { timeout: 3000 }); await p.waitForTimeout(800); } catch {}
     await p.screenshot({ path: `audit/shots/${name}-list.png` });
-    const opt = await p.$('.opt');
+    const opt = await p.$('.rows .opt.g-free, .rows .opt.g-paid, .rows .opt.g-guess') || await p.$('.opt');
     if (opt) { await opt.click(); await p.waitForTimeout(1200); await p.screenshot({ path: `audit/shots/${name}-detail.png` }); }
     // Sydney: the fines card, then the parked card and the proof sheet (I parked here → Add proof).
     if (opt && name === 'syd') {

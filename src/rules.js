@@ -123,10 +123,13 @@ const mpsLimit = (p) => (p < 0 || p > 0.5 ? Infinity : p === 0.5 ? 2 : 0.5);
 export function costFor(props, rules, day, h, stay) {
   if (props.k < 0) return { ok: null, why: 'No published rules for this kerb yet' };
   const set = rules[props.k];
-  const step = 0.25, n = Math.max(1, Math.round(stay / step));
+  // Signs change on quarter hours, so the stay is walked in pieces that end on a quarter hour. A stay that starts
+  // at 8:58pm is checked from 8:58pm to 10:58pm (not 8:45 to 10:45), and each piece counts for the time it covers.
+  const end = h + Math.max(stay, 0.01);
   let cost = 0, run = 0, ref = null, paid = 0, firstPaidAt = null, rate = 0, waived = 0, unknownRate = false, limitUnknown = false, unknown = false;
-  for (let i = 0; i < n; i++) {
-    const t = h + i * step, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
+  for (let t = h, nx = h; t < end - 1e-9; t = nx) {
+    nx = Math.min(end, Math.floor(t * 4 + 1e-6) / 4 + 0.25);
+    const step = nx - t, d = (day + Math.floor(t / 24)) % 7, hh = t % 24;
     const s = stateAt(props, rules, d, hh);
     if (s.kind === 'restricted') return { ok: false, why: `${s.note || 'No parking'} ${s.until < 24 || hh > 0 ? `${fmtTime(hh)}-${fmtTime(s.until)}` : ''}`.trim() };
     if (s.kind === 'unknown') unknown = true;
@@ -138,8 +141,11 @@ export function costFor(props, rules, day, h, stay) {
     if (run > limit + 1e-9) return { ok: false, why: BEN.mps ? `${limit === 0.5 ? '30-minute' : `${limit}-hour`} limit with a permit until ${fmtTime(s.rule[3])}` : `${pLabel(s.rule[0])} limit until ${fmtTime(s.rule[3])}` };
     if (s.kind === 'limit') continue;
     if (BEN.mps) { waived += step; continue; }
-    const tier = s.rule[8] && run > s.rule[8][0] + 1e-9 ? s.rule[8][1] : s.rule[4];
-    if (s.rule[4] < 0) unknownRate = true; else cost += tier * step;
+    // A tiered meter (a higher rate after the first hours) charges each piece at the rate for the time it covers:
+    // a piece that crosses the change is split there.
+    if (s.rule[4] < 0) unknownRate = true;
+    else if (s.rule[8]) { const low = Math.min(step, Math.max(0, s.rule[8][0] - (run - step))); cost += s.rule[4] * low + s.rule[8][1] * (step - low); }
+    else cost += s.rule[4] * step;
     paid += step;
     if (firstPaidAt == null) { firstPaidAt = t; rate = s.rule[4]; }
   }
@@ -147,7 +153,10 @@ export function costFor(props, rules, day, h, stay) {
   // Ticket machines in free 15-minute zones give the first quarter hour free.
   const quarterFree = set.q || props.f15;
   if (quarterFree && paid > 0) cost = Math.max(0, cost - Math.min(paid, 0.25) * (cost / paid));
-  return { ok: true, cost, quarterFree: !!quarterFree && stay <= 0.25 && !unknownRate, paidHours: paid, freeHours: stay - paid, firstPaidAt, rate, waived, unknownRate, limitUnknown };
+  // Pieces are fractions of an hour, so totals are rounded to the second: a stay paid the whole way has no free time.
+  const r6 = (v) => Math.round(v * 3600) / 3600;
+  paid = r6(paid); waived = r6(waived);
+  return { ok: true, cost: Math.round(cost * 1e6) / 1e6, quarterFree: !!quarterFree && stay <= 0.25 && !unknownRate, paidHours: paid, freeHours: Math.max(0, r6(stay - paid)), firstPaidAt, rate, waived, unknownRate, limitUnknown };
 }
 
 // Category used for colouring the kerb for the chosen stay.
