@@ -1584,7 +1584,7 @@ let pendingFit = null;
 // Runs once the card's height is known. A kerb you tapped on the map only moves if it ended up hidden.
 function fitSel(force) {
   const id = S.sel;
-  if (id == null || !map.isStyleLoaded()) return;
+  if (id == null || !KERBS) return; // (not isStyleLoaded(): that stays false while tiles are still loading)
   const coords = typeof id === 'number' ? byId.get(id)?.geometry.coordinates : [CARPARKS.find((c) => c.id === id)?.at].filter(Boolean);
   if (!coords?.length) return;
   const desk = isDesk(), H = map.getCanvas().clientHeight, W = map.getCanvas().clientWidth;
